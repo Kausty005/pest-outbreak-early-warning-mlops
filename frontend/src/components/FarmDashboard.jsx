@@ -79,43 +79,122 @@ function rainfallInsight(r) {
 }
 
 const ZONE_LAYOUT = [
-  { id: 'zone-1', label: 'Zone A', crop: '🌾', cx: 155, cy: 130, rx: 130, ry: 90, fill: '#16a34a', stroke: '#4ade80' },
-  { id: 'zone-2', label: 'Zone B', crop: '🌽', cx: 430, cy: 110, rx: 140, ry: 80, fill: '#15803d', stroke: '#86efac' },
-  { id: 'zone-3', label: 'Zone C', crop: '☁️', cx: 680, cy: 135, rx: 120, ry: 85, fill: '#166534', stroke: '#4ade80' },
-  { id: 'zone-4', label: 'Zone D', crop: '🌱', cx: 270, cy: 310, rx: 170, ry: 100, fill: '#14532d', stroke: '#22c55e' },
-  { id: 'zone-5', label: 'Zone E', crop: '🍌', cx: 580, cy: 305, rx: 150, ry: 95, fill: '#052e16', stroke: '#86efac' },
+  { id: 'zone-1', label: 'Zone A', crop: '🌾', cropName: 'Rice Paddy', area: '4.5 Ac', soil: 'Clay Loam', x: 24, y: 24, width: 250, height: 180, fill: '#0d361c', stroke: '#22c55e', furrowDir: 'horizontal', probeX: 230, probeY: 165 },
+  { id: 'zone-2', label: 'Zone B', crop: '🌽', cropName: 'Maize Field', area: '5.0 Ac', soil: 'Sandy Loam', x: 294, y: 24, width: 250, height: 180, fill: '#163e14', stroke: '#4ade80', furrowDir: 'vertical', probeX: 500, probeY: 165 },
+  { id: 'zone-3', label: 'Zone C', crop: '☁️', cropName: 'Cotton Field', area: '4.0 Ac', soil: 'Black Soil', x: 564, y: 24, width: 252, height: 180, fill: '#133a25', stroke: '#86efac', furrowDir: 'horizontal', probeX: 770, probeY: 165 },
+  { id: 'zone-4', label: 'Zone D', crop: '🌱', cropName: 'Soybean / Pulses', area: '5.2 Ac', soil: 'Red Loam', x: 24, y: 228, width: 386, height: 188, fill: '#0c3218', stroke: '#22c55e', furrowDir: 'horizontal', probeX: 365, probeY: 375 },
+  { id: 'zone-5', label: 'Zone E', crop: '🍌', cropName: 'Banana Orchard', area: '4.8 Ac', soil: 'Alluvial', x: 430, y: 228, width: 386, height: 188, fill: '#082a14', stroke: '#4ade80', furrowDir: 'grid', probeX: 770, probeY: 375 },
 ]
 
 function SensorPin({ zone, telemetry, isSelected, onClick }) {
   const moisture = telemetry?.soil_moisture ?? 55
   const mColor = moistureColor(moisture)
+  const probeX = zone.probeX || (zone.x + zone.width - 45)
+  const probeY = zone.probeY || (zone.y + zone.height - 40)
+
+  // Furrow lines inside the rectangular field to give it a realistic cultivated field appearance
+  const furrows = []
+  if (zone.furrowDir === 'horizontal') {
+    for (let py = zone.y + 42; py < zone.y + zone.height - 18; py += 18) {
+      furrows.push(
+        <line key={py} x1={zone.x + 10} y1={py} x2={zone.x + zone.width - 10} y2={py}
+          stroke="rgba(255,255,255,0.08)" strokeWidth="1.5" strokeDasharray="6 4" />
+      )
+    }
+  } else if (zone.furrowDir === 'vertical') {
+    for (let px = zone.x + 28; px < zone.x + zone.width - 18; px += 20) {
+      furrows.push(
+        <line key={px} x1={px} y1={zone.y + 40} x2={px} y2={zone.y + zone.height - 12}
+          stroke="rgba(255,255,255,0.08)" strokeWidth="1.5" strokeDasharray="6 4" />
+      )
+    }
+  } else {
+    for (let gx = zone.x + 36; gx < zone.x + zone.width - 24; gx += 38) {
+      for (let gy = zone.y + 46; gy < zone.y + zone.height - 20; gy += 34) {
+        furrows.push(
+          <circle key={`${gx}-${gy}`} cx={gx} cy={gy} r="3" fill="rgba(74,222,128,0.2)" />
+        )
+      }
+    }
+  }
+
   return (
     <g style={{ cursor: 'pointer' }} onClick={onClick} role="button" aria-label={`Select ${zone.label}`}>
-      <ellipse cx={zone.cx} cy={zone.cy} rx={zone.rx} ry={zone.ry}
-        fill={zone.fill} opacity={isSelected ? 1 : 0.75}
-        stroke={isSelected ? mColor : zone.stroke} strokeWidth={isSelected ? 3 : 1.5}
-        style={{ transition: 'all 0.35s ease', filter: isSelected ? `drop-shadow(0 0 14px ${mColor}99)` : 'none' }} />
-      {[-2, -1, 0, 1, 2].map(i => (
-        <line key={i} x1={zone.cx - zone.rx * 0.78} y1={zone.cy + i * (zone.ry * 0.3)}
-          x2={zone.cx + zone.rx * 0.78} y2={zone.cy + i * (zone.ry * 0.3)}
-          stroke={zone.stroke} strokeWidth="1" opacity="0.22" />
-      ))}
-      <line x1={zone.cx} y1={zone.cy - zone.ry + 4} x2={zone.cx} y2={zone.cy - zone.ry - 32}
-        stroke={mColor} strokeWidth="2" opacity="0.9" />
+      {/* Square/Rectangular Field Plot */}
+      <rect x={zone.x} y={zone.y} width={zone.width} height={zone.height} rx="8"
+        fill={zone.fill}
+        stroke={isSelected ? mColor : 'rgba(74,222,128,0.28)'}
+        strokeWidth={isSelected ? 3.5 : 1.5}
+        style={{
+          transition: 'all 0.25s ease',
+          filter: isSelected ? `drop-shadow(0 0 16px ${mColor}99)` : 'none',
+        }}
+      />
+
+      {/* Internal Soil Cultivation Furrows */}
+      {furrows}
+
+      {/* Field Earthen Bund / Inner Rim */}
+      <rect x={zone.x + 4} y={zone.y + 4} width={zone.width - 8} height={zone.height - 8} rx="6"
+        fill="none" stroke="rgba(0,0,0,0.3)" strokeWidth="1" />
+
+      {/* Selection Glow Tint */}
       {isSelected && (
-        <circle cx={zone.cx} cy={zone.cy - zone.ry - 32} r="14" fill="none" stroke={mColor} strokeWidth="2" opacity="0.5">
-          <animate attributeName="r" from="12" to="26" dur="1.4s" repeatCount="indefinite" />
-          <animate attributeName="opacity" from="0.8" to="0" dur="1.4s" repeatCount="indefinite" />
-        </circle>
+        <rect x={zone.x} y={zone.y} width={zone.width} height={zone.height} rx="8"
+          fill={mColor} opacity="0.08" />
       )}
-      <circle cx={zone.cx} cy={zone.cy - zone.ry - 32} r="8" fill={mColor} stroke="#0f172a" strokeWidth="2" />
-      <text x={zone.cx} y={zone.cy - zone.ry - 47} textAnchor="middle" fill={isSelected ? mColor : '#bbf7d0'}
-        fontSize="12" fontWeight="700" fontFamily="Outfit,Inter,sans-serif">{zone.label}</text>
-      <text x={zone.cx} y={zone.cy + 8} textAnchor="middle" fontSize="24" opacity="0.65">{zone.crop}</text>
-      <rect x={zone.cx - 29} y={zone.cy + zone.ry - 10} width="58" height="22" rx="11"
-        fill="#0f172aCC" stroke={mColor} strokeWidth="1.2" />
-      <text x={zone.cx} y={zone.cy + zone.ry + 7} textAnchor="middle" fill={mColor}
-        fontSize="11" fontWeight="700" fontFamily="Outfit,Inter,sans-serif">💧{moisture}%</text>
+
+      {/* Center Crop Watermark */}
+      <text x={zone.x + zone.width / 2} y={zone.y + zone.height / 2 + 12}
+        textAnchor="middle" fontSize={zone.width > 300 ? '46' : '36'} opacity="0.28">
+        {zone.crop}
+      </text>
+
+      {/* Plot Name Tag (Top Left) */}
+      <rect x={zone.x + 8} y={zone.y + 8} width={zone.width < 300 ? 155 : 190} height="24" rx="6"
+        fill="#04140bE6" stroke={isSelected ? mColor : 'rgba(74,222,128,0.25)'} strokeWidth="1" />
+      <text x={zone.x + 16} y={zone.y + 24}
+        fill={isSelected ? '#f0fdf4' : '#86efac'}
+        fontSize="11.5" fontWeight="700" fontFamily="Outfit,Inter,sans-serif">
+        {zone.crop} {zone.label} · {zone.cropName} ({zone.area})
+      </text>
+
+      {/* Active Inspection Tag (Top Right) */}
+      {isSelected && (
+        <g>
+          <rect x={zone.x + zone.width - 92} y={zone.y + 8} width="84" height="20" rx="5"
+            fill={mColor} opacity="0.9" />
+          <text x={zone.x + zone.width - 50} y={zone.y + 22} textAnchor="middle"
+            fill="#051a0e" fontSize="9.5" fontWeight="800" fontFamily="Outfit,Inter,sans-serif" letterSpacing="0.05em">
+            ACTIVE PLOT
+          </text>
+        </g>
+      )}
+
+      {/* IoT Sensor Station Mast & Live Telemetry Marker */}
+      <g>
+        {/* Mast pole */}
+        <line x1={probeX} y1={probeY} x2={probeX} y2={probeY - 26} stroke={mColor} strokeWidth="2" />
+        {/* Solar panel */}
+        <rect x={probeX - 8} y={probeY - 32} width="16" height="7" rx="2" fill="#0f172a" stroke={mColor} strokeWidth="1.2" />
+        {/* Blinking signal wave when selected */}
+        {isSelected && (
+          <circle cx={probeX} cy={probeY - 28} r="10" fill="none" stroke={mColor} strokeWidth="1.8" opacity="0.6">
+            <animate attributeName="r" from="6" to="22" dur="1.5s" repeatCount="indefinite" />
+            <animate attributeName="opacity" from="0.9" to="0" dur="1.5s" repeatCount="indefinite" />
+          </circle>
+        )}
+        <circle cx={probeX} cy={probeY - 28} r="4.5" fill={mColor} stroke="#05140b" strokeWidth="1.5" />
+
+        {/* Moisture Badge */}
+        <rect x={probeX - 35} y={probeY - 2} width="70" height="22" rx="11"
+          fill="#06180fEE" stroke={mColor} strokeWidth="1.4"
+          filter="drop-shadow(0 2px 6px rgba(0,0,0,0.4))" />
+        <text x={probeX} y={probeY + 13} textAnchor="middle" fill={mColor}
+          fontSize="11" fontWeight="800" fontFamily="Outfit,Inter,sans-serif">
+          💧 {moisture}%
+        </text>
+      </g>
     </g>
   )
 }
@@ -342,19 +421,53 @@ export default function FarmDashboard() {
               </div>
               <span style={{ fontSize:'0.72rem', color:'#10b981', fontWeight:700 }}><LiveDot /> Sensors Active</span>
             </div>
-            <div style={{ borderRadius:'12px', overflow:'hidden', border:'1px solid rgba(74,222,128,0.15)' }}>
-              <svg viewBox="0 0 830 430" width="100%" style={{ display:'block', background:'linear-gradient(180deg,#052e16 0%,#0a3320 60%,#071a0e 100%)' }}>
-                <rect x="10" y="10" width="810" height="410" rx="12" fill="none" stroke="rgba(74,222,128,0.22)" strokeWidth="1.5" strokeDasharray="8 4" />
-                <line x1="415" y1="10" x2="415" y2="420" stroke="rgba(255,255,255,0.05)" strokeWidth="8" />
-                <line x1="10" y1="215" x2="820" y2="215" stroke="rgba(255,255,255,0.05)" strokeWidth="8" />
-                <path d="M 10 392 Q 200 382 415 392 Q 620 402 820 392" fill="none" stroke="rgba(56,189,248,0.32)" strokeWidth="6" strokeLinecap="round" />
-                <text x="28" y="410" fill="rgba(56,189,248,0.55)" fontSize="10" fontFamily="Outfit,sans-serif">— Irrigation Canal</text>
+            <div style={{ borderRadius:'12px', overflow:'hidden', border:'1px solid rgba(74,222,128,0.2)' }}>
+              <svg viewBox="0 0 840 440" width="100%" style={{ display:'block', background:'#06180e' }}>
+                {/* Farm Base Turf */}
+                <rect x="0" y="0" width="840" height="440" fill="#06180e" />
+
+                {/* Earthen Access Roads separating the square field plots */}
+                {/* Horizontal Central Road */}
+                <rect x="20" y="206" width="800" height="20" fill="#152618" rx="2" />
+                <line x1="24" y1="216" x2="816" y2="216" stroke="#253d25" strokeWidth="1.5" strokeDasharray="8 6" />
+
+                {/* Vertical Road between Plot A and Plot B */}
+                <rect x="274" y="24" width="20" height="182" fill="#152618" rx="2" />
+                <line x1="284" y1="28" x2="284" y2="202" stroke="#253d25" strokeWidth="1.5" strokeDasharray="8 6" />
+
+                {/* Vertical Road between Plot B and Plot C */}
+                <rect x="544" y="24" width="20" height="182" fill="#152618" rx="2" />
+                <line x1="554" y1="28" x2="554" y2="202" stroke="#253d25" strokeWidth="1.5" strokeDasharray="8 6" />
+
+                {/* Vertical Road between Plot D and Plot E */}
+                <rect x="410" y="228" width="20" height="188" fill="#152618" rx="2" />
+                <line x1="420" y1="232" x2="420" y2="412" stroke="#253d25" strokeWidth="1.5" strokeDasharray="8 6" />
+
+                {/* Main Irrigation Canal running through central corridor */}
+                <path d="M 24 216 L 816 216" stroke="#0284c7" strokeWidth="6" strokeLinecap="round" opacity="0.8" />
+                <path d="M 24 216 L 816 216" stroke="#38bdf8" strokeWidth="2.5" strokeDasharray="14 10" strokeLinecap="round">
+                  <animate attributeName="stroke-dashoffset" from="0" to="-48" dur="2s" repeatCount="indefinite" />
+                </path>
+                <text x="32" y="213" fill="#38bdf8" fontSize="8.5" fontWeight="700" fontFamily="Outfit,Inter,sans-serif" letterSpacing="0.08em">
+                  ══ MAIN IRRIGATION CANAL ══
+                </text>
+
+                {/* Outer Estate Perimeter Fence */}
+                <rect x="14" y="14" width="812" height="412" rx="12" fill="none" stroke="rgba(74,222,128,0.25)" strokeWidth="1.5" strokeDasharray="8 5" />
+
+                {/* 5 Square/Rectangular Field Plots */}
                 {activeZoneData.map(zone => (
                   <SensorPin key={zone.id} zone={zone} telemetry={zone.telemetry}
                     isSelected={zone.id === selectedZoneId} onClick={() => handleSelectZone(zone.id)} />
                 ))}
-                <text x="795" y="36" textAnchor="middle" fill="rgba(255,255,255,0.3)" fontSize="11" fontFamily="Outfit,sans-serif">N</text>
-                <line x1="795" y1="40" x2="795" y2="54" stroke="rgba(255,255,255,0.2)" strokeWidth="1.5" />
+
+                {/* Compass Rose */}
+                <g transform="translate(806, 38)">
+                  <circle cx="0" cy="0" r="14" fill="#04120aCC" stroke="rgba(74,222,128,0.3)" strokeWidth="1" />
+                  <text x="0" y="-3" textAnchor="middle" fill="#4ade80" fontSize="9" fontWeight="800" fontFamily="Outfit,sans-serif">N</text>
+                  <polygon points="0,-11 -3,-2 3,-2" fill="#ef4444" />
+                  <polygon points="0,11 -3,2 3,2" fill="#94a3b8" />
+                </g>
               </svg>
             </div>
             <div style={{ display:'flex', gap:'1.2rem', marginTop:'0.8rem', flexWrap:'wrap', alignItems:'center' }}>
