@@ -62,11 +62,10 @@ def run_drift_detection(
 ) -> dict[str, Any]:
     """
     Run Evidently DataDriftPreset on reference vs current data.
+    If Evidently is unavailable (e.g. Python 3.14 pydantic.v1 incompatibility),
+    falls back seamlessly to Kolmogorov-Smirnov 2-sample statistical tests via scipy.
     Writes an HTML report + JSON summary and returns the summary dict.
     """
-    from evidently.report import Report
-    from evidently.metric_preset import DataDriftPreset
-
     report_dir = Path(report_dir)
     report_dir.mkdir(parents=True, exist_ok=True)
 
@@ -77,14 +76,8 @@ def run_drift_detection(
     ref = reference[common_cols].reset_index(drop=True)
     cur = current[common_cols].reset_index(drop=True)
 
-    report = Report(metrics=[DataDriftPreset()])
-    report.run(reference_data=ref, current_data=cur)
-
     html_path = report_dir / f"drift_report_{run_id}.html"
-    report.save_html(str(html_path))
-    LOGGER.info("Drift HTML report: %s", html_path)
 
-    report_dict = report.as_dict()
     summary: dict[str, Any] = {
         "run_id": run_id,
         "timestamp": ts.isoformat(),
@@ -99,20 +92,90 @@ def run_drift_detection(
         "alert": False,
     }
 
-    for metric in report_dict.get("metrics", []):
-        result = metric.get("result", {})
-        for col, stats in result.get("drift_by_columns", {}).items():
+    use_evidently = True
+    try:
+        from evidently.report import Report
+        from evidently.metric_preset import DataDriftPreset
+
+        report = Report(metrics=[DataDriftPreset()])
+        report.run(reference_data=ref, current_data=cur)
+        report.save_html(str(html_path))
+        LOGGER.info("Evidently drift HTML report: %s", html_path)
+        report_dict = report.as_dict()
+
+        for metric in report_dict.get("metrics", []):
+            result = metric.get("result", {})
+            for col, stats in result.get("drift_by_columns", {}).items():
+                summary["feature_drift"][col] = {
+                    "drift_detected": bool(stats.get("drift_detected", False)),
+                    "stattest": stats.get("stattest_name", ""),
+                    "p_value": stats.get("p_value"),
+                    "drift_score": stats.get("drift_score"),
+                }
+            if "share_of_drifted_columns" in result:
+                summary["drift_share"] = float(result["share_of_drifted_columns"])
+                summary["drift_detected"] = bool(result.get("dataset_drift", False))
+            if "number_of_drifted_columns" in result:
+                summary["drifted_feature_count"] = int(result["number_of_drifted_columns"])
+
+    except Exception as exc:  # noqa: BLE001
+        LOGGER.warning("Evidently unavailable (%s) — using scipy Kolmogorov-Smirnov 2-sample drift engine", exc)
+        use_evidently = False
+        from scipy import stats
+
+        drifted_count = 0
+        html_rows = []
+        for col in common_cols:
+            res = stats.ks_2samp(ref[col].dropna(), cur[col].dropna())
+            stat_val = float(res.statistic)
+            pval = float(res.pvalue)
+            is_drifted = bool(pval < 0.05)
+            if is_drifted:
+                drifted_count += 1
             summary["feature_drift"][col] = {
-                "drift_detected": bool(stats.get("drift_detected", False)),
-                "stattest": stats.get("stattest_name", ""),
-                "p_value": stats.get("p_value"),
-                "drift_score": stats.get("drift_score"),
+                "drift_detected": is_drifted,
+                "stattest": "Kolmogorov-Smirnov (alpha=0.05)",
+                "p_value": round(pval, 6),
+                "drift_score": round(stat_val, 4),
             }
-        if "share_of_drifted_columns" in result:
-            summary["drift_share"] = float(result["share_of_drifted_columns"])
-            summary["drift_detected"] = bool(result.get("dataset_drift", False))
-        if "number_of_drifted_columns" in result:
-            summary["drifted_feature_count"] = int(result["number_of_drifted_columns"])
+            status_badge = "<span style='color: #ef4444; font-weight: bold;'>DRIFT</span>" if is_drifted else "<span style='color: #22c55e;'>STABLE</span>"
+            html_rows.append(f"<tr><td><b>{col}</b></td><td>{stat_val:.4f}</td><td>{pval:.4e}</td><td>{status_badge}</td></tr>")
+
+        summary["drifted_feature_count"] = drifted_count
+        summary["drift_share"] = round(drifted_count / len(common_cols), 4) if common_cols else 0.0
+        summary["drift_detected"] = summary["drift_share"] >= DRIFT_SHARE_THRESHOLD
+
+        # Generate standalone HTML report
+        html_content = f"""<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>AgriAdapt Data Drift Report - {run_id}</title>
+  <style>
+    body {{ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 40px; background: #0f172a; color: #f8fafc; }}
+    h1 {{ color: #38bdf8; font-size: 24px; }}
+    .summary-card {{ background: #1e293b; padding: 20px; border-radius: 8px; margin-bottom: 24px; border: 1px solid #334155; }}
+    table {{ width: 100%; border-collapse: collapse; margin-top: 16px; background: #1e293b; border-radius: 8px; overflow: hidden; }}
+    th, td {{ padding: 12px 16px; text-align: left; border-bottom: 1px solid #334155; }}
+    th {{ background: #334155; color: #94a3b8; font-size: 13px; text-transform: uppercase; }}
+  </style>
+</head>
+<body>
+  <h1>🌾 AgriAdapt Model Input Drift Report</h1>
+  <div class="summary-card">
+    <p><b>Run ID:</b> {run_id} | <b>Timestamp:</b> {ts.isoformat()}</p>
+    <p><b>Reference Rows:</b> {len(ref)} | <b>Current Rows:</b> {len(cur)}</p>
+    <p><b>Drift Status:</b> {'⚠️ ALERT - RETRAIN RECOMMENDED' if summary['drift_share'] >= DRIFT_SHARE_THRESHOLD else '✅ HEALTHY'}</p>
+    <p><b>Drifted Features:</b> {drifted_count} / {len(common_cols)} ({summary['drift_share']*100:.1f}%)</p>
+  </div>
+  <table>
+    <thead><tr><th>Feature</th><th>KS Statistic</th><th>p-value</th><th>Status</th></tr></thead>
+    <tbody>{''.join(html_rows)}</tbody>
+  </table>
+</body>
+</html>"""
+        html_path.write_text(html_content, encoding="utf-8")
+        LOGGER.info("KS test drift HTML report generated: %s", html_path)
 
     summary["alert"] = summary["drift_share"] >= DRIFT_SHARE_THRESHOLD
 
@@ -158,4 +221,21 @@ def get_drift_history(report_dir: str | Path = "logs/drift", last_n: int = 30) -
         return []
     lines = log_path.read_text(encoding="utf-8").splitlines()
     return [json.loads(line) for line in lines[-last_n:] if line.strip()]
+
+
+if __name__ == "__main__":
+    import argparse
+    parser = argparse.ArgumentParser(description="Run AgriAdapt drift detection")
+    parser.add_argument("--reference", default="data/raw/Crop_recommendation.csv", help="Path to reference CSV")
+    parser.add_argument("--prediction-log", default="logs/prediction_log.jsonl", help="Path to prediction log JSONL")
+    parser.add_argument("--report-dir", default="logs/drift", help="Directory for drift reports")
+    parser.add_argument("--run-id", default=None, help="Optional run ID")
+    args = parser.parse_args()
+
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
+    ref_df = load_reference_data(args.reference)
+    cur_df = load_prediction_log(args.prediction_log)
+    drift_res = run_drift_detection(ref_df, cur_df, report_dir=args.report_dir, run_id=args.run_id)
+    print(json.dumps({k: v for k, v in drift_res.items() if k != "feature_drift"}, indent=2))
+
 

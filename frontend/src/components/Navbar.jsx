@@ -46,6 +46,13 @@ export default function Navbar({ activeTab, setActiveTab }) {
           >
             Unified & Pest Advisory
           </a>
+          <a
+            href="#monitoring"
+            onClick={(e) => { e.preventDefault(); setActiveTab && setActiveTab('monitoring'); }}
+            style={{ fontWeight: activeTab === 'monitoring' ? 'bold' : 'normal', color: activeTab === 'monitoring' ? '#b9e487' : '#e5eee8' }}
+          >
+            MLOps & Drift
+          </a>
         </nav>
       </div>
     </header>

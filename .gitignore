@@ -21,9 +21,11 @@ backend/artifacts/*.md
 !backend/artifacts/.gitkeep
 
 # Drift & monitoring logs (runtime-generated)
+logs/
 logs/drift/
 logs/prediction_log.jsonl
 logs/retrain_log.jsonl
+*.log
 
 # macOS
 __MACOSX/

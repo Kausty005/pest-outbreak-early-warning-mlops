@@ -6,6 +6,7 @@ import ModelInformation from './components/ModelInformation'
 import RecommendationCard from './components/RecommendationCard'
 import FertilizerSection from './components/FertilizerSection'
 import UnifiedAdvisorySection from './components/UnifiedAdvisorySection'
+import MonitoringSection from './components/MonitoringSection'
 import { cropApi } from './services/api'
 
 function validate(values) {
@@ -101,6 +102,15 @@ export default function App() {
           >
             🌾 Unified & Pest Advisory
           </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={activeTab === 'monitoring'}
+            className={`tab-btn ${activeTab === 'monitoring' ? 'active' : ''}`}
+            onClick={() => setActiveTab('monitoring')}
+          >
+            📡 MLOps Drift & Pipeline
+          </button>
         </div>
 
         {/* Tab 1: Crop Recommendation */}
@@ -128,6 +138,11 @@ export default function App() {
         {/* Tab 3: Unified Advisory & Pest Early Warning */}
         {activeTab === 'unified' && (
           <UnifiedAdvisorySection />
+        )}
+
+        {/* Tab 4: MLOps Drift & Retrain Lifecycle */}
+        {activeTab === 'monitoring' && (
+          <MonitoringSection />
         )}
 
         <ModelInformation info={modelInfo} error={modelError} onRetry={loadModelInfo} />

@@ -46,3 +46,13 @@ export const advisoryApi = {
 export const healthApi = {
   status: () => request('/health'),
 }
+
+export const monitoringApi = {
+  health: () => request('/monitoring/health'),
+  latestDrift: () => request('/monitoring/drift/latest'),
+  driftHistory: (lastN = 30) => request(`/monitoring/drift/history?last_n=${lastN}`),
+  retrainHistory: (lastN = 20) => request(`/monitoring/retrain/history?last_n=${lastN}`),
+  runDrift: () => request('/monitoring/drift/run', { method: 'POST', body: JSON.stringify({}) }),
+  triggerRetrain: (force = false) => request('/monitoring/retrain/trigger', { method: 'POST', body: JSON.stringify({ force }) }),
+}
+

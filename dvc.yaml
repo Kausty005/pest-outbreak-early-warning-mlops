@@ -21,3 +21,13 @@ stages:
     outs:
       - backend/artifacts/fertilizer_model_metadata.json:
           cache: false
+
+  monitor_drift:
+    cmd: python -m backend.ml.drift_monitor --reference data/raw/Crop_recommendation.csv --report-dir logs/drift
+    deps:
+      - data/raw/Crop_recommendation.csv
+      - backend/ml/drift_monitor.py
+    outs:
+      - logs/drift:
+          persist: true
+

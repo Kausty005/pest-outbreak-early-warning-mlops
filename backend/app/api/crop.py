@@ -3,6 +3,7 @@ from __future__ import annotations
 from fastapi import APIRouter, HTTPException, Request, status
 
 from ...ml.data_validation import FEATURE_COLUMNS
+from ...ml.prediction_logger import log_prediction_input
 from ..schemas.crop import (
     CropRecommendationRequest,
     CropRecommendationResponse,
@@ -51,6 +52,7 @@ def recommend_crop(payload: CropRecommendationRequest, request: Request):
     try:
         values = payload.model_dump(exclude={"farm_id"})
         result = service.prediction(values)
+        log_prediction_input(values)
     except ModelUnavailableError as error:
         raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=str(error)) from error
     result["persistence_status"] = persist_prediction(request.app.state.database, result, payload.farm_id)
