@@ -1,0 +1,32 @@
+.env
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+node_modules/
+frontend/dist/
+mlruns/
+mlflow.db
+
+# Dataset CSVs (large binary — tracked via DVC)
+data/raw/*.csv
+data/processed/*
+!data/processed/.gitkeep
+
+# Trained model artifacts (tracked via DVC)
+backend/artifacts/*.joblib
+backend/artifacts/*.json
+backend/artifacts/*.md
+!backend/artifacts/.gitkeep
+
+# Drift & monitoring logs (runtime-generated)
+logs/drift/
+logs/prediction_log.jsonl
+logs/retrain_log.jsonl
+
+# macOS
+__MACOSX/
+.DS_Store
+
+coverage.xml

@@ -1,0 +1,240 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AgriAdaptAI_FertilizerFeatureSchema",
+  "version": "1.0.0",
+  "description": "Validation schema for input features to the AgriAdapt AI fertilizer recommendation model.",
+  "type": "object",
+  "required": [
+    "crop",
+    "state_name",
+    "nitrogen__nutrient_index",
+    "phosphorus__nutrient_index",
+    "potassium__nutrient_index",
+    "soil_ph__nutrient_index",
+    "organic_carbon__nutrient_index"
+  ],
+  "properties": {
+    "crop": {
+      "type": "string",
+      "description": "Target crop cultivated on the field.",
+      "enum": [
+        "Rice",
+        "Wheat",
+        "Sugarcane",
+        "Kharif Maize",
+        "Rabi Maize",
+        "Kharif Rice",
+        "Rice-Rabi"
+      ]
+    },
+    "state_name": {
+      "type": "string",
+      "description": "Indian state or union territory where the field is located.",
+      "minLength": 2
+    },
+    "crop_season": {
+      "type": "string",
+      "description": "Agricultural cropping season (optional, auto-derived from crop if omitted).",
+      "enum": ["Kharif", "Rabi", "Annual"]
+    },
+    "nitrogen__nutrient_index": {
+      "type": "number",
+      "minimum": 1.0,
+      "maximum": 3.0,
+      "description": "Ramamoorthy & Bajaj Nutrient Index for Nitrogen (1.0=Low, 2.0=Medium, 3.0=High)."
+    },
+    "nitrogen__pct_low": {
+      "type": "number",
+      "minimum": 0.0,
+      "maximum": 100.0,
+      "description": "Percentage of soil samples in the district testing low for nitrogen."
+    },
+    "nitrogen__pct_medium": {
+      "type": "number",
+      "minimum": 0.0,
+      "maximum": 100.0,
+      "description": "Percentage of soil samples in the district testing medium for nitrogen."
+    },
+    "nitrogen__pct_high": {
+      "type": "number",
+      "minimum": 0.0,
+      "maximum": 100.0,
+      "description": "Percentage of soil samples in the district testing high for nitrogen."
+    },
+    "phosphorus__nutrient_index": {
+      "type": "number",
+      "minimum": 1.0,
+      "maximum": 3.0,
+      "description": "Ramamoorthy & Bajaj Nutrient Index for Phosphorus."
+    },
+    "phosphorus__pct_low": {
+      "type": "number",
+      "minimum": 0.0,
+      "maximum": 100.0,
+      "description": "Percentage of soil samples testing low for phosphorus."
+    },
+    "phosphorus__pct_medium": {
+      "type": "number",
+      "minimum": 0.0,
+      "maximum": 100.0,
+      "description": "Percentage of soil samples testing medium for phosphorus."
+    },
+    "phosphorus__pct_high": {
+      "type": "number",
+      "minimum": 0.0,
+      "maximum": 100.0,
+      "description": "Percentage of soil samples testing high for phosphorus."
+    },
+    "potassium__nutrient_index": {
+      "type": "number",
+      "minimum": 1.0,
+      "maximum": 3.0,
+      "description": "Ramamoorthy & Bajaj Nutrient Index for Potassium."
+    },
+    "potassium__pct_low": {
+      "type": "number",
+      "minimum": 0.0,
+      "maximum": 100.0,
+      "description": "Percentage of soil samples testing low for potassium."
+    },
+    "potassium__pct_medium": {
+      "type": "number",
+      "minimum": 0.0,
+      "maximum": 100.0,
+      "description": "Percentage of soil samples testing medium for potassium."
+    },
+    "potassium__pct_high": {
+      "type": "number",
+      "minimum": 0.0,
+      "maximum": 100.0,
+      "description": "Percentage of soil samples testing high for potassium."
+    },
+    "soil_ph__nutrient_index": {
+      "type": "number",
+      "minimum": 1.0,
+      "maximum": 3.0,
+      "description": "Soil pH Index mapped to fertility scale (1=Acidic, 2=Neutral, 3=Alkaline)."
+    },
+    "soil_ph__pct_low": {
+      "type": "number",
+      "minimum": 0.0,
+      "maximum": 100.0,
+      "description": "Percentage of soil samples with acidic pH."
+    },
+    "soil_ph__pct_medium": {
+      "type": "number",
+      "minimum": 0.0,
+      "maximum": 100.0,
+      "description": "Percentage of soil samples with neutral pH."
+    },
+    "soil_ph__pct_high": {
+      "type": "number",
+      "minimum": 0.0,
+      "maximum": 100.0,
+      "description": "Percentage of soil samples with alkaline pH."
+    },
+    "organic_carbon__nutrient_index": {
+      "type": "number",
+      "minimum": 1.0,
+      "maximum": 3.0,
+      "description": "Nutrient Index for Organic Carbon."
+    },
+    "organic_carbon__pct_low": {
+      "type": "number",
+      "minimum": 0.0,
+      "maximum": 100.0
+    },
+    "organic_carbon__pct_medium": {
+      "type": "number",
+      "minimum": 0.0,
+      "maximum": 100.0
+    },
+    "organic_carbon__pct_high": {
+      "type": "number",
+      "minimum": 0.0,
+      "maximum": 100.0
+    },
+    "electrical_conductivity__nutrient_index": {
+      "type": "number",
+      "minimum": 1.0,
+      "maximum": 3.0,
+      "description": "Nutrient Index for Electrical Conductivity (salinity)."
+    },
+    "electrical_conductivity__pct_low": {
+      "type": "number",
+      "minimum": 0.0,
+      "maximum": 100.0
+    },
+    "electrical_conductivity__pct_medium": {
+      "type": "number",
+      "minimum": 0.0,
+      "maximum": 100.0
+    },
+    "electrical_conductivity__pct_high": {
+      "type": "number",
+      "minimum": 0.0,
+      "maximum": 100.0
+    },
+    "boron__nutrient_index": {
+      "type": "number",
+      "minimum": 1.0,
+      "maximum": 3.0,
+      "description": "Boron nutrient index (1.0=Deficient, 3.0=Sufficient)."
+    },
+    "copper__nutrient_index": {
+      "type": "number",
+      "minimum": 1.0,
+      "maximum": 3.0,
+      "description": "Copper nutrient index."
+    },
+    "iron__nutrient_index": {
+      "type": "number",
+      "minimum": 1.0,
+      "maximum": 3.0,
+      "description": "Iron nutrient index."
+    },
+    "manganese__nutrient_index": {
+      "type": "number",
+      "minimum": 1.0,
+      "maximum": 3.0,
+      "description": "Manganese nutrient index."
+    },
+    "sulphur__nutrient_index": {
+      "type": "number",
+      "minimum": 1.0,
+      "maximum": 3.0,
+      "description": "Sulphur nutrient index."
+    },
+    "zinc__nutrient_index": {
+      "type": "number",
+      "minimum": 1.0,
+      "maximum": 3.0,
+      "description": "Zinc nutrient index."
+    },
+    "nitrogen__total_samples": {
+      "type": "number",
+      "minimum": 0.0,
+      "description": "Total volume of soil samples analyzed in the region."
+    }
+  },
+  "targets": {
+    "recommended_n_kg_ha": {
+      "nutrient": "Nitrogen",
+      "form": "N",
+      "unit": "kg/ha",
+      "description": "Recommended elemental Nitrogen application dose per hectare."
+    },
+    "recommended_p2o5_kg_ha": {
+      "nutrient": "Phosphorus",
+      "form": "P2O5",
+      "unit": "kg/ha",
+      "description": "Recommended available Phosphate application dose per hectare."
+    },
+    "recommended_k2o_kg_ha": {
+      "nutrient": "Potassium",
+      "form": "K2O",
+      "unit": "kg/ha",
+      "description": "Recommended available Potash application dose per hectare."
+    }
+  }
+}

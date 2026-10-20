@@ -1,0 +1,205 @@
+{
+  "model_name": "AgriAdaptAI-FertilizerRecommendationModel",
+  "model_version": "1.1.0",
+  "framework": "scikit-learn",
+  "model_type": "Multi-Target Weighted Ensemble (Random Forest + Extra Trees + Gradient Boosting)",
+  "artifact_file": "models/fertilizer_model.joblib",
+  "feature_schema_file": "models/fertilizer_feature_schema.json",
+  "training_date": "2026-10-19T16:04:47Z",
+  "random_seed": 42,
+  "previous_version": {
+    "version": "1.0.0",
+    "model_type": "Multi-Target Random Forest Regressor",
+    "backup_file": "models/fertilizer_model_rf_v1.joblib",
+    "backup_metadata": "models/fertilizer_model_metadata_rf_v1.json"
+  },
+  "training_dataset": {
+    "source_file": "data/processed/fertilizer_training_dataset.csv",
+    "description": "Multi-source integrated dataset combining Soil Health Card portal aggregated district nutrient indices (2023-25), ICAR-IISS district general fertilizer recommendations (GFR, June 2026), and NASA POWER MERRA-2 agroclimatology.",
+    "total_records": 2051,
+    "unique_districts": 693,
+    "unique_states": 30,
+    "crops_covered": [
+      "Rice",
+      "Wheat",
+      "Sugarcane",
+      "Kharif Maize",
+      "Rabi Maize",
+      "Kharif Rice",
+      "Rice-Rabi"
+    ],
+    "split_strategy": "GroupShuffleSplit by district_name (0% spatial leakage between train, val, and test)",
+    "split_counts": {
+      "train": 1429,
+      "val": 320,
+      "test": 302
+    }
+  },
+  "validation_ensemble_weights": {
+    "target_n_kg_ha": {
+      "random_forest": 0.0,
+      "extra_trees": 0.8008,
+      "gradient_boosting": 0.1992
+    },
+    "target_p2o5_kg_ha": {
+      "random_forest": 0.3679,
+      "extra_trees": 0.6321,
+      "gradient_boosting": 0.0
+    },
+    "target_k2o_kg_ha": {
+      "random_forest": 0.0,
+      "extra_trees": 1.0,
+      "gradient_boosting": 0.0
+    }
+  },
+  "features": {
+    "numeric_features": [
+      "nitrogen__nutrient_index",
+      "nitrogen__pct_low",
+      "nitrogen__pct_medium",
+      "nitrogen__pct_high",
+      "phosphorus__nutrient_index",
+      "phosphorus__pct_low",
+      "phosphorus__pct_medium",
+      "phosphorus__pct_high",
+      "potassium__nutrient_index",
+      "potassium__pct_low",
+      "potassium__pct_medium",
+      "potassium__pct_high",
+      "soil_ph__nutrient_index",
+      "soil_ph__pct_low",
+      "soil_ph__pct_medium",
+      "soil_ph__pct_high",
+      "organic_carbon__nutrient_index",
+      "organic_carbon__pct_low",
+      "organic_carbon__pct_medium",
+      "organic_carbon__pct_high",
+      "electrical_conductivity__nutrient_index",
+      "electrical_conductivity__pct_low",
+      "electrical_conductivity__pct_medium",
+      "electrical_conductivity__pct_high",
+      "boron__nutrient_index",
+      "copper__nutrient_index",
+      "iron__nutrient_index",
+      "manganese__nutrient_index",
+      "sulphur__nutrient_index",
+      "zinc__nutrient_index",
+      "nitrogen__total_samples"
+    ],
+    "categorical_features": [
+      "crop",
+      "crop_season",
+      "state_name"
+    ]
+  },
+  "targets": {
+    "target_n_kg_ha": {
+      "nutrient": "Nitrogen",
+      "symbol": "N",
+      "unit": "kg/ha",
+      "min": 50.0,
+      "mean": 101.7,
+      "max": 350.0
+    },
+    "target_p2o5_kg_ha": {
+      "nutrient": "Phosphorus",
+      "symbol": "P2O5",
+      "unit": "kg/ha",
+      "min": 20.0,
+      "mean": 42.0,
+      "max": 120.0
+    },
+    "target_k2o_kg_ha": {
+      "nutrient": "Potassium",
+      "symbol": "K2O",
+      "unit": "kg/ha",
+      "min": 20.0,
+      "mean": 37.6,
+      "max": 120.0
+    }
+  },
+  "evaluation_metrics": {
+    "test_geographical_holdout": {
+      "n_districts": 104,
+      "n_records": 302,
+      "weighted_ensemble": {
+        "nitrogen": {
+          "mae": 16.58,
+          "rmse": 27.45,
+          "r2": 0.7658
+        },
+        "phosphorus": {
+          "mae": 5.61,
+          "rmse": 9.32,
+          "r2": 0.6662
+        },
+        "potassium": {
+          "mae": 5.13,
+          "rmse": 8.07,
+          "r2": 0.8425
+        }
+      },
+      "random_forest": {
+        "nitrogen": {
+          "mae": 18.98,
+          "rmse": 27.39,
+          "r2": 0.7667
+        },
+        "phosphorus": {
+          "mae": 6.04,
+          "rmse": 9.60,
+          "r2": 0.6455
+        },
+        "potassium": {
+          "mae": 6.40,
+          "rmse": 9.14,
+          "r2": 0.7981
+        }
+      },
+      "crop_mean_baseline": {
+        "nitrogen": {
+          "mae": 26.44,
+          "rmse": 34.68,
+          "r2": 0.6261
+        },
+        "phosphorus": {
+          "mae": 8.79,
+          "rmse": 12.60,
+          "r2": 0.3897
+        },
+        "potassium": {
+          "mae": 11.41,
+          "rmse": 14.61,
+          "r2": 0.4843
+        }
+      }
+    },
+    "validation_holdout": {
+      "n_districts": 104,
+      "n_records": 320,
+      "weighted_ensemble": {
+        "nitrogen": {
+          "mae": 15.22,
+          "rmse": 21.93,
+          "r2": 0.8525
+        },
+        "phosphorus": {
+          "mae": 4.28,
+          "rmse": 7.22,
+          "r2": 0.7385
+        },
+        "potassium": {
+          "mae": 5.12,
+          "rmse": 7.83,
+          "r2": 0.8464
+        }
+      }
+    }
+  },
+  "limitations": [
+    "Macro-Level Resolution: Predictions reflect district-wide baseline requirements for an average field cultivating that crop under standard soil conditions, not field-specific sensor prescriptions.",
+    "Soil Aggregation: Features reflect regional Soil Health Card nutrient index distributions rather than a single plot's laboratory assay.",
+    "STCR Modulation: For field-level deployment, predicted district baselines must be modulated by +/- 25% based on farmer-specific soil test rating (Low/Medium/High) and organic manure credits.",
+    "Weather Coverage: Authentic weather features are currently active for Pune, Maharashtra. Expansion across other Indian districts requires continuous ingestion via NASA POWER API."
+  ]
+}

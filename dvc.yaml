@@ -1,0 +1,23 @@
+stages:
+  train_crop_model:
+    cmd: python -m backend.ml.train --dataset data/raw/Crop_recommendation.csv --artifacts-dir backend/artifacts
+    deps:
+      - data/raw/Crop_recommendation.csv
+      - backend/ml/data_validation.py
+      - backend/ml/feature_engineering.py
+      - backend/ml/evaluate.py
+      - backend/ml/train.py
+    outs:
+      - backend/artifacts/crop_model.joblib
+      - backend/artifacts/metadata.json
+      - backend/artifacts/evaluation_report.md
+
+  fertilizer_artifacts:
+    cmd: python -c "print('Tracking fertilizer model artifacts')"
+    deps:
+      - backend/artifacts/fertilizer_model.joblib
+      - backend/artifacts/fertilizer_model_metadata.json
+      - backend/artifacts/fertilizer_feature_schema.json
+    outs:
+      - backend/artifacts/fertilizer_model_metadata.json:
+          cache: false
