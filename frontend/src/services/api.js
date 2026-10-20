@@ -56,3 +56,13 @@ export const monitoringApi = {
   triggerRetrain: (force = false) => request('/monitoring/retrain/trigger', { method: 'POST', body: JSON.stringify({ force }) }),
 }
 
+export const farmApi = {
+  zones: () => request('/farm/zones'),
+  getZone: (zoneId) => request(`/farm/zones/${zoneId}`),
+  ingestTelemetry: (zoneId, payload) => request(`/farm/zones/${zoneId}/telemetry`, { method: 'POST', body: JSON.stringify(payload) }),
+  simulate: (zoneId, scenario = 'dry_spell') => request(`/farm/zones/${zoneId}/simulate?scenario=${scenario}`, { method: 'POST' }),
+  advisory: (zoneId) => request(`/farm/zones/${zoneId}/advisory`),
+  weather: (lat, lon) => request(`/farm/weather${lat && lon ? `?lat=${lat}&lon=${lon}` : ''}`),
+}
+
+

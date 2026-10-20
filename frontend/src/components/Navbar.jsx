@@ -26,6 +26,13 @@ export default function Navbar({ activeTab, setActiveTab }) {
 
         <nav aria-label="Main navigation">
           <a
+            href="#farm-dashboard"
+            onClick={(e) => { e.preventDefault(); setActiveTab && setActiveTab('dashboard'); }}
+            style={{ fontWeight: activeTab === 'dashboard' ? 'bold' : 'normal', color: activeTab === 'dashboard' ? '#b9e487' : '#e5eee8' }}
+          >
+            🗺️ Smart Farm
+          </a>
+          <a
             href="#crop-recommendation"
             onClick={(e) => { e.preventDefault(); setActiveTab && setActiveTab('crop'); }}
             style={{ fontWeight: activeTab === 'crop' ? 'bold' : 'normal', color: activeTab === 'crop' ? '#b9e487' : '#e5eee8' }}

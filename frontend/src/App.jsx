@@ -7,6 +7,7 @@ import RecommendationCard from './components/RecommendationCard'
 import FertilizerSection from './components/FertilizerSection'
 import UnifiedAdvisorySection from './components/UnifiedAdvisorySection'
 import MonitoringSection from './components/MonitoringSection'
+import FarmDashboard from './components/FarmDashboard'
 import { cropApi } from './services/api'
 
 function validate(values) {
@@ -17,7 +18,7 @@ function validate(values) {
 }
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState('crop')
+  const [activeTab, setActiveTab] = useState('dashboard')
   const [selectedCropForFertilizer, setSelectedCropForFertilizer] = useState(null)
 
   const [values, setValues] = useState(initialValues)
@@ -78,6 +79,15 @@ export default function App() {
           <button
             type="button"
             role="tab"
+            aria-selected={activeTab === 'dashboard'}
+            className={`tab-btn ${activeTab === 'dashboard' ? 'active' : ''}`}
+            onClick={() => setActiveTab('dashboard')}
+          >
+            🗺️ Smart Farm & Sensors
+          </button>
+          <button
+            type="button"
+            role="tab"
             aria-selected={activeTab === 'crop'}
             className={`tab-btn ${activeTab === 'crop' ? 'active' : ''}`}
             onClick={() => setActiveTab('crop')}
@@ -112,6 +122,11 @@ export default function App() {
             📡 MLOps Drift & Pipeline
           </button>
         </div>
+
+        {/* Tab 0: Smart Farm & IoT Multi-Zone Dashboard */}
+        {activeTab === 'dashboard' && (
+          <FarmDashboard onSelectCropForDetail={handleSelectCropForFertilizer} />
+        )}
 
         {/* Tab 1: Crop Recommendation */}
         {activeTab === 'crop' && (
