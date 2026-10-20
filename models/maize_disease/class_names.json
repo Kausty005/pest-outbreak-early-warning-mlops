@@ -1,0 +1,27 @@
+{
+  "classes": [
+    "blight",
+    "common_rust",
+    "gray_leaf_spot",
+    "healthy"
+  ],
+  "class_to_idx": {
+    "blight": 0,
+    "common_rust": 1,
+    "gray_leaf_spot": 2,
+    "healthy": 3
+  },
+  "idx_to_class": {
+    "0": "blight",
+    "1": "common_rust",
+    "2": "gray_leaf_spot",
+    "3": "healthy"
+  },
+  "num_classes": 4,
+  "healthy_class": "healthy",
+  "disease_classes": [
+    "blight",
+    "common_rust",
+    "gray_leaf_spot"
+  ]
+}

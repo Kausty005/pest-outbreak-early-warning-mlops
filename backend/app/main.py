@@ -7,13 +7,20 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from .api import crop_router, fertilizer_router, advisory_router, monitoring_router
+from .api import (
+    advisory_router,
+    crop_router,
+    fertilizer_router,
+    monitoring_router,
+    pest_forecast_router,
+    pest_router,
+)
 from .core.config import Settings
 from .core.config import settings as default_settings
 from .core.logging import configure_logging
 from .db import DatabaseManager
 from .schemas.crop import HealthResponse
-from .services import CropModelService, FertilizerModelService
+from .services import CropModelService, FertilizerModelService, PestForecastService
 
 LOGGER = logging.getLogger(__name__)
 
@@ -27,6 +34,7 @@ def create_app(config: Settings | None = None) -> FastAPI:
         # Load models during startup lifespan
         app.state.model_service.load()
         app.state.fertilizer_service.load()
+        app.state.pest_forecast_service.load_models()
         yield
 
     app = FastAPI(
@@ -39,11 +47,13 @@ def create_app(config: Settings | None = None) -> FastAPI:
     # Initialize services on state immediately
     app.state.model_service = CropModelService(app_settings)
     app.state.fertilizer_service = FertilizerModelService(app_settings)
+    app.state.pest_forecast_service = PestForecastService()
     app.state.database = DatabaseManager(app_settings)
 
     # Also load models eagerly so synchronous clients (e.g. without context manager) work reliably
     app.state.model_service.load()
     app.state.fertilizer_service.load()
+    app.state.pest_forecast_service.load_models()
 
     app.add_middleware(
         CORSMiddleware,
@@ -58,6 +68,10 @@ def create_app(config: Settings | None = None) -> FastAPI:
     app.include_router(fertilizer_router, prefix=app_settings.api_prefix)
     app.include_router(advisory_router, prefix=app_settings.api_prefix)
     app.include_router(monitoring_router, prefix=app_settings.api_prefix)
+    app.include_router(pest_router, prefix=app_settings.api_prefix)
+    app.include_router(pest_forecast_router, prefix=app_settings.api_prefix)
+    # Also support suggested /api/pest-forecast prefix directly
+    app.include_router(pest_forecast_router, prefix="/api")
 
     @app.exception_handler(Exception)
     async def internal_error_handler(request: Request, exc: Exception):

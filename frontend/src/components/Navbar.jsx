@@ -40,11 +40,18 @@ export default function Navbar({ activeTab, setActiveTab }) {
             Fertilizer Intelligence
           </a>
           <a
+            href="#pest-forecast"
+            onClick={(e) => { e.preventDefault(); setActiveTab && setActiveTab('pest-forecast'); }}
+            style={{ fontWeight: activeTab === 'pest-forecast' ? 'bold' : 'normal', color: activeTab === 'pest-forecast' ? '#b9e487' : '#e5eee8' }}
+          >
+            Pest Forecaster
+          </a>
+          <a
             href="#unified-advisory"
             onClick={(e) => { e.preventDefault(); setActiveTab && setActiveTab('unified'); }}
             style={{ fontWeight: activeTab === 'unified' ? 'bold' : 'normal', color: activeTab === 'unified' ? '#b9e487' : '#e5eee8' }}
           >
-            Unified & Pest Advisory
+            Unified Advisory
           </a>
           <a
             href="#monitoring"

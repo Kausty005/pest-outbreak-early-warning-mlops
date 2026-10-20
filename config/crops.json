@@ -1,0 +1,735 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "metadata": {
+    "version": "1.0.0",
+    "description": "AgriAdapt AI Centralized Crop Configuration & Single Source of Truth",
+    "created_at": "2026-10-20T18:35:00Z",
+    "total_crops": 24,
+    "model_coverage_summary": {
+      "crop_prediction_model": 22,
+      "fertilizer_recommendation_model": 7,
+      "pesticide_recommendation_model": 0,
+      "pest_outbreak_preview_heuristic": 3,
+      "pest_outbreak_ml_eligible": 5
+    }
+  },
+  "crops": [
+    {
+      "canonical_id": "rice",
+      "display_name": "Rice (Paddy)",
+      "scientific_name": "Oryza sativa",
+      "category": "cereal",
+      "accepted_aliases": ["rice", "paddy", "kharif rice", "rice-rabi", "dhan"],
+      "models": {
+        "crop_prediction": {
+          "supported": true,
+          "model_identifier": "rice"
+        },
+        "fertilizer_recommendation": {
+          "supported": true,
+          "model_identifiers": ["Rice", "Kharif Rice", "Rice-Rabi"],
+          "default_identifier": "Rice",
+          "requires_fallback": false
+        },
+        "pesticide_recommendation": {
+          "supported": false,
+          "model_identifier": null,
+          "notes": "No dedicated ML pesticide recommendation model in project"
+        },
+        "pest_outbreak_preview": {
+          "supported": true,
+          "rule_target": "Yellow Stem Borer & Brown Planthopper (BPH)"
+        }
+      },
+      "pest_outbreak_prediction": {
+        "eligible": true,
+        "priority_tier": "TIER_1_PRIMARY",
+        "target_pests": [
+          {
+            "common_name": "Yellow Stem Borer",
+            "scientific_name": "Scirpophaga incertulas",
+            "economic_threshold": "5% dead hearts at vegetative stage; 1 egg mass/m²"
+          },
+          {
+            "common_name": "Brown Planthopper (BPH)",
+            "scientific_name": "Nilaparvata lugens",
+            "economic_threshold": "5-10 hoppers/hill at vegetative stage; 15-20 hoppers/hill after flowering"
+          }
+        ],
+        "historical_data_requirements": [
+          "Light trap catches (moths/night)",
+          "Field sweep-net counts (hoppers/hill)",
+          "Infested tiller percentages (% dead hearts / white ears)"
+        ],
+        "weather_feature_requirements": [
+          "Mean temperature (°C, optimal 26-32°C)",
+          "Relative humidity (%, high risk >80%)",
+          "Rainfall & water level (mm)",
+          "Sunshine hours (hr/day)"
+        ],
+        "training_data_availability": "moderate_ready_for_curation",
+        "data_sources": ["ICAR-NRRI Cuttack", "AICRIP (ICAR-IIRR Hyderabad)", "State Depts of Agriculture (AP, WB, Punjab)"]
+      }
+    },
+    {
+      "canonical_id": "maize",
+      "display_name": "Maize (Corn)",
+      "scientific_name": "Zea mays",
+      "category": "cereal",
+      "accepted_aliases": ["maize", "corn", "kharif maize", "rabi maize", "makka"],
+      "models": {
+        "crop_prediction": {
+          "supported": true,
+          "model_identifier": "maize"
+        },
+        "fertilizer_recommendation": {
+          "supported": true,
+          "model_identifiers": ["Kharif Maize", "Rabi Maize"],
+          "default_identifier": "Kharif Maize",
+          "requires_fallback": false
+        },
+        "pesticide_recommendation": {
+          "supported": false,
+          "model_identifier": null,
+          "notes": "No dedicated ML pesticide recommendation model in project"
+        },
+        "pest_outbreak_preview": {
+          "supported": true,
+          "rule_target": "Fall Armyworm (Spodoptera frugiperda)"
+        }
+      },
+      "pest_outbreak_prediction": {
+        "eligible": true,
+        "priority_tier": "TIER_1_PRIMARY",
+        "target_pests": [
+          {
+            "common_name": "Fall Armyworm",
+            "scientific_name": "Spodoptera frugiperda",
+            "economic_threshold": "5% damaged whorls at seedling; 10% damaged whorls at mid-whorl stage"
+          },
+          {
+            "common_name": "Maize Stem Borer",
+            "scientific_name": "Chilo partellus",
+            "economic_threshold": "10% dead hearts / pinholes on leaves"
+          }
+        ],
+        "historical_data_requirements": [
+          "Pheromone trap catches (moths/trap/week)",
+          "Visual whorl infestation percentages (% infested plants)",
+          "Larval counts per 20 plants"
+        ],
+        "weather_feature_requirements": [
+          "Temperature (°C, optimal 24-32°C)",
+          "Relative humidity (%, favorable >65%)",
+          "Rainfall intensity & frequency (mm)",
+          "Wind speed & direction (km/h, for moth migration tracking)"
+        ],
+        "training_data_availability": "moderate_ready_for_curation",
+        "data_sources": ["ICAR-IIMR Ludhiana/Hyderabad", "UAS Dharwad", "CIMMYT India surveillance"]
+      }
+    },
+    {
+      "canonical_id": "cotton",
+      "display_name": "Cotton",
+      "scientific_name": "Gossypium hirsutum",
+      "category": "fiber_cash_crop",
+      "accepted_aliases": ["cotton", "kapas"],
+      "models": {
+        "crop_prediction": {
+          "supported": true,
+          "model_identifier": "cotton"
+        },
+        "fertilizer_recommendation": {
+          "supported": false,
+          "model_identifiers": [],
+          "default_identifier": "Rice",
+          "requires_fallback": true,
+          "fallback_reason": "Cotton is not present in ICAR-IISS fertilizer training dataset; advisory uses baseline Rice nutrient curve"
+        },
+        "pesticide_recommendation": {
+          "supported": false,
+          "model_identifier": null,
+          "notes": "No dedicated ML pesticide recommendation model in project"
+        },
+        "pest_outbreak_preview": {
+          "supported": true,
+          "rule_target": "Pink Bollworm & American Bollworm (Helicoverpa armigera)"
+        }
+      },
+      "pest_outbreak_prediction": {
+        "eligible": true,
+        "priority_tier": "TIER_1_PRIMARY",
+        "target_pests": [
+          {
+            "common_name": "Pink Bollworm",
+            "scientific_name": "Pectinophora gossypiella",
+            "economic_threshold": ">8 moths/trap/night for 3 consecutive days, or 10% rosette flowers / green boll damage"
+          },
+          {
+            "common_name": "American Bollworm",
+            "scientific_name": "Helicoverpa armigera",
+            "economic_threshold": "1 larva/plant or 1 egg/plant or 5-10% damaged fruiting bodies"
+          },
+          {
+            "common_name": "Whitefly",
+            "scientific_name": "Bemisia tabaci",
+            "economic_threshold": "6-8 adults/leaf or nymphs causing leaf curl"
+          }
+        ],
+        "historical_data_requirements": [
+          "Pheromone trap catches (moths/trap/night, ICAR-CICR / State surveillance)",
+          "Destructive boll sampling (% damaged bolls)",
+          "Rosette flower counts per acre"
+        ],
+        "weather_feature_requirements": [
+          "Ambient temperature (°C, 25-34°C triggers acceleration)",
+          "Relative humidity (%, >70% peak incubation)",
+          "Precipitation & rainy days (mm)",
+          "Solar radiation (MJ/m²/day)"
+        ],
+        "training_data_availability": "high_ready_for_curation",
+        "data_sources": ["ICAR-CICR Nagpur", "ICAR-NBAIR Bengaluru", "Maharashtra Dept of Agriculture (Vidarbha/Marathwada CROPSAP)"]
+      }
+    },
+    {
+      "canonical_id": "wheat",
+      "display_name": "Wheat",
+      "scientific_name": "Triticum aestivum",
+      "category": "cereal",
+      "accepted_aliases": ["wheat", "gehun", "rabi wheat"],
+      "models": {
+        "crop_prediction": {
+          "supported": false,
+          "model_identifier": null,
+          "notes": "Not present in Crop_recommendation.csv; requires dataset extension to recommend"
+        },
+        "fertilizer_recommendation": {
+          "supported": true,
+          "model_identifiers": ["Wheat"],
+          "default_identifier": "Wheat",
+          "requires_fallback": false
+        },
+        "pesticide_recommendation": {
+          "supported": false,
+          "model_identifier": null,
+          "notes": "No dedicated ML pesticide recommendation model in project"
+        },
+        "pest_outbreak_preview": {
+          "supported": false,
+          "rule_target": "General Crop Pests"
+        }
+      },
+      "pest_outbreak_prediction": {
+        "eligible": true,
+        "priority_tier": "TIER_2_SECONDARY",
+        "target_pests": [
+          {
+            "common_name": "Wheat Aphid",
+            "scientific_name": "Rhopalosiphum padi / Sitobion avenae",
+            "economic_threshold": "10-15 aphids/earhead at flowering/milking"
+          },
+          {
+            "common_name": "Armyworm",
+            "scientific_name": "Mythimna separata",
+            "economic_threshold": "4-5 larvae/meter row"
+          }
+        ],
+        "historical_data_requirements": [
+          "Aphid tiller counts",
+          "Rust spore incidence ratings (Yellow / Brown Rust)"
+        ],
+        "weather_feature_requirements": [
+          "Temperature (°C, 15-25°C favorable for aphids)",
+          "Relative humidity (%, >70%)",
+          "Winter rainfall / dew persistence"
+        ],
+        "training_data_availability": "requires_dedicated_collection",
+        "data_sources": ["ICAR-IIWBR Karnal", "PAU Ludhiana"]
+      }
+    },
+    {
+      "canonical_id": "sugarcane",
+      "display_name": "Sugarcane",
+      "scientific_name": "Saccharum officinarum",
+      "category": "cash_crop",
+      "accepted_aliases": ["sugarcane", "ganna"],
+      "models": {
+        "crop_prediction": {
+          "supported": false,
+          "model_identifier": null,
+          "notes": "Not present in Crop_recommendation.csv; requires dataset extension to recommend"
+        },
+        "fertilizer_recommendation": {
+          "supported": true,
+          "model_identifiers": ["Sugarcane"],
+          "default_identifier": "Sugarcane",
+          "requires_fallback": false
+        },
+        "pesticide_recommendation": {
+          "supported": false,
+          "model_identifier": null,
+          "notes": "No dedicated ML pesticide recommendation model in project"
+        },
+        "pest_outbreak_preview": {
+          "supported": false,
+          "rule_target": "General Crop Pests"
+        }
+      },
+      "pest_outbreak_prediction": {
+        "eligible": true,
+        "priority_tier": "TIER_2_SECONDARY",
+        "target_pests": [
+          {
+            "common_name": "Early Shoot Borer",
+            "scientific_name": "Chilo infuscatellus",
+            "economic_threshold": "15% dead hearts in formative phase"
+          },
+          {
+            "common_name": "Top Borer",
+            "scientific_name": "Scirpophaga excerptalis",
+            "economic_threshold": "10% bunchy top symptom"
+          },
+          {
+            "common_name": "Sugarcane Pyrilla",
+            "scientific_name": "Pyrilla perpusilla",
+            "economic_threshold": "3-5 individuals/leaf"
+          }
+        ],
+        "historical_data_requirements": [
+          "Dead heart incidence percentages in formative crop",
+          "Pyrilla egg mass and nymph counts"
+        ],
+        "weather_feature_requirements": [
+          "High temperature (>35°C accelerates early shoot borer)",
+          "Low humidity (<60% suppresses parasitoids)",
+          "Monsoon onset timing"
+        ],
+        "training_data_availability": "requires_dedicated_collection",
+        "data_sources": ["ICAR-SBI Coimbatore", "ICAR-IISR Lucknow", "VSI Pune"]
+      }
+    },
+    {
+      "canonical_id": "chickpea",
+      "display_name": "Chickpea (Gram / Chana)",
+      "scientific_name": "Cicer arietinum",
+      "category": "pulse",
+      "accepted_aliases": ["chickpea", "gram", "chana", "bengal gram"],
+      "models": {
+        "crop_prediction": { "supported": true, "model_identifier": "chickpea" },
+        "fertilizer_recommendation": { "supported": false, "model_identifiers": [], "default_identifier": "Rice", "requires_fallback": true },
+        "pesticide_recommendation": { "supported": false, "model_identifier": null, "notes": "No dedicated ML model" },
+        "pest_outbreak_preview": { "supported": false, "rule_target": "General Crop Pests" }
+      },
+      "pest_outbreak_prediction": {
+        "eligible": true,
+        "priority_tier": "TIER_2_SECONDARY",
+        "target_pests": [
+          { "common_name": "Gram Pod Borer", "scientific_name": "Helicoverpa armigera", "economic_threshold": "1 larva/meter row or 1 moth/trap/day" }
+        ],
+        "historical_data_requirements": ["Pheromone trap catches", "Larval counts per meter row length"],
+        "weather_feature_requirements": ["Temperature (15-28°C)", "Humidity (<65%)", "Cloudy weather spells"],
+        "training_data_availability": "requires_dedicated_collection",
+        "data_sources": ["ICRISAT Hyderabad", "ICAR-IIPR Kanpur"]
+      }
+    },
+    {
+      "canonical_id": "pigeonpeas",
+      "display_name": "Pigeonpeas (Tur / Arhar)",
+      "scientific_name": "Cajanus cajan",
+      "category": "pulse",
+      "accepted_aliases": ["pigeonpeas", "tur", "arhar", "red gram"],
+      "models": {
+        "crop_prediction": { "supported": true, "model_identifier": "pigeonpeas" },
+        "fertilizer_recommendation": { "supported": false, "model_identifiers": [], "default_identifier": "Rice", "requires_fallback": true },
+        "pesticide_recommendation": { "supported": false, "model_identifier": null, "notes": "No dedicated ML model" },
+        "pest_outbreak_preview": { "supported": false, "rule_target": "General Crop Pests" }
+      },
+      "pest_outbreak_prediction": {
+        "eligible": true,
+        "priority_tier": "TIER_2_SECONDARY",
+        "target_pests": [
+          { "common_name": "Pod Borer", "scientific_name": "Helicoverpa armigera", "economic_threshold": "10% damaged pods" },
+          { "common_name": "Pod Fly", "scientific_name": "Melanagromyza obtusa", "economic_threshold": "5% pod damage" }
+        ],
+        "historical_data_requirements": ["Pheromone trap catches", "Infested pod percentages"],
+        "weather_feature_requirements": ["Temperature (20-30°C)", "Relative humidity (60-80%)"],
+        "training_data_availability": "requires_dedicated_collection",
+        "data_sources": ["ICRISAT Hyderabad", "ICAR-IIPR Kanpur"]
+      }
+    },
+    {
+      "canonical_id": "apple",
+      "display_name": "Apple",
+      "scientific_name": "Malus domestica",
+      "category": "fruit",
+      "accepted_aliases": ["apple", "seb"],
+      "models": {
+        "crop_prediction": { "supported": true, "model_identifier": "apple" },
+        "fertilizer_recommendation": { "supported": false, "model_identifiers": [], "default_identifier": "Rice", "requires_fallback": true },
+        "pesticide_recommendation": { "supported": false, "model_identifier": null, "notes": "No dedicated ML model" },
+        "pest_outbreak_preview": { "supported": false, "rule_target": "General Crop Pests" }
+      },
+      "pest_outbreak_prediction": {
+        "eligible": false,
+        "priority_tier": "TIER_3_DATA_LIMITED",
+        "target_pests": [{ "common_name": "Codling Moth", "scientific_name": "Cydia pomonella", "economic_threshold": "1 moth/trap/week" }],
+        "historical_data_requirements": ["Orchard trap records", "Fruit injury indices"],
+        "weather_feature_requirements": ["Degree-day accumulation", "Chilling hours", "Relative humidity"],
+        "training_data_availability": "sparse",
+        "data_sources": ["ICAR-CITH Srinagar"]
+      }
+    },
+    {
+      "canonical_id": "banana",
+      "display_name": "Banana",
+      "scientific_name": "Musa acuminata",
+      "category": "fruit",
+      "accepted_aliases": ["banana", "kela"],
+      "models": {
+        "crop_prediction": { "supported": true, "model_identifier": "banana" },
+        "fertilizer_recommendation": { "supported": false, "model_identifiers": [], "default_identifier": "Rice", "requires_fallback": true },
+        "pesticide_recommendation": { "supported": false, "model_identifier": null, "notes": "No dedicated ML model" },
+        "pest_outbreak_preview": { "supported": false, "rule_target": "General Crop Pests" }
+      },
+      "pest_outbreak_prediction": {
+        "eligible": false,
+        "priority_tier": "TIER_3_DATA_LIMITED",
+        "target_pests": [{ "common_name": "Banana Pseudostem Weevil", "scientific_name": "Odoiporus longicollis", "economic_threshold": "Exudation of transparent gummy fluid" }],
+        "historical_data_requirements": ["Trapped weevils per bait trap"],
+        "weather_feature_requirements": ["Warm humid tropics (25-35°C, >75% humidity)"],
+        "training_data_availability": "sparse",
+        "data_sources": ["ICAR-NRCB Tiruchirappalli"]
+      }
+    },
+    {
+      "canonical_id": "blackgram",
+      "display_name": "Blackgram (Urad)",
+      "scientific_name": "Vigna mungo",
+      "category": "pulse",
+      "accepted_aliases": ["blackgram", "urad", "mash"],
+      "models": {
+        "crop_prediction": { "supported": true, "model_identifier": "blackgram" },
+        "fertilizer_recommendation": { "supported": false, "model_identifiers": [], "default_identifier": "Rice", "requires_fallback": true },
+        "pesticide_recommendation": { "supported": false, "model_identifier": null, "notes": "No dedicated ML model" },
+        "pest_outbreak_preview": { "supported": false, "rule_target": "General Crop Pests" }
+      },
+      "pest_outbreak_prediction": {
+        "eligible": false,
+        "priority_tier": "TIER_3_DATA_LIMITED",
+        "target_pests": [{ "common_name": "Spotted Pod Borer", "scientific_name": "Maruca vitrata", "economic_threshold": "Webbed flower/pod count" }],
+        "historical_data_requirements": ["Webbed inflorescence counts"],
+        "weather_feature_requirements": ["Temperature (22-30°C)", "Humidity (>75%)"],
+        "training_data_availability": "sparse",
+        "data_sources": ["ICAR-IIPR Kanpur"]
+      }
+    },
+    {
+      "canonical_id": "coconut",
+      "display_name": "Coconut",
+      "scientific_name": "Cocos nucifera",
+      "category": "plantation",
+      "accepted_aliases": ["coconut", "nariyal"],
+      "models": {
+        "crop_prediction": { "supported": true, "model_identifier": "coconut" },
+        "fertilizer_recommendation": { "supported": false, "model_identifiers": [], "default_identifier": "Rice", "requires_fallback": true },
+        "pesticide_recommendation": { "supported": false, "model_identifier": null, "notes": "No dedicated ML model" },
+        "pest_outbreak_preview": { "supported": false, "rule_target": "General Crop Pests" }
+      },
+      "pest_outbreak_prediction": {
+        "eligible": false,
+        "priority_tier": "TIER_3_DATA_LIMITED",
+        "target_pests": [{ "common_name": "Rhinoceros Beetle", "scientific_name": "Oryctes rhinoceros", "economic_threshold": "V-shaped leaf cuts on crown" }],
+        "historical_data_requirements": ["Pherolure trap counts"],
+        "weather_feature_requirements": ["Coastal tropical climate, continuous humidity"],
+        "training_data_availability": "sparse",
+        "data_sources": ["ICAR-CPCRI Kasaragod"]
+      }
+    },
+    {
+      "canonical_id": "coffee",
+      "display_name": "Coffee",
+      "scientific_name": "Coffea arabica / canephora",
+      "category": "plantation",
+      "accepted_aliases": ["coffee", "kafi"],
+      "models": {
+        "crop_prediction": { "supported": true, "model_identifier": "coffee" },
+        "fertilizer_recommendation": { "supported": false, "model_identifiers": [], "default_identifier": "Rice", "requires_fallback": true },
+        "pesticide_recommendation": { "supported": false, "model_identifier": null, "notes": "No dedicated ML model" },
+        "pest_outbreak_preview": { "supported": false, "rule_target": "General Crop Pests" }
+      },
+      "pest_outbreak_prediction": {
+        "eligible": false,
+        "priority_tier": "TIER_3_DATA_LIMITED",
+        "target_pests": [{ "common_name": "Coffee Berry Borer", "scientific_name": "Hypothenemus hampei", "economic_threshold": "5% berry damage" }],
+        "historical_data_requirements": ["Brood trap monitoring"],
+        "weather_feature_requirements": ["High altitude sub-tropical rain and shade microclimate"],
+        "training_data_availability": "sparse",
+        "data_sources": ["Central Coffee Research Institute (CCRI Balehonnur)"]
+      }
+    },
+    {
+      "canonical_id": "grapes",
+      "display_name": "Grapes",
+      "scientific_name": "Vitis vinifera",
+      "category": "fruit",
+      "accepted_aliases": ["grapes", "angoor"],
+      "models": {
+        "crop_prediction": { "supported": true, "model_identifier": "grapes" },
+        "fertilizer_recommendation": { "supported": false, "model_identifiers": [], "default_identifier": "Rice", "requires_fallback": true },
+        "pesticide_recommendation": { "supported": false, "model_identifier": null, "notes": "No dedicated ML model" },
+        "pest_outbreak_preview": { "supported": false, "rule_target": "General Crop Pests" }
+      },
+      "pest_outbreak_prediction": {
+        "eligible": false,
+        "priority_tier": "TIER_3_DATA_LIMITED",
+        "target_pests": [{ "common_name": "Grape Mealybug", "scientific_name": "Maconellicoccus hirsutus", "economic_threshold": "Colonies on bunches / shoot tips" }],
+        "historical_data_requirements": ["Shoot tip infestation scores"],
+        "weather_feature_requirements": ["Warm dry spells followed by humidity surges"],
+        "training_data_availability": "sparse",
+        "data_sources": ["ICAR-NRCG Pune"]
+      }
+    },
+    {
+      "canonical_id": "jute",
+      "display_name": "Jute",
+      "scientific_name": "Corchorus olitorius",
+      "category": "fiber",
+      "accepted_aliases": ["jute", "pat", "golden fiber"],
+      "models": {
+        "crop_prediction": { "supported": true, "model_identifier": "jute" },
+        "fertilizer_recommendation": { "supported": false, "model_identifiers": [], "default_identifier": "Rice", "requires_fallback": true },
+        "pesticide_recommendation": { "supported": false, "model_identifier": null, "notes": "No dedicated ML model" },
+        "pest_outbreak_preview": { "supported": false, "rule_target": "General Crop Pests" }
+      },
+      "pest_outbreak_prediction": {
+        "eligible": false,
+        "priority_tier": "TIER_3_DATA_LIMITED",
+        "target_pests": [{ "common_name": "Jute Semilooper", "scientific_name": "Anomis sabulifera", "economic_threshold": "10-15% infested plants" }],
+        "historical_data_requirements": ["Larval defoliation scores"],
+        "weather_feature_requirements": ["High rainfall (>150mm/month), humidity >85%"],
+        "training_data_availability": "sparse",
+        "data_sources": ["ICAR-CRIJAF Barrackpore"]
+      }
+    },
+    {
+      "canonical_id": "kidneybeans",
+      "display_name": "Kidney Beans (Rajma)",
+      "scientific_name": "Phaseolus vulgaris",
+      "category": "pulse",
+      "accepted_aliases": ["kidneybeans", "rajma", "french bean"],
+      "models": {
+        "crop_prediction": { "supported": true, "model_identifier": "kidneybeans" },
+        "fertilizer_recommendation": { "supported": false, "model_identifiers": [], "default_identifier": "Rice", "requires_fallback": true },
+        "pesticide_recommendation": { "supported": false, "model_identifier": null, "notes": "No dedicated ML model" },
+        "pest_outbreak_preview": { "supported": false, "rule_target": "General Crop Pests" }
+      },
+      "pest_outbreak_prediction": {
+        "eligible": false,
+        "priority_tier": "TIER_3_DATA_LIMITED",
+        "target_pests": [{ "common_name": "Bean Stem Fly", "scientific_name": "Ophiomyia phaseoli", "economic_threshold": "10% seedling mortality" }],
+        "historical_data_requirements": ["Seedling mortality records"],
+        "weather_feature_requirements": ["Moderate temperature (18-25°C), high soil moisture"],
+        "training_data_availability": "sparse",
+        "data_sources": ["ICAR-IIPR Kanpur"]
+      }
+    },
+    {
+      "canonical_id": "lentil",
+      "display_name": "Lentil (Masoor)",
+      "scientific_name": "Lens culinaris",
+      "category": "pulse",
+      "accepted_aliases": ["lentil", "masoor"],
+      "models": {
+        "crop_prediction": { "supported": true, "model_identifier": "lentil" },
+        "fertilizer_recommendation": { "supported": false, "model_identifiers": [], "default_identifier": "Rice", "requires_fallback": true },
+        "pesticide_recommendation": { "supported": false, "model_identifier": null, "notes": "No dedicated ML model" },
+        "pest_outbreak_preview": { "supported": false, "rule_target": "General Crop Pests" }
+      },
+      "pest_outbreak_prediction": {
+        "eligible": false,
+        "priority_tier": "TIER_3_DATA_LIMITED",
+        "target_pests": [{ "common_name": "Lentil Aphid", "scientific_name": "Aphis craccivora", "economic_threshold": "20 aphids/plant" }],
+        "historical_data_requirements": ["Colony counts on terminal twigs"],
+        "weather_feature_requirements": ["Cool dry spells followed by overcast weather"],
+        "training_data_availability": "sparse",
+        "data_sources": ["ICAR-IIPR Kanpur"]
+      }
+    },
+    {
+      "canonical_id": "mango",
+      "display_name": "Mango",
+      "scientific_name": "Mangifera indica",
+      "category": "fruit",
+      "accepted_aliases": ["mango", "aam"],
+      "models": {
+        "crop_prediction": { "supported": true, "model_identifier": "mango" },
+        "fertilizer_recommendation": { "supported": false, "model_identifiers": [], "default_identifier": "Rice", "requires_fallback": true },
+        "pesticide_recommendation": { "supported": false, "model_identifier": null, "notes": "No dedicated ML model" },
+        "pest_outbreak_preview": { "supported": false, "rule_target": "General Crop Pests" }
+      },
+      "pest_outbreak_prediction": {
+        "eligible": false,
+        "priority_tier": "TIER_3_DATA_LIMITED",
+        "target_pests": [{ "common_name": "Mango Hopper", "scientific_name": "Amritodus atkinsoni / Idioscopus clypealis", "economic_threshold": "5 hoppers/panicle" }],
+        "historical_data_requirements": ["Panicle sweep counts during flowering"],
+        "weather_feature_requirements": ["Cloudy weather with high humidity during flowering"],
+        "training_data_availability": "sparse",
+        "data_sources": ["ICAR-CISH Lucknow"]
+      }
+    },
+    {
+      "canonical_id": "mothbeans",
+      "display_name": "Moth Beans (Matki)",
+      "scientific_name": "Vigna aconitifolia",
+      "category": "pulse",
+      "accepted_aliases": ["mothbeans", "matki", "moth bean"],
+      "models": {
+        "crop_prediction": { "supported": true, "model_identifier": "mothbeans" },
+        "fertilizer_recommendation": { "supported": false, "model_identifiers": [], "default_identifier": "Rice", "requires_fallback": true },
+        "pesticide_recommendation": { "supported": false, "model_identifier": null, "notes": "No dedicated ML model" },
+        "pest_outbreak_preview": { "supported": false, "rule_target": "General Crop Pests" }
+      },
+      "pest_outbreak_prediction": {
+        "eligible": false,
+        "priority_tier": "TIER_3_DATA_LIMITED",
+        "target_pests": [{ "common_name": "Whitefly & Jassids", "scientific_name": "Empoasca kerri", "economic_threshold": "2-3 nymphs/leaf" }],
+        "historical_data_requirements": ["Arid pulse surveillance records"],
+        "weather_feature_requirements": ["Arid high-temperature conditions (30-40°C)"],
+        "training_data_availability": "sparse",
+        "data_sources": ["ICAR-CAZRI Jodhpur"]
+      }
+    },
+    {
+      "canonical_id": "mungbean",
+      "display_name": "Mung Bean (Moong)",
+      "scientific_name": "Vigna radiata",
+      "category": "pulse",
+      "accepted_aliases": ["mungbean", "moong", "green gram"],
+      "models": {
+        "crop_prediction": { "supported": true, "model_identifier": "mungbean" },
+        "fertilizer_recommendation": { "supported": false, "model_identifiers": [], "default_identifier": "Rice", "requires_fallback": true },
+        "pesticide_recommendation": { "supported": false, "model_identifier": null, "notes": "No dedicated ML model" },
+        "pest_outbreak_preview": { "supported": false, "rule_target": "General Crop Pests" }
+      },
+      "pest_outbreak_prediction": {
+        "eligible": false,
+        "priority_tier": "TIER_3_DATA_LIMITED",
+        "target_pests": [{ "common_name": "Whitefly (Yellow Mosaic Virus vector)", "scientific_name": "Bemisia tabaci", "economic_threshold": "5 adults/cage or leaf" }],
+        "historical_data_requirements": ["Yellow sticky trap catches"],
+        "weather_feature_requirements": ["Warm humid weather (28-35°C, humidity 70-85%)"],
+        "training_data_availability": "sparse",
+        "data_sources": ["ICAR-IIPR Kanpur"]
+      }
+    },
+    {
+      "canonical_id": "muskmelon",
+      "display_name": "Muskmelon",
+      "scientific_name": "Cucumis melo",
+      "category": "fruit",
+      "accepted_aliases": ["muskmelon", "kharbooja"],
+      "models": {
+        "crop_prediction": { "supported": true, "model_identifier": "muskmelon" },
+        "fertilizer_recommendation": { "supported": false, "model_identifiers": [], "default_identifier": "Rice", "requires_fallback": true },
+        "pesticide_recommendation": { "supported": false, "model_identifier": null, "notes": "No dedicated ML model" },
+        "pest_outbreak_preview": { "supported": false, "rule_target": "General Crop Pests" }
+      },
+      "pest_outbreak_prediction": {
+        "eligible": false,
+        "priority_tier": "TIER_3_DATA_LIMITED",
+        "target_pests": [{ "common_name": "Fruit Fly", "scientific_name": "Bactrocera cucurbitae", "economic_threshold": "1 fly/cue-lure trap/day" }],
+        "historical_data_requirements": ["Cue-lure trap catches"],
+        "weather_feature_requirements": ["Warm dry spells during fruiting (28-38°C)"],
+        "training_data_availability": "sparse",
+        "data_sources": ["ICAR-CIAH Bikaner"]
+      }
+    },
+    {
+      "canonical_id": "orange",
+      "display_name": "Orange (Citrus)",
+      "scientific_name": "Citrus sinensis / reticulata",
+      "category": "fruit",
+      "accepted_aliases": ["orange", "santra", "citrus", "mandarin"],
+      "models": {
+        "crop_prediction": { "supported": true, "model_identifier": "orange" },
+        "fertilizer_recommendation": { "supported": false, "model_identifiers": [], "default_identifier": "Rice", "requires_fallback": true },
+        "pesticide_recommendation": { "supported": false, "model_identifier": null, "notes": "No dedicated ML model" },
+        "pest_outbreak_preview": { "supported": false, "rule_target": "General Crop Pests" }
+      },
+      "pest_outbreak_prediction": {
+        "eligible": false,
+        "priority_tier": "TIER_3_DATA_LIMITED",
+        "target_pests": [{ "common_name": "Citrus Psylla", "scientific_name": "Diaphorina citri", "economic_threshold": "5 nymphs/flush" }],
+        "historical_data_requirements": ["Flush inspection counts"],
+        "weather_feature_requirements": ["Sub-tropical dry winter followed by spring flush"],
+        "training_data_availability": "sparse",
+        "data_sources": ["ICAR-CCRI Nagpur"]
+      }
+    },
+    {
+      "canonical_id": "papaya",
+      "display_name": "Papaya",
+      "scientific_name": "Carica papaya",
+      "category": "fruit",
+      "accepted_aliases": ["papaya", "papita"],
+      "models": {
+        "crop_prediction": { "supported": true, "model_identifier": "papaya" },
+        "fertilizer_recommendation": { "supported": false, "model_identifiers": [], "default_identifier": "Rice", "requires_fallback": true },
+        "pesticide_recommendation": { "supported": false, "model_identifier": null, "notes": "No dedicated ML model" },
+        "pest_outbreak_preview": { "supported": false, "rule_target": "General Crop Pests" }
+      },
+      "pest_outbreak_prediction": {
+        "eligible": false,
+        "priority_tier": "TIER_3_DATA_LIMITED",
+        "target_pests": [{ "common_name": "Papaya Mealybug", "scientific_name": "Paracoccus marginatus", "economic_threshold": "Colonies on foliage / fruit cluster" }],
+        "historical_data_requirements": ["Infested plant percentage"],
+        "weather_feature_requirements": ["Warm humid tropical weather (25-35°C)"],
+        "training_data_availability": "sparse",
+        "data_sources": ["TNAU Coimbatore", "ICAR-IIHR Bengaluru"]
+      }
+    },
+    {
+      "canonical_id": "pomegranate",
+      "display_name": "Pomegranate",
+      "scientific_name": "Punica granatum",
+      "category": "fruit",
+      "accepted_aliases": ["pomegranate", "anaar"],
+      "models": {
+        "crop_prediction": { "supported": true, "model_identifier": "pomegranate" },
+        "fertilizer_recommendation": { "supported": false, "model_identifiers": [], "default_identifier": "Rice", "requires_fallback": true },
+        "pesticide_recommendation": { "supported": false, "model_identifier": null, "notes": "No dedicated ML model" },
+        "pest_outbreak_preview": { "supported": false, "rule_target": "General Crop Pests" }
+      },
+      "pest_outbreak_prediction": {
+        "eligible": false,
+        "priority_tier": "TIER_3_DATA_LIMITED",
+        "target_pests": [{ "common_name": "Pomegranate Butterfly (Anar Butterfly)", "scientific_name": "Deudorix isocrates", "economic_threshold": "5% damaged fruits" }],
+        "historical_data_requirements": ["Oviposition monitoring on calyx"],
+        "weather_feature_requirements": ["Semi-arid climate (Solapur/Nashik belt) with rainfall surges"],
+        "training_data_availability": "sparse",
+        "data_sources": ["ICAR-NRCP Solapur"]
+      }
+    },
+    {
+      "canonical_id": "watermelon",
+      "display_name": "Watermelon",
+      "scientific_name": "Citrullus lanatus",
+      "category": "fruit",
+      "accepted_aliases": ["watermelon", "tarbooj"],
+      "models": {
+        "crop_prediction": { "supported": true, "model_identifier": "watermelon" },
+        "fertilizer_recommendation": { "supported": false, "model_identifiers": [], "default_identifier": "Rice", "requires_fallback": true },
+        "pesticide_recommendation": { "supported": false, "model_identifier": null, "notes": "No dedicated ML model" },
+        "pest_outbreak_preview": { "supported": false, "rule_target": "General Crop Pests" }
+      },
+      "pest_outbreak_prediction": {
+        "eligible": false,
+        "priority_tier": "TIER_3_DATA_LIMITED",
+        "target_pests": [{ "common_name": "Red Pumpkin Beetle", "scientific_name": "Aulacophora foveicollis", "economic_threshold": "1 beetle/seedling" }],
+        "historical_data_requirements": ["Cotyledon feeding damage scores"],
+        "weather_feature_requirements": ["Warm temperatures (24-35°C), high soil moisture"],
+        "training_data_availability": "sparse",
+        "data_sources": ["ICAR-IIVR Varanasi"]
+      }
+    }
+  ]
+}

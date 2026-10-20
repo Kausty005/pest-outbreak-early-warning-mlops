@@ -1,0 +1,14 @@
+{
+  "pest_present_t0": 0.27519,
+  "growth_stage": 0.15575,
+  "pest": 0.01016,
+  "t7_mean_rh_pct": 0.00846,
+  "t14_rainfall_mm": 0.004,
+  "district": 0.0,
+  "crop": 0.0,
+  "t7_mean_temp_c": 0.0,
+  "t7_min_temp_c": 0.0,
+  "t7_max_temp_c": 0.0,
+  "t7_rainfall_mm": 0.0,
+  "t7_high_rh_days": 0.0
+}

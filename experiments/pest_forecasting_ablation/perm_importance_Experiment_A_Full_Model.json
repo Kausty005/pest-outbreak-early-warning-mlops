@@ -1,0 +1,16 @@
+{
+  "current_severity_pct_t0": 0.17962,
+  "current_incidence_pct_t0": 0.13123,
+  "growth_stage": 0.0443,
+  "pest_present_t0": 0.02593,
+  "crop": 0.01126,
+  "pest": 0.00661,
+  "t7_min_temp_c": 0.00466,
+  "district": 0.00194,
+  "t7_high_rh_days": 0.00125,
+  "t7_mean_rh_pct": 0.00095,
+  "t7_rainfall_mm": 0.00054,
+  "t14_rainfall_mm": 0.00037,
+  "t7_mean_temp_c": 0.00016,
+  "t7_max_temp_c": 0.0
+}

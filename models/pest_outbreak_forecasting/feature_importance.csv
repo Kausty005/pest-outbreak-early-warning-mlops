@@ -1,0 +1,16 @@
+feature,importance
+current_severity_pct_t0,0.3420574988976398
+current_incidence_pct_t0,0.3081927532674732
+pest_present_t0,0.10210786063125653
+t7_max_temp_c,0.02290902711516597
+t7_min_temp_c,0.022170884604096185
+t7_mean_temp_c,0.02161954946893262
+t7_mean_rh_pct,0.0206578284028015
+t14_rainfall_mm,0.019766881130062922
+t7_rainfall_mm,0.014502898591595247
+growth_stage_Flowering,0.0138834704942944
+growth_stage_Vegetative_branching,0.008501457181367428
+growth_stage_R2_R4_grain_fill,0.007070556005105154
+growth_stage_Milky_dough,0.006892933572304528
+growth_stage_Jointing_stem_extension,0.005824125105631125
+growth_stage_V1_V4_early_whorl,0.00547521570976696

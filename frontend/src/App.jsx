@@ -7,6 +7,7 @@ import RecommendationCard from './components/RecommendationCard'
 import FertilizerSection from './components/FertilizerSection'
 import UnifiedAdvisorySection from './components/UnifiedAdvisorySection'
 import MonitoringSection from './components/MonitoringSection'
+import PestForecastSection from './components/PestForecastSection'
 import { cropApi } from './services/api'
 
 function validate(values) {
@@ -96,6 +97,15 @@ export default function App() {
           <button
             type="button"
             role="tab"
+            aria-selected={activeTab === 'pest-forecast'}
+            className={`tab-btn ${activeTab === 'pest-forecast' ? 'active' : ''}`}
+            onClick={() => setActiveTab('pest-forecast')}
+          >
+            🐛 Pest Outbreak Forecaster
+          </button>
+          <button
+            type="button"
+            role="tab"
             aria-selected={activeTab === 'unified'}
             className={`tab-btn ${activeTab === 'unified' ? 'active' : ''}`}
             onClick={() => setActiveTab('unified')}
@@ -135,12 +145,17 @@ export default function App() {
           <FertilizerSection preselectedCrop={selectedCropForFertilizer} />
         )}
 
-        {/* Tab 3: Unified Advisory & Pest Early Warning */}
+        {/* Tab 3: 7-Day Pest Outbreak Forecasting Prototype */}
+        {activeTab === 'pest-forecast' && (
+          <PestForecastSection />
+        )}
+
+        {/* Tab 4: Unified Advisory & Pest Early Warning */}
         {activeTab === 'unified' && (
           <UnifiedAdvisorySection />
         )}
 
-        {/* Tab 4: MLOps Drift & Retrain Lifecycle */}
+        {/* Tab 5: MLOps Drift & Retrain Lifecycle */}
         {activeTab === 'monitoring' && (
           <MonitoringSection />
         )}

@@ -1,0 +1,48 @@
+{
+  "info": {
+    "description": "data",
+    "version": "1.0",
+    "year": 2025,
+    "contributor": "search engine",
+    "source": "augmented",
+    "license": {
+      "name": "Creative Commons Attribution 4.0 International",
+      "url": "https://creativecommons.org/licenses/by/4.0/"
+    }
+  },
+  "images": [
+    {
+      "id": 7386259950,
+      "width": 5184,
+      "height": 3456,
+      "file_name": "Corn_Gray_Spot (41).jpg",
+      "size": 5693806,
+      "format": "JPG",
+      "url": "",
+      "hash": "",
+      "status": "success"
+    }
+  ],
+  "annotations": [
+    {
+      "id": 1114658950,
+      "image_id": 7386259950,
+      "category_id": 2,
+      "segmentation": [],
+      "area": 17915904,
+      "bbox": [
+        0,
+        0,
+        5184,
+        3456
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "id": 2,
+      "name": "Gray_Leaf_Spot",
+      "supercategory": "corn"
+    }
+  ]
+}

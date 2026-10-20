@@ -1,0 +1,48 @@
+{
+  "info": {
+    "description": "data",
+    "version": "1.0",
+    "year": 2025,
+    "contributor": "search engine",
+    "source": "augmented",
+    "license": {
+      "name": "Creative Commons Attribution 4.0 International",
+      "url": "https://creativecommons.org/licenses/by/4.0/"
+    }
+  },
+  "images": [
+    {
+      "id": 4548511952,
+      "width": 300,
+      "height": 200,
+      "file_name": "Corn_Blight (100).jpg",
+      "size": 55013,
+      "format": "JPG",
+      "url": "",
+      "hash": "",
+      "status": "success"
+    }
+  ],
+  "annotations": [
+    {
+      "id": 2090884952,
+      "image_id": 4548511952,
+      "category_id": 4,
+      "segmentation": [],
+      "area": 60000,
+      "bbox": [
+        0,
+        0,
+        300,
+        200
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "id": 4,
+      "name": "Blight",
+      "supercategory": "corn"
+    }
+  ]
+}

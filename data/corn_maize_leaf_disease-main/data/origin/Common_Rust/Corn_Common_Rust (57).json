@@ -1,0 +1,48 @@
+{
+  "info": {
+    "description": "data",
+    "version": "1.0",
+    "year": 2025,
+    "contributor": "search engine",
+    "source": "augmented",
+    "license": {
+      "name": "Creative Commons Attribution 4.0 International",
+      "url": "https://creativecommons.org/licenses/by/4.0/"
+    }
+  },
+  "images": [
+    {
+      "id": 3574983951,
+      "width": 862,
+      "height": 882,
+      "file_name": "Corn_Common_Rust (57).jpg",
+      "size": 205687,
+      "format": "JPG",
+      "url": "",
+      "hash": "",
+      "status": "success"
+    }
+  ],
+  "annotations": [
+    {
+      "id": 1020285951,
+      "image_id": 3574983951,
+      "category_id": 3,
+      "segmentation": [],
+      "area": 760284,
+      "bbox": [
+        0,
+        0,
+        862,
+        882
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "id": 3,
+      "name": "Common_Rust",
+      "supercategory": "corn"
+    }
+  ]
+}

@@ -50,7 +50,11 @@ def evaluate_pest_risk_preview(crop: str, temp: float, humidity: float, rainfall
     Preliminary rule-based agroclimatic pest risk indicators.
     Serves as the foundation and bridge for the upcoming Drift-Aware Pest Outbreak Early-Warning ML Model.
     """
-    c = crop.lower()
+    from ..core.crop_catalog import get_crop_catalog
+
+    catalog = get_crop_catalog()
+    canonical = catalog.resolve_canonical_id(crop) or crop.strip().lower()
+    c = canonical.lower()
     pest_target = "General Crop Pests"
     risk_level = "LOW"
     risk_factors = []

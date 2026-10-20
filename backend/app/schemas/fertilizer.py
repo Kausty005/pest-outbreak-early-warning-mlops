@@ -24,6 +24,17 @@ def normalize_crop_name(name: str) -> str:
     for valid in VALID_CROPS:
         if valid.lower() == cleaned.lower():
             return valid
+    # Catalog-assisted resolution
+    try:
+        from ..core.crop_catalog import get_crop_catalog
+        catalog = get_crop_catalog()
+        crop_obj = catalog.get_crop(cleaned)
+        if crop_obj:
+            fert = crop_obj.get("models", {}).get("fertilizer_recommendation", {})
+            if fert.get("supported"):
+                return fert.get("default_identifier", cleaned)
+    except Exception:
+        pass
     # Partial match heuristics
     low = cleaned.lower()
     if "wheat" in low:

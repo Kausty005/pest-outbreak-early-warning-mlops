@@ -1,0 +1,32 @@
+{
+  "model_name": "AgriAdapt-MaizeLeafDisease-MobileNetV2",
+  "model_version": "1.0.0",
+  "architecture": "MobileNetV2 (ImageNet) + GAP + Dropout(0.3) + Dense(4, softmax)",
+  "input_shape": [
+    224,
+    224,
+    3
+  ],
+  "batch_size": 16,
+  "epochs_stage1": 6,
+  "epochs_stage2": 6,
+  "lr_stage1": 0.001,
+  "lr_stage2": 0.0001,
+  "optimizer": "Adam",
+  "loss": "categorical_crossentropy",
+  "random_seed": 42,
+  "hardware_platform": "CPU (TensorFlow AVX2/oneDNN optimized)",
+  "training_duration_seconds": 778.0,
+  "split_counts": {
+    "train": 2930,
+    "val": 628,
+    "test": 628,
+    "total": 4186
+  },
+  "data_augmentation_layers": [
+    "RandomFlip(horizontal)",
+    "RandomRotation(0.08)",
+    "RandomZoom((-0.08, 0.08))",
+    "RandomTranslation(0.05, 0.05)"
+  ]
+}

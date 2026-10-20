@@ -57,3 +57,16 @@ def recommend_crop(payload: CropRecommendationRequest, request: Request):
         raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=str(error)) from error
     result["persistence_status"] = persist_prediction(request.app.state.database, result, payload.farm_id)
     return result
+
+
+@router.get("/catalog")
+def crop_catalog():
+    """Returns the centralized crop catalog, canonical identifiers, aliases, and model support matrix."""
+    from ..core.crop_catalog import get_crop_catalog
+
+    catalog = get_crop_catalog()
+    return {
+        "metadata": catalog.metadata,
+        "crops": catalog.list_all_crops(),
+    }
+

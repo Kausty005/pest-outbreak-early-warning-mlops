@@ -1,0 +1,48 @@
+{
+  "info": {
+    "description": "data",
+    "version": "1.0",
+    "year": 2025,
+    "contributor": "search engine",
+    "source": "augmented",
+    "license": {
+      "name": "Creative Commons Attribution 4.0 International",
+      "url": "https://creativecommons.org/licenses/by/4.0/"
+    }
+  },
+  "images": [
+    {
+      "id": 9242226948,
+      "width": 256,
+      "height": 256,
+      "file_name": "Corn_Health (205).jpg",
+      "size": 15008,
+      "format": "JPG",
+      "url": "",
+      "hash": "",
+      "status": "success"
+    }
+  ],
+  "annotations": [
+    {
+      "id": 7208019948,
+      "image_id": 9242226948,
+      "category_id": 1,
+      "segmentation": [],
+      "area": 65536,
+      "bbox": [
+        0,
+        0,
+        256,
+        256
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "id": 1,
+      "name": "Healthy",
+      "supercategory": "corn"
+    }
+  ]
+}

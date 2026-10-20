@@ -1,0 +1,48 @@
+{
+  "can_train_forecasting_model": false,
+  "decision_reason": "CRITICAL DATA DEFICIT \u2014 MODEL TRAINING HALTED:\n1. Zero time-indexed longitudinal field disease surveillance records exist in workspace.\n2. Zero daily weather time-series records exist for historical field plots.\n3. The existing corn leaf dataset contains static leaf photos with no dates or locations; fabricating temporal outbreak labels from them is scientifically invalid and prohibited.",
+  "weather_sensor_data_available": false,
+  "historical_disease_surveillance_available": false,
+  "existing_cnn_artifacts": {
+    "class_names.json": "469 bytes",
+    "confusion_matrix.png": "85130 bytes",
+    "evaluation_report.json": "4206 bytes",
+    "maize_disease_model.keras": "9.24 MB",
+    "training_config.json": "805 bytes",
+    "training_history.png": "206779 bytes"
+  },
+  "missing_data_requirements": [
+    "Daily meteorological time-series (T_min, T_max, RH_morning, RH_evening, Rainfall mm, Leaf wetness hours) for specific fields.",
+    "Longitudinal scouting logs with unique field/plot ID, GPS coordinates, date of observation, and maize growth stage.",
+    "Quantitative disease measurements (% infected plants incidence, % leaf area affected severity on Cobb scale).",
+    "Multi-season surveillance (minimum 2\u20133 growing seasons) to capture non-outbreak vs epidemic outbreak transitions."
+  ],
+  "required_collection_process": [
+    "Phase A: Ingest historical surveillance records from ICAR-IIMR (Ludhiana/Hyderabad), UAS Dharwad, or CIMMYT India maize rust surveys.",
+    "Phase B: Connect NASA POWER Agroclimatology API / IMD gridded daily weather for target field coordinates over past seasons.",
+    "Phase C: Align weekly field scouting with 7-day preceding weather summaries [t-7 to t0] and 7-day forward outbreak transition [t+1 to t+7].",
+    "Phase D: Execute the implemented time-based stratified splitting pipeline on true ground truth."
+  ],
+  "proposed_feature_schema": [
+    "field_id (string)",
+    "observation_date (date, t0)",
+    "growth_stage (BBCH/CIMMYT scale)",
+    "t7_mean_temp_c (float)",
+    "t7_min_temp_c (float)",
+    "t7_max_temp_c (float)",
+    "t7_temp_favorable_rust_hours_est (float, 16-25\u00b0C hours)",
+    "t7_mean_rh_pct (float)",
+    "t7_high_rh_days (int, RH > 80%)",
+    "t7_cumulative_rainfall_mm (float)",
+    "t7_rainy_days_count (int)",
+    "t7_estimated_leaf_wetness_hours_sum (float)",
+    "t14_cumulative_rainfall_mm (float)",
+    "growth_stage_vulnerability_index (float [0.1, 1.0])",
+    "current_incidence_at_t0 (float %)",
+    "current_severity_at_t0 (float %)",
+    "disease_already_present_t0 (binary 0/1)",
+    "regional_outbreak_pressure_last_14d (float [0, 1])",
+    "cnn_observed_leaf_rust_probability_t0 (optional visual symptom score at t0)"
+  ],
+  "label_creation_strategy": "Target Y_{t+7} in {0, 1}:\nY = 1 if field transitions from sub-threshold (severity < 5%) at t0 to crossing economic threshold (severity >= 5% or incidence surge delta >= 10%) within forward window [t0+1d, t0+7d].\nY = 0 if field remains below action threshold or already had an uncontained outbreak at t0."
+}

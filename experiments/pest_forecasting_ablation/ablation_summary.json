@@ -1,0 +1,150 @@
+{
+  "timestamp": "2026-10-20T18:54:18Z",
+  "experiments": {
+    "Experiment_A_Full_Model": {
+      "label": "Experiment A (Full Feature Model)",
+      "features": [
+        "district",
+        "crop",
+        "pest",
+        "growth_stage",
+        "t7_mean_temp_c",
+        "t7_min_temp_c",
+        "t7_max_temp_c",
+        "t7_mean_rh_pct",
+        "t7_rainfall_mm",
+        "t14_rainfall_mm",
+        "current_incidence_pct_t0",
+        "current_severity_pct_t0",
+        "t7_high_rh_days",
+        "pest_present_t0"
+      ],
+      "optimal_threshold": 0.72,
+      "val_pr_auc": 0.8487,
+      "val_f1_tuned": 0.8008,
+      "test_pr_auc": 0.8437,
+      "test_recall_tuned": 0.7409,
+      "test_precision_tuned": 0.8871,
+      "test_f1_tuned": 0.8075,
+      "test_false_positives": 223,
+      "test_false_negatives": 613,
+      "top_permutation_features": [
+        [
+          "current_severity_pct_t0",
+          0.17962
+        ],
+        [
+          "current_incidence_pct_t0",
+          0.13123
+        ],
+        [
+          "growth_stage",
+          0.0443
+        ],
+        [
+          "pest_present_t0",
+          0.02593
+        ],
+        [
+          "crop",
+          0.01126
+        ]
+      ]
+    },
+    "Experiment_B_Weather_Crop": {
+      "label": "Experiment B (Weather & Crop Model)",
+      "features": [
+        "district",
+        "crop",
+        "pest",
+        "growth_stage",
+        "t7_mean_temp_c",
+        "t7_min_temp_c",
+        "t7_max_temp_c",
+        "t7_mean_rh_pct",
+        "t7_rainfall_mm",
+        "t14_rainfall_mm",
+        "t7_high_rh_days"
+      ],
+      "optimal_threshold": 0.42,
+      "val_pr_auc": 0.2701,
+      "val_f1_tuned": 0.4057,
+      "test_pr_auc": 0.2989,
+      "test_recall_tuned": 0.817,
+      "test_precision_tuned": 0.2597,
+      "test_f1_tuned": 0.3942,
+      "test_false_positives": 5509,
+      "test_false_negatives": 433,
+      "top_permutation_features": [
+        [
+          "growth_stage",
+          0.08892
+        ],
+        [
+          "t7_max_temp_c",
+          0.01097
+        ],
+        [
+          "pest",
+          0.00712
+        ],
+        [
+          "t7_high_rh_days",
+          0.00633
+        ],
+        [
+          "t7_mean_rh_pct",
+          0.00604
+        ]
+      ]
+    },
+    "Experiment_C_Early_Warning": {
+      "label": "Experiment C (Early-Warning Model)",
+      "features": [
+        "district",
+        "crop",
+        "pest",
+        "growth_stage",
+        "t7_mean_temp_c",
+        "t7_min_temp_c",
+        "t7_max_temp_c",
+        "t7_mean_rh_pct",
+        "t7_rainfall_mm",
+        "t14_rainfall_mm",
+        "t7_high_rh_days",
+        "pest_present_t0"
+      ],
+      "optimal_threshold": 0.56,
+      "val_pr_auc": 0.5132,
+      "val_f1_tuned": 0.6353,
+      "test_pr_auc": 0.5178,
+      "test_recall_tuned": 0.7658,
+      "test_precision_tuned": 0.5021,
+      "test_f1_tuned": 0.6065,
+      "test_false_positives": 1797,
+      "test_false_negatives": 554,
+      "top_permutation_features": [
+        [
+          "pest_present_t0",
+          0.27519
+        ],
+        [
+          "growth_stage",
+          0.15575
+        ],
+        [
+          "pest",
+          0.01016
+        ],
+        [
+          "t7_mean_rh_pct",
+          0.00846
+        ],
+        [
+          "t14_rainfall_mm",
+          0.004
+        ]
+      ]
+    }
+  }
+}

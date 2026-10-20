@@ -29,6 +29,7 @@ async function request(path, options = {}) {
 export const cropApi = {
   schema: () => request('/crop/schema'),
   modelInfo: () => request('/crop/model-info'),
+  catalog: () => request('/crop/catalog'),
   recommend: (values) => request('/crop/recommend', { method: 'POST', body: JSON.stringify(values) }),
 }
 
@@ -41,6 +42,18 @@ export const fertilizerApi = {
 
 export const advisoryApi = {
   unified: (values) => request('/advisory/unified', { method: 'POST', body: JSON.stringify(values) }),
+}
+
+export const pestApi = {
+  eligibleCrops: () => request('/pest/eligible-crops'),
+  spec: (cropId) => request(`/pest/spec/${cropId}`),
+  preview: (values) => request('/pest/preview', { method: 'POST', body: JSON.stringify(values) }),
+}
+
+export const pestForecastApi = {
+  predict: (values) => request('/pest-forecast/predict', { method: 'POST', body: JSON.stringify(values) }),
+  info: () => request('/pest-forecast/info'),
+  example: () => request('/pest-forecast/example'),
 }
 
 export const healthApi = {

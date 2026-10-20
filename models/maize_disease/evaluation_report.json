@@ -1,0 +1,132 @@
+{
+  "test_loss": 0.19742536544799805,
+  "test_accuracy": 0.9267516136169434,
+  "macro_avg_f1": 0.907439082331251,
+  "weighted_avg_f1": 0.9262677712014502,
+  "per_class_metrics": {
+    "blight": {
+      "precision": 0.8659,
+      "recall": 0.9012,
+      "f1_score": 0.8832,
+      "support": 172
+    },
+    "common_rust": {
+      "precision": 0.9596,
+      "recall": 0.9694,
+      "f1_score": 0.9645,
+      "support": 196
+    },
+    "gray_leaf_spot": {
+      "precision": 0.8228,
+      "recall": 0.7558,
+      "f1_score": 0.7879,
+      "support": 86
+    },
+    "healthy": {
+      "precision": 1.0,
+      "recall": 0.9885,
+      "f1_score": 0.9942,
+      "support": 174
+    }
+  },
+  "confusion_matrix": [
+    [
+      155,
+      4,
+      13,
+      0
+    ],
+    [
+      5,
+      190,
+      1,
+      0
+    ],
+    [
+      19,
+      2,
+      65,
+      0
+    ],
+    [
+      0,
+      2,
+      0,
+      172
+    ]
+  ],
+  "sample_correctly_classified": [
+    {
+      "image_filename": "Corn_Blight (426).JPG",
+      "image_filepath": "D:\\OMKAR\\VITP\\SEM 5\\MLOPS\\pest-outbreak-early-warning-mlops\\data\\maize_leaf_disease\\blight\\Corn_Blight (426).JPG",
+      "ground_truth": "blight",
+      "predicted": "blight",
+      "confidence": 0.9906
+    },
+    {
+      "image_filename": "Corn_Health (163).jpg",
+      "image_filepath": "D:\\OMKAR\\VITP\\SEM 5\\MLOPS\\pest-outbreak-early-warning-mlops\\data\\maize_leaf_disease\\healthy\\Corn_Health (163).jpg",
+      "ground_truth": "healthy",
+      "predicted": "healthy",
+      "confidence": 0.9992
+    },
+    {
+      "image_filename": "Corn_Common_Rust (349).JPG",
+      "image_filepath": "D:\\OMKAR\\VITP\\SEM 5\\MLOPS\\pest-outbreak-early-warning-mlops\\data\\maize_leaf_disease\\common_rust\\Corn_Common_Rust (349).JPG",
+      "ground_truth": "common_rust",
+      "predicted": "common_rust",
+      "confidence": 0.9078
+    },
+    {
+      "image_filename": "Corn_Blight (977).JPG",
+      "image_filepath": "D:\\OMKAR\\VITP\\SEM 5\\MLOPS\\pest-outbreak-early-warning-mlops\\data\\maize_leaf_disease\\blight\\Corn_Blight (977).JPG",
+      "ground_truth": "blight",
+      "predicted": "blight",
+      "confidence": 0.8935
+    },
+    {
+      "image_filename": "Corn_Blight (421).JPG",
+      "image_filepath": "D:\\OMKAR\\VITP\\SEM 5\\MLOPS\\pest-outbreak-early-warning-mlops\\data\\maize_leaf_disease\\blight\\Corn_Blight (421).JPG",
+      "ground_truth": "blight",
+      "predicted": "blight",
+      "confidence": 0.8812
+    }
+  ],
+  "sample_misclassified": [
+    {
+      "image_filename": "Corn_Health (431).jpg",
+      "image_filepath": "D:\\OMKAR\\VITP\\SEM 5\\MLOPS\\pest-outbreak-early-warning-mlops\\data\\maize_leaf_disease\\healthy\\Corn_Health (431).jpg",
+      "ground_truth": "healthy",
+      "predicted": "common_rust",
+      "confidence": 0.4104
+    },
+    {
+      "image_filename": "Corn_Blight (688).JPG",
+      "image_filepath": "D:\\OMKAR\\VITP\\SEM 5\\MLOPS\\pest-outbreak-early-warning-mlops\\data\\maize_leaf_disease\\blight\\Corn_Blight (688).JPG",
+      "ground_truth": "blight",
+      "predicted": "gray_leaf_spot",
+      "confidence": 0.6999
+    },
+    {
+      "image_filename": "Corn_Gray_Spot (29).jpg",
+      "image_filepath": "D:\\OMKAR\\VITP\\SEM 5\\MLOPS\\pest-outbreak-early-warning-mlops\\data\\maize_leaf_disease\\gray_leaf_spot\\Corn_Gray_Spot (29).jpg",
+      "ground_truth": "gray_leaf_spot",
+      "predicted": "blight",
+      "confidence": 0.8348
+    },
+    {
+      "image_filename": "Corn_Gray_Spot (232).JPG",
+      "image_filepath": "D:\\OMKAR\\VITP\\SEM 5\\MLOPS\\pest-outbreak-early-warning-mlops\\data\\maize_leaf_disease\\gray_leaf_spot\\Corn_Gray_Spot (232).JPG",
+      "ground_truth": "gray_leaf_spot",
+      "predicted": "blight",
+      "confidence": 0.9631
+    },
+    {
+      "image_filename": "Corn_Gray_Spot (282).JPG",
+      "image_filepath": "D:\\OMKAR\\VITP\\SEM 5\\MLOPS\\pest-outbreak-early-warning-mlops\\data\\maize_leaf_disease\\gray_leaf_spot\\Corn_Gray_Spot (282).JPG",
+      "ground_truth": "gray_leaf_spot",
+      "predicted": "blight",
+      "confidence": 0.7635
+    }
+  ]
+}
