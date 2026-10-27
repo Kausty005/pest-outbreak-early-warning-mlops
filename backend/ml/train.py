@@ -4,6 +4,7 @@ from __future__ import annotations
 import argparse
 import json
 import logging
+import os
 import platform
 import time
 from dataclasses import dataclass, field
@@ -20,6 +21,7 @@ from sklearn.model_selection import GridSearchCV, StratifiedKFold, train_test_sp
 from .data_validation import FEATURE_COLUMNS, TARGET_COLUMN, load_valid_dataset
 from .evaluate import classification_metrics, feature_importance
 from .feature_engineering import FeatureConfig, make_model_pipeline
+from .model_registry import promote_candidate, stage_candidate, sha256_file
 from .xgboost_model import LabelEncodedClassifier
 
 LOGGER = logging.getLogger(__name__)
@@ -34,7 +36,11 @@ class TrainingConfig:
     parallel_jobs: int = 1
     model_names: tuple[str, ...] = ("random_forest", "extra_trees", "xgboost")
     quick: bool = False
+    promote: bool = False
+    min_macro_f1: float = 0.90
+    min_f1_improvement: float = 0.0
     mlflow_enabled: bool = False
+    mlflow_tracking_uri: str | None = None
     mlflow_experiment: str = "crop-recommendation"
     mlflow_register_model: bool = False
 
@@ -221,37 +227,77 @@ def _comparison_markdown(metadata: dict[str, Any]) -> str:
     return "\n".join(rows) + "\n"
 
 
-def _log_to_mlflow(metadata: dict[str, Any], artifacts_dir: Path, config: TrainingConfig, pipeline) -> None:
+def _log_to_mlflow(metadata: dict[str, Any], artifacts_dir: Path, config: TrainingConfig, pipeline: Any) -> None:
     if not config.mlflow_enabled:
         return
     try:
         import mlflow
+        import mlflow.sklearn
     except ImportError:
         LOGGER.warning("MLflow was requested but is unavailable; continuing without MLflow logging")
+        metadata["mlflow"] = {"status": "unavailable", "reason": "mlflow package not installed"}
         return
-    mlflow.set_experiment(config.mlflow_experiment)
-    with mlflow.start_run():
-        mlflow.log_params(
-            {
-                "selected_model": metadata["selected_model"]["model"],
-                "feature_configuration": metadata["selected_model"]["configuration"],
-                "dataset_checksum": metadata["dataset"]["checksum_sha256"],
-                "cv_folds": metadata["split"]["cv_folds"],
+
+    tracking_uri = (
+        config.mlflow_tracking_uri
+        or os.getenv("MLFLOW_TRACKING_URI")
+        or str((PROJECT_ROOT / "mlruns").resolve() if "PROJECT_ROOT" in globals() else (artifacts_dir.parent / "mlruns").resolve())
+    )
+    # Ensure local filesystem paths (especially Windows drive paths like C:\) use standard file:// URI
+    if not (
+        tracking_uri.startswith("http://")
+        or tracking_uri.startswith("https://")
+        or tracking_uri.startswith("file:")
+        or tracking_uri.startswith("sqlite:")
+        or tracking_uri.startswith("postgresql:")
+        or tracking_uri.startswith("mysql:")
+    ):
+        tracking_uri = Path(tracking_uri).resolve().as_uri()
+
+    try:
+        mlflow.set_tracking_uri(tracking_uri)
+        mlflow.set_experiment(config.mlflow_experiment)
+        with mlflow.start_run(run_name=metadata["model_version"]) as run:
+            mlflow.log_params(
+                {
+                    "selected_model": metadata["selected_model"]["model"],
+                    "feature_configuration": metadata["selected_model"]["configuration"],
+                    "dataset_checksum": metadata["dataset"]["checksum_sha256"],
+                    "cv_folds": metadata["split"]["cv_folds"],
+                    "test_size": config.test_size,
+                    "random_seed": config.random_seed,
+                }
+            )
+            mlflow.log_metrics(
+                {
+                    "test_accuracy": metadata["evaluation_metrics"]["accuracy"],
+                    "test_macro_f1": metadata["evaluation_metrics"]["macro_f1"],
+                    "test_weighted_f1": metadata["evaluation_metrics"]["weighted_f1"],
+                    "cv_macro_f1_mean": metadata["selected_model"]["cv_macro_f1_mean"],
+                    "cv_macro_f1_std": metadata["selected_model"]["cv_macro_f1_std"],
+                }
+            )
+            for name in ("metadata.json", "evaluation_report.md", "crop_model.joblib"):
+                p = artifacts_dir / name
+                if p.exists():
+                    mlflow.log_artifact(str(p))
+            mlflow.sklearn.log_model(pipeline, artifact_path="model")
+            if config.mlflow_register_model:
+                try:
+                    mlflow.register_model(f"runs:/{run.info.run_id}/model", "crop-recommendation")
+                except Exception as reg_exc:
+                    LOGGER.warning("MLflow model registry candidate registration warning: %s", reg_exc)
+
+            metadata["mlflow"] = {
+                "status": "tracked",
+                "run_id": run.info.run_id,
+                "tracking_uri": tracking_uri,
+                "experiment": config.mlflow_experiment,
             }
-        )
-        mlflow.log_metrics(
-            {
-                "test_accuracy": metadata["evaluation_metrics"]["accuracy"],
-                "test_macro_f1": metadata["evaluation_metrics"]["macro_f1"],
-                "test_weighted_f1": metadata["evaluation_metrics"]["weighted_f1"],
-            }
-        )
-        for name in ("metadata.json", "evaluation_report.md", "crop_model.joblib"):
-            mlflow.log_artifact(str(artifacts_dir / name))
-        mlflow.sklearn.log_model(pipeline, artifact_path="model")
-        if config.mlflow_register_model:
-            # A registry entry is a candidate only; this never sets a production alias.
-            mlflow.register_model(f"runs:/{mlflow.active_run().info.run_id}/model", "crop-recommendation")
+            LOGGER.info("MLflow run %s logged successfully to %s", run.info.run_id, tracking_uri)
+    except Exception as exc:
+        LOGGER.warning("MLflow logging failed: %s", exc)
+        metadata["mlflow"] = {"status": "failed", "error": str(exc), "tracking_uri": tracking_uri}
 
 
 def run_training(
@@ -284,10 +330,40 @@ def run_training(
         "runtime": {"python": platform.python_version()},
         "deployment_status": "candidate",
     }
-    joblib.dump(winner.pipeline, artifacts / "crop_model.joblib")
-    (artifacts / "metadata.json").write_text(json.dumps(metadata, indent=2, default=_json_safe), encoding="utf-8")
-    (artifacts / "evaluation_report.md").write_text(_comparison_markdown(metadata), encoding="utf-8")
-    _log_to_mlflow(metadata, artifacts, config, winner.pipeline)
+
+    report_md = _comparison_markdown(metadata)
+
+    # 1. Stage candidate safely in candidates/<model_version>/
+    candidate_dir = stage_candidate(artifacts, winner.pipeline, metadata, report_md)
+    metadata["candidate_dir"] = str(candidate_dir)
+    metadata["artifact_sha256"] = sha256_file(candidate_dir / "crop_model.joblib")
+
+    # 2. Check if candidate should be promoted to production
+    prod_exists = (artifacts / "crop_model.joblib").exists()
+    should_promote = config.promote or (not prod_exists)
+
+    if should_promote:
+        try:
+            promote_candidate(
+                artifact_dir=artifacts,
+                candidate_metadata=metadata,
+                candidate_source_dir=candidate_dir,
+                min_macro_f1=config.min_macro_f1,
+                min_macro_f1_improvement=config.min_f1_improvement,
+            )
+            metadata["deployment_status"] = "production"
+            LOGGER.info("Candidate %s promoted to production.", model_version)
+        except Exception as exc:
+            LOGGER.warning("Candidate promotion skipped/rejected: %s", exc)
+            metadata["deployment_status"] = "candidate"
+            metadata["promotion_error"] = str(exc)
+            if not prod_exists:
+                raise
+    else:
+        metadata["deployment_status"] = "candidate"
+        LOGGER.info("Candidate %s staged. Production model retained without overwrite.", model_version)
+
+    _log_to_mlflow(metadata, artifacts if should_promote else candidate_dir, config, winner.pipeline)
     return metadata
 
 
@@ -296,7 +372,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--dataset", required=True, help="Path to Crop_recommendation.csv")
     parser.add_argument("--artifacts-dir", default="backend/artifacts", help="Destination for model artifacts")
     parser.add_argument("--quick", action="store_true", help="Use smaller grids for CI or smoke testing")
+    parser.add_argument("--promote", action="store_true", help="Promote candidate to production if validation gates pass")
+    parser.add_argument("--min-macro-f1", type=float, default=0.90, help="Minimum macro F1 required for promotion")
+    parser.add_argument("--min-f1-improvement", type=float, default=0.0, help="Required macro F1 improvement over deployed model")
     parser.add_argument("--mlflow", action="store_true", help="Log enabled run to the configured MLflow tracking URI")
+    parser.add_argument("--mlflow-tracking-uri", default=None, help="MLflow tracking URI (default: local mlruns)")
     parser.add_argument(
         "--register-mlflow",
         action="store_true",
@@ -315,13 +395,17 @@ def main() -> None:
         args.artifacts_dir,
         TrainingConfig(
             quick=args.quick,
+            promote=args.promote,
+            min_macro_f1=args.min_macro_f1,
+            min_f1_improvement=args.min_f1_improvement,
             cv_folds=args.cv_folds,
             parallel_jobs=args.jobs,
             mlflow_enabled=args.mlflow,
+            mlflow_tracking_uri=args.mlflow_tracking_uri,
             mlflow_register_model=args.register_mlflow,
         ),
     )
-    print(json.dumps({"model_version": metadata["model_version"], "selected_model": metadata["selected_model"]}, indent=2))
+    print(json.dumps(metadata, indent=2, default=_json_safe))
 
 
 if __name__ == "__main__":

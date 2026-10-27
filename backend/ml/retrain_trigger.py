@@ -54,6 +54,9 @@ def should_retrain(drift_report_dir: str | Path = DRIFT_REPORT_DIR) -> tuple[boo
     if summary is None:
         return False, "No drift summary available yet — run drift detection first"
 
+    if summary.get("is_synthetic"):
+        return False, "Latest drift report was generated from synthetic demonstration data; automated production retraining requires genuine production drift."
+
     if summary.get("alert"):
         share = summary.get("drift_share", 0.0)
         n = summary.get("drifted_feature_count", 0)
@@ -87,7 +90,13 @@ def run_retraining(
         return None
 
     try:
-        metadata = json.loads(result.stdout)
+        stdout = result.stdout.strip()
+        start = stdout.find("{")
+        end = stdout.rfind("}")
+        if start != -1 and end != -1:
+            metadata = json.loads(stdout[start : end + 1])
+        else:
+            metadata = json.loads(stdout)
         LOGGER.info("Retraining complete — version: %s", metadata.get("model_version"))
         return metadata
     except json.JSONDecodeError:

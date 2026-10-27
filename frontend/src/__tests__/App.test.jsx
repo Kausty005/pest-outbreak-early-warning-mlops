@@ -74,7 +74,7 @@ afterEach(cleanup)
 
 test('renders smart farm dashboard with 5-zone IoT grid', async () => {
   render(<App />)
-  expect(await screen.findByText(/Smart Precision Farming Command Center/i)).toBeInTheDocument()
+  expect(await screen.findByText(/Smart Farm Command Center/i)).toBeInTheDocument()
   const plotElements = await screen.findAllByText(/Plot 1/i)
   expect(plotElements.length).toBeGreaterThan(0)
 })

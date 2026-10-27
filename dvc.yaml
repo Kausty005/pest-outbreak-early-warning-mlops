@@ -1,33 +1,34 @@
 stages:
   train_crop_model:
-    cmd: python -m backend.ml.train --dataset data/raw/Crop_recommendation.csv --artifacts-dir backend/artifacts
+    cmd: python -m backend.ml.train --dataset data/raw/Crop_recommendation.csv --artifacts-dir backend/artifacts --promote
     deps:
       - data/raw/Crop_recommendation.csv
       - backend/ml/data_validation.py
       - backend/ml/feature_engineering.py
       - backend/ml/evaluate.py
       - backend/ml/train.py
+      - backend/ml/model_registry.py
     outs:
       - backend/artifacts/crop_model.joblib
       - backend/artifacts/metadata.json
       - backend/artifacts/evaluation_report.md
 
   fertilizer_artifacts:
-    cmd: python -c "print('Tracking fertilizer model artifacts')"
+    cmd: python -m backend.ml.fertilizer --verify
     deps:
-      - backend/artifacts/fertilizer_model.joblib
-      - backend/artifacts/fertilizer_model_metadata.json
-      - backend/artifacts/fertilizer_feature_schema.json
+      - models/fertilizer_model.joblib
+      - models/fertilizer_model_metadata.json
+      - models/fertilizer_feature_schema.json
+      - backend/ml/fertilizer.py
     outs:
-      - backend/artifacts/fertilizer_model_metadata.json:
+      - backend/artifacts/fertilizer_verification.json:
           cache: false
 
   monitor_drift:
-    cmd: python -m backend.ml.drift_monitor --reference data/raw/Crop_recommendation.csv --report-dir logs/drift
+    cmd: python -m backend.ml.drift_monitor --reference data/raw/Crop_recommendation.csv --prediction-log logs/prediction_log.jsonl --report-dir logs/drift --synthetic
     deps:
       - data/raw/Crop_recommendation.csv
       - backend/ml/drift_monitor.py
     outs:
       - logs/drift:
           persist: true
-

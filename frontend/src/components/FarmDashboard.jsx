@@ -156,7 +156,7 @@ function SensorPin({ zone, telemetry, isSelected, onClick }) {
       <text x={zone.x + 16} y={zone.y + 24}
         fill={isSelected ? '#f0fdf4' : '#86efac'}
         fontSize="11.5" fontWeight="700" fontFamily="Outfit,Inter,sans-serif">
-        {zone.crop} {zone.label} · {zone.cropName} ({zone.area})
+        {zone.name || `${zone.crop} ${zone.label} · ${zone.cropName} (${zone.area})`}
       </text>
 
       {/* Active Inspection Tag (Top Right) */}
@@ -493,7 +493,7 @@ export default function FarmDashboard() {
               <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center' }}>
                 <div>
                   <div style={{ fontSize:'0.68rem', color:'#4ade80', fontWeight:700, letterSpacing:'0.08em' }}>ACTIVE ZONE</div>
-                  <div style={{ fontSize:'1.25rem', fontWeight:800, color:'#f0fdf4' }}>{selectedZone?.label} · {selectedZone?.active_crop || 'Rice'}</div>
+                  <div style={{ fontSize:'1.25rem', fontWeight:800, color:'#f0fdf4' }}>{selectedZone?.name || `${selectedZone?.label} · ${selectedZone?.active_crop || 'Rice'}`}</div>
                   <div style={{ fontSize:'0.78rem', color:'#64748b', marginTop:'0.1rem' }}>{selectedZone?.area_acres || '4'} Acres · {selectedZone?.soil_type || 'Loamy'}</div>
                 </div>
                 <div style={{ width:54, height:54, borderRadius:'50%', display:'flex', alignItems:'center', justifyContent:'center',

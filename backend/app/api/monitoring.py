@@ -30,6 +30,7 @@ class DriftRunRequest(BaseModel):
     run_id: str | None = None
     prediction_log_path: str = _PREDICTION_LOG
     report_dir: str = _DRIFT_REPORT_DIR
+    allow_synthetic: bool = True
 
 
 class RetrainRequest(BaseModel):
@@ -135,7 +136,7 @@ def run_drift_now(payload: DriftRunRequest) -> dict[str, Any]:
      run_drift_detection, _, _) = _safe_import_drift()
     try:
         ref = load_reference_data(_REFERENCE_DATA)
-        cur = load_prediction_log(payload.prediction_log_path)
+        cur = load_prediction_log(payload.prediction_log_path, allow_synthetic=payload.allow_synthetic)
         summary = run_drift_detection(
             ref, cur,
             report_dir=payload.report_dir,

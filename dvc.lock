@@ -1,0 +1,86 @@
+schema: '2.0'
+stages:
+  train_crop_model:
+    cmd: python -m backend.ml.train --dataset data/raw/Crop_recommendation.csv 
+      --artifacts-dir backend/artifacts --promote
+    deps:
+    - path: backend/ml/data_validation.py
+      hash: md5
+      md5: cdd5a1ebead21b42c240ed8023ddd467
+      size: 5243
+    - path: backend/ml/evaluate.py
+      hash: md5
+      md5: d102d762cdd50a784ece80167a93e85f
+      size: 1591
+    - path: backend/ml/feature_engineering.py
+      hash: md5
+      md5: 4f74ab297b443c0b6f04e530da25c908
+      size: 5820
+    - path: backend/ml/model_registry.py
+      hash: md5
+      md5: d5ba83db3fa302aefa89b47673215742
+      size: 16789
+    - path: backend/ml/train.py
+      hash: md5
+      md5: 85a129e11d2c58217d38bc94364120b6
+      size: 17851
+    - path: data/raw/Crop_recommendation.csv
+      hash: md5
+      md5: 5e743dd4cf49f84d23a904cd51c9b5b8
+      size: 150034
+    outs:
+    - path: backend/artifacts/crop_model.joblib
+      hash: md5
+      md5: c1a9f12e8ae79c1dd0fd2c6ed8127b48
+      size: 7282514
+    - path: backend/artifacts/evaluation_report.md
+      hash: md5
+      md5: 3be6445a68814074d0688cd6aebf4b7b
+      size: 941
+    - path: backend/artifacts/metadata.json
+      hash: md5
+      md5: 7c6e5c062eba7f07c5d2f4c1833872e0
+      size: 72150
+  fertilizer_artifacts:
+    cmd: python -m backend.ml.fertilizer --verify
+    deps:
+    - path: backend/ml/fertilizer.py
+      hash: md5
+      md5: b6de9500f88a8bbd4930aa3b37fbf46b
+      size: 7210
+    - path: models/fertilizer_feature_schema.json
+      hash: md5
+      md5: 0287785ef1c99e2160adbbe0b83f1b04
+      size: 7157
+    - path: models/fertilizer_model.joblib
+      hash: md5
+      md5: 4ba7f0b5ee1eb696c8ad78c851372851
+      size: 64538867
+    - path: models/fertilizer_model_metadata.json
+      hash: md5
+      md5: 71a2833ad592f2d5c6dd003eac39f7e9
+      size: 6092
+    outs:
+    - path: backend/artifacts/fertilizer_verification.json
+      hash: md5
+      md5: cf20101b7b9fb9d219771aaf979246b9
+      size: 600
+  monitor_drift:
+    cmd: python -m backend.ml.drift_monitor --reference 
+      data/raw/Crop_recommendation.csv --prediction-log 
+      logs/prediction_log.jsonl --report-dir logs/drift --synthetic
+    deps:
+    - path: backend/ml/drift_monitor.py
+      hash: md5
+      md5: f9049c5a531bbc32bd72994d57377be6
+      size: 15098
+    - path: data/raw/Crop_recommendation.csv
+      hash: md5
+      md5: 5e743dd4cf49f84d23a904cd51c9b5b8
+      size: 150034
+    outs:
+    - path: logs/drift
+      hash: md5
+      md5: 42b0e6b92cab37d4a3dbf10eb4a1b8ae.dir
+      size: 25287
+      nfiles: 13
