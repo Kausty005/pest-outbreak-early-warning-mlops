@@ -9,7 +9,6 @@ from __future__ import annotations
 import logging
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any
 
 import numpy as np
 import pandas as pd
@@ -18,8 +17,8 @@ from .data_validation import validate_environmental_dataframe
 from .pest_surveillance_ingestion import load_pest_surveillance_data
 from .soil_moisture_ingestion import extract_soil_moisture_series
 from .weather_ingestion import (
-    IngestionConfig,
     MAHARASHTRA_DISTRICT_COORDINATES,
+    IngestionConfig,
     fetch_open_meteo_weather,
     process_weather_data,
 )

@@ -2,7 +2,9 @@ from __future__ import annotations
 
 import datetime
 from typing import Literal
+
 from pydantic import BaseModel, Field
+
 
 class LifecycleEvent(BaseModel):
     id: str = Field(..., description="Unique event identifier")

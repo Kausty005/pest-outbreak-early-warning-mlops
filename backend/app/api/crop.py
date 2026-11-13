@@ -7,10 +7,10 @@ from fastapi import APIRouter, HTTPException, Request, status
 from ...ml.data_validation import FEATURE_COLUMNS
 from ...ml.prediction_logger import log_prediction_input
 from ..core.metrics import (
-    prediction_requests_total,
+    input_feature_value,
     prediction_errors_total,
     prediction_latency_seconds,
-    input_feature_value,
+    prediction_requests_total,
 )
 from ..schemas.crop import (
     CropRecommendationRequest,

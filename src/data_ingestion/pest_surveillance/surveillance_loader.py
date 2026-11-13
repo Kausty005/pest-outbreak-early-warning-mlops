@@ -15,12 +15,9 @@ import hashlib
 import logging
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
-import numpy as np
 import pandas as pd
-
-from src.data_ingestion.pest_surveillance.surveillance_schema import SurveillanceRecord
 
 LOGGER = logging.getLogger(__name__)
 
@@ -107,7 +104,7 @@ def load_surveillance_file(file_path: str | Path) -> LoadResult:
 
     # 1. Parse tabular data with encoding tolerance
     ext = path.suffix.lower()
-    df: Optional[pd.DataFrame] = None
+    df: pd.DataFrame | None = None
     if ext in {".xlsx", ".xls"}:
         df = pd.read_excel(path)
     elif ext == ".csv":

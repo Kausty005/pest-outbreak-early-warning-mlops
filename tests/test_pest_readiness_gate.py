@@ -12,18 +12,13 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-import pytest
+
 from fastapi.testclient import TestClient
 
 from backend.app.main import app
 from src.pest_risk.production_readiness_gate import (
-    evaluate_production_readiness,
-    MINIMUM_AUTHENTIC_RECORDS,
-    MINIMUM_POSITIVE_LABELS,
-    MINIMUM_NEGATIVE_LABELS,
-    MINIMUM_SEASONS,
-    MINIMUM_DISTRICTS,
     TARGET_ETLS,
+    evaluate_production_readiness,
 )
 
 

@@ -21,34 +21,29 @@ import logging
 import os
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 from uuid import uuid4
 
 from fastapi import APIRouter, File, Header, HTTPException, Query, UploadFile, status
-from pydantic import ValidationError
 
 from backend.app.schemas.pest_surveillance import (
+    SurveillanceDashboardResponse,
     SurveillanceObservationInput,
     SurveillanceObservationResponse,
-    SurveillanceDashboardResponse,
-    SurveillanceUploadResponse,
     SurveillanceReviewRequest,
     SurveillanceReviewResponse,
+    SurveillanceUploadResponse,
+)
+from src.data_ingestion.pest_surveillance.surveillance_pseudonymization import (
+    sanitize_public_surveillance_record,
 )
 from src.data_ingestion.pest_surveillance.surveillance_schema import (
     MAHARASHTRA_BOUNDS,
-    PHYSICAL_BOUNDS,
     VALID_CROP_PEST_COMBINATIONS,
-    VALID_SAMPLING_METHODS,
-    SurveillanceRecord,
     normalize_token,
 )
 from src.data_ingestion.pest_surveillance.surveillance_validation import (
     validate_surveillance_records,
-)
-from src.data_ingestion.pest_surveillance.surveillance_pseudonymization import (
-    sanitize_public_surveillance_record,
-    fuzz_coordinates_deterministic,
 )
 
 LOGGER = logging.getLogger(__name__)
@@ -118,7 +113,7 @@ def _load_audit_log() -> list[dict[str, Any]]:
 def _compute_audit_entry_hash(prev_hash: str, entry_content: dict[str, Any]) -> str:
     """Compute SHA-256 hash chaining this entry to the preceding audit entry."""
     payload = json.dumps({k: v for k, v in entry_content.items() if k != "entry_hash"}, sort_keys=True)
-    chained_data = f"{prev_hash}|{payload}".encode("utf-8")
+    chained_data = f"{prev_hash}|{payload}".encode()
     return hashlib.sha256(chained_data).hexdigest()
 
 
@@ -268,13 +263,13 @@ def verify_audit_log_integrity() -> dict[str, Any]:
 
 @router.get("/records")
 def list_surveillance_records(
-    district: Optional[str] = Query(None, description="Filter by district"),
-    crop: Optional[str] = Query(None, description="Filter by crop"),
-    pest: Optional[str] = Query(None, description="Filter by pest"),
-    verification_status: Optional[str] = Query(None, description="Filter by status"),
+    district: str | None = Query(None, description="Filter by district"),
+    crop: str | None = Query(None, description="Filter by crop"),
+    pest: str | None = Query(None, description="Filter by pest"),
+    verification_status: str | None = Query(None, description="Filter by status"),
     include_drafts: bool = Query(True, description="Include draft records"),
     fuzz_coordinates: bool = Query(True, description="Apply privacy-preserving coordinate fuzzing (1.5-3km)"),
-    x_api_key: Optional[str] = Header(None, alias="X-API-Key"),
+    x_api_key: str | None = Header(None, alias="X-API-Key"),
 ) -> dict[str, Any]:
     """
     Retrieve filtered list of recorded field observations.

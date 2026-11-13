@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import Navbar from './components/Navbar'
 import AuthModal from './components/AuthModal'
-import FarmSetupWizard, { simulateTelemetryForCrop } from './components/FarmSetupWizard'
+import FarmSetupWizard from './components/FarmSetupWizard'
 import FarmDashboard from './components/FarmDashboard'
 import UnifiedInputPanel from './components/UnifiedInputPanel'
 import LifecycleMonitor from './components/LifecycleMonitor'
@@ -9,7 +9,7 @@ import EnvironmentalPestRiskSection from './components/EnvironmentalPestRiskSect
 import PublicPestAdvisoriesSection from './components/PublicPestAdvisoriesSection'
 import FieldSurveillanceSection from './components/FieldSurveillanceSection'
 import MLOpsStatus from './components/MLOpsStatus'
-import { getFarmStorageKeyForUser, ensurePresetFarmsInitialized } from './utils/userFarmStorage'
+import { getFarmStorageKeyForUser, ensurePresetFarmsInitialized, simulateTelemetryForCrop } from './utils/userFarmStorage'
 
 export default function App() {
   const [currentUser, setCurrentUser] = useState(() => {

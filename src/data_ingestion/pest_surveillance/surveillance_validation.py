@@ -8,14 +8,9 @@ from __future__ import annotations
 
 import logging
 from dataclasses import asdict, dataclass, field
-from typing import Any, Optional
-
-import pandas as pd
+from typing import Any
 
 from src.data_ingestion.pest_surveillance.surveillance_schema import (
-    MAHARASHTRA_BOUNDS,
-    PHYSICAL_BOUNDS,
-    VALID_CROP_PEST_COMBINATIONS,
     SurveillanceRecord,
     normalize_token,
 )

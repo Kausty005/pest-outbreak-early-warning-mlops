@@ -17,12 +17,9 @@ Never populate unobserved fields with arbitrary values or zeros.
 """
 from __future__ import annotations
 
-from dataclasses import asdict, dataclass, field
-from datetime import date, datetime
-from typing import Any, Optional
+from datetime import datetime
 
 from pydantic import BaseModel, Field, field_validator, model_validator
-
 
 # Geographic boundaries for Maharashtra State, India
 MAHARASHTRA_BOUNDS = {
@@ -88,7 +85,7 @@ VALID_DATASET_CLASSIFICATIONS = frozenset({
 })
 
 
-def normalize_token(val: Optional[str]) -> str:
+def normalize_token(val: str | None) -> str:
     """Normalize string to lowercase alphanumeric with underscores."""
     if not val:
         return ""
@@ -102,42 +99,42 @@ class SurveillanceRecord(BaseModel):
     # ── 1. Identification ──
     observation_id: str = Field(description="Unique alphanumeric record identifier")
     observation_date: str = Field(description="ISO 8601 date (YYYY-MM-DD)")
-    field_id: Optional[str] = Field(default=None, description="Pseudonymous sentinel field identifier (e.g. MAH-NGP-KAT-001)")
-    farmer_id: Optional[str] = Field(default=None, description="Pseudonymous farmer identifier (e.g. FMR-NGP-9E2A8F)")
-    observer_id: Optional[str] = Field(default=None, description="Pseudonymous field scout identifier (e.g. SCT-NGP-01)")
-    photo_evidence_sha256: Optional[str] = Field(default=None, description="Cryptographic SHA-256 hash of geotagged field photograph")
+    field_id: str | None = Field(default=None, description="Pseudonymous sentinel field identifier (e.g. MAH-NGP-KAT-001)")
+    farmer_id: str | None = Field(default=None, description="Pseudonymous farmer identifier (e.g. FMR-NGP-9E2A8F)")
+    observer_id: str | None = Field(default=None, description="Pseudonymous field scout identifier (e.g. SCT-NGP-01)")
+    photo_evidence_sha256: str | None = Field(default=None, description="Cryptographic SHA-256 hash of geotagged field photograph")
     district: str = Field(description="Administrative district (e.g., Nagpur, Amravati, Yavatmal, Jalgaon)")
-    taluka: Optional[str] = Field(default=None, description="Administrative sub-district / taluka")
-    village: Optional[str] = Field(default=None, description="Village or gram panchayat name")
+    taluka: str | None = Field(default=None, description="Administrative sub-district / taluka")
+    village: str | None = Field(default=None, description="Village or gram panchayat name")
     latitude: float = Field(description="WGS84 latitude coordinate")
     longitude: float = Field(description="WGS84 longitude coordinate")
     crop: str = Field(description="Target crop name (e.g. cotton, soybean, rice, maize)")
-    crop_variety: Optional[str] = Field(default=None, description="Cultivar or hybrid name (e.g. Bt Cotton BG-II)")
+    crop_variety: str | None = Field(default=None, description="Cultivar or hybrid name (e.g. Bt Cotton BG-II)")
     pest_common_name: str = Field(description="Common name of target pest (e.g. Pink Bollworm)")
-    pest_scientific_name: Optional[str] = Field(default=None, description="Binomial scientific nomenclature")
+    pest_scientific_name: str | None = Field(default=None, description="Binomial scientific nomenclature")
 
     # ── 2. Pest Surveillance Measurements ──
-    pest_incidence_pct: Optional[float] = Field(
+    pest_incidence_pct: float | None = Field(
         default=None,
         description="Percentage of plants or organs infested with pest [0.0, 100.0]%"
     )
-    pest_severity_pct: Optional[float] = Field(
+    pest_severity_pct: float | None = Field(
         default=None,
         description="Degree of tissue damage or defoliation severity [0.0, 100.0]%"
     )
-    trap_type: Optional[str] = Field(
+    trap_type: str | None = Field(
         default=None,
         description="Pheromone trap or physical monitoring device type"
     )
-    trap_catch_count: Optional[float] = Field(
+    trap_catch_count: float | None = Field(
         default=None,
         description="Number of adult insects trapped per trap (moths/trap/night or weekly catch)"
     )
-    plants_sampled: Optional[int] = Field(
+    plants_sampled: int | None = Field(
         default=None,
         description="Total number of plants or plant organs inspected in scouting sample"
     )
-    plants_affected: Optional[int] = Field(
+    plants_affected: int | None = Field(
         default=None,
         description="Number of sampled plants showing live pest presence or diagnostic damage"
     )
@@ -151,9 +148,9 @@ class SurveillanceRecord(BaseModel):
     )
 
     # ── 3. Crop Information ──
-    sowing_date: Optional[str] = Field(default=None, description="Field planting/sowing date (YYYY-MM-DD)")
-    crop_growth_stage: Optional[str] = Field(default=None, description="Agronomic growth stage name")
-    days_since_sowing: Optional[int] = Field(default=None, description="Days elapsed since crop sowing")
+    sowing_date: str | None = Field(default=None, description="Field planting/sowing date (YYYY-MM-DD)")
+    crop_growth_stage: str | None = Field(default=None, description="Agronomic growth stage name")
+    days_since_sowing: int | None = Field(default=None, description="Days elapsed since crop sowing")
 
     # ── 4. Provenance & Verification ──
     dataset_classification: str = Field(
@@ -161,8 +158,8 @@ class SurveillanceRecord(BaseModel):
         description="Dataset provenance tier: HISTORICAL_RESEARCH_TRIAL, PROSPECTIVE_SENTINEL_FIELD, PUBLIC_ADVISORY, ENVIRONMENTAL_COVARIATE",
     )
     source_organization: str = Field(description="Originating institution (e.g. CROPSAP-Maharashtra, ICAR-NCIPM)")
-    source_document: Optional[str] = Field(default=None, description="Source file, survey bulletin, or export ref")
-    source_record_id: Optional[str] = Field(default=None, description="Original record ID in source database")
+    source_document: str | None = Field(default=None, description="Source file, survey bulletin, or export ref")
+    source_record_id: str | None = Field(default=None, description="Original record ID in source database")
     collection_method: str = Field(default="field_scouting_visual", description="Visual or mechanical collection")
     verification_status: str = Field(default="UNVERIFIED", description="Data validation audit status")
     data_license: str = Field(default="GOVERNMENT_RESTRICTED", description="Legal licensing terms")
@@ -207,7 +204,7 @@ class SurveillanceRecord(BaseModel):
 
     @field_validator("pest_incidence_pct")
     @classmethod
-    def validate_incidence(cls, v: Optional[float]) -> Optional[float]:
+    def validate_incidence(cls, v: float | None) -> float | None:
         if v is not None:
             if v < PHYSICAL_BOUNDS["incidence_min"] or v > PHYSICAL_BOUNDS["incidence_max"]:
                 raise ValueError(f"pest_incidence_pct must be between 0.0 and 100.0%, got {v}")
@@ -215,7 +212,7 @@ class SurveillanceRecord(BaseModel):
 
     @field_validator("pest_severity_pct")
     @classmethod
-    def validate_severity(cls, v: Optional[float]) -> Optional[float]:
+    def validate_severity(cls, v: float | None) -> float | None:
         if v is not None:
             if v < PHYSICAL_BOUNDS["severity_min"] or v > PHYSICAL_BOUNDS["severity_max"]:
                 raise ValueError(f"pest_severity_pct must be between 0.0 and 100.0%, got {v}")
@@ -223,7 +220,7 @@ class SurveillanceRecord(BaseModel):
 
     @field_validator("trap_catch_count")
     @classmethod
-    def validate_trap_catch(cls, v: Optional[float]) -> Optional[float]:
+    def validate_trap_catch(cls, v: float | None) -> float | None:
         if v is not None:
             if v < 0.0:
                 raise ValueError(f"trap_catch_count cannot be negative, got {v}")

@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+
 import joblib
 import numpy as np
 import pandas as pd
@@ -30,7 +31,6 @@ from src.pest_forecasting.dataset_v2 import (
     load_and_validate_dataset_v2,
     verify_no_leakage_v2,
 )
-from src.pest_forecasting.synthetic_generator_v2 import generate_synthetic_dataset_v2
 from src.pest_risk.production_readiness_gate import evaluate_production_readiness
 
 MODELS_DIR = Path("models/experimental_synthetic_pest_v2")

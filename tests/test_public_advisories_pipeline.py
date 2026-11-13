@@ -18,29 +18,21 @@ Tests:
 """
 from __future__ import annotations
 
-import tempfile
 from pathlib import Path
+
 import pytest
-from pydantic import ValidationError
 
 from src.data_ingestion.public_advisories import (
-    AdvisoryDownloader,
-    AdvisoryNormalizer,
     AdvisoryParser,
     AdvisoryProvenanceRegistry,
     AdvisoryRecord,
-    AdvisorySeverity,
-    AdvisoryValidationReport,
     AdvisoryValidator,
     EvidenceType,
     HumanReviewStatus,
     PublicAdvisoryIngestionPipeline,
-    compute_content_sha256,
     compute_document_sha256,
     list_advisory_sources,
-    get_advisory_source,
 )
-
 
 # ══════════════════════════════════════════════════════════════════════════════
 # 1. SOURCES REGISTRY TESTS
@@ -379,7 +371,9 @@ def test_real_cropsap_faw_marathi_pdf_parsing():
 
 def test_advisory_downloader_domain_security():
     """Verify downloader security: whitelisted domains allowed, unknown domains blocked."""
-    from src.data_ingestion.public_advisories.advisory_downloader import AdvisoryDownloader
+    from src.data_ingestion.public_advisories.advisory_downloader import (
+        AdvisoryDownloader,
+    )
 
     assert AdvisoryDownloader.is_url_allowed("https://cropsap.maharashtra.gov.in/advisories") is True
     assert AdvisoryDownloader.is_url_allowed("https://cicr.org.in/weekly-advisory/") is True

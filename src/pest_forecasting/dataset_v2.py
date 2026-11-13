@@ -6,11 +6,10 @@ for the Version 2.0 experimental synthetic multi-crop pest forecasting pipeline.
 """
 from __future__ import annotations
 
+from collections.abc import Sequence
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Sequence
 
-import numpy as np
 import pandas as pd
 
 TARGET_COLUMN = "outbreak_within_7d"
@@ -64,12 +63,10 @@ ALL_COLUMNS = METADATA_COLUMNS + FULL_FEATURE_COLUMNS + [TARGET_COLUMN]
 
 class DataValidationError(ValueError):
     """Raised when dataset fails schema, range, or causal validation."""
-    pass
 
 
 class DataLeakageError(RuntimeError):
     """Raised when leakage across features or splits is detected."""
-    pass
 
 
 @dataclass
@@ -229,7 +226,6 @@ def chronological_split_with_purging_v2(
     verify_no_leakage_v2(selected_features)
 
     df_sorted = df.sort_values(by="date").reset_index(drop=True)
-    n = len(df_sorted)
 
     # Enforce seasonal chronological boundaries aligned with annual crop cycles
     # Season 1 & early Season 2 (2023-06 to 2024-10) -> Train (61,265 obs)

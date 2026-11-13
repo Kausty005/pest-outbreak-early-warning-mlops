@@ -92,6 +92,7 @@ __all__ = [
     "match_observation_to_environmental_grid",
     "KNOWN_DISTRICT_CENTROIDS",
     "MAX_PERMISSIBLE_MATCH_DISTANCE_KM",
+    "HIGH_CONFIDENCE_GRID_DISTANCE_KM",
     # Temporal
     "calculate_smw",
     "TemporallyAlignedFeatures",

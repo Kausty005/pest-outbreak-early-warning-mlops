@@ -10,7 +10,7 @@ IPM recommendations, and scientific citations.
 """
 from __future__ import annotations
 
-from typing import Any, Optional
+from typing import Any
 
 from src.pest_risk.environmental_scoring import DailyFavorabilityScores
 from src.pest_risk.pest_profiles import PestBiologicalProfile
@@ -30,8 +30,8 @@ def extract_environmental_drivers(
     temp_c: float,
     rh_pct: float,
     rainfall_mm: float,
-    soil_moisture_m3m3: Optional[float],
-    days_since_sowing: Optional[int],
+    soil_moisture_m3m3: float | None,
+    days_since_sowing: int | None,
     profile: PestBiologicalProfile,
 ) -> tuple[list[str], list[str]]:
     """
@@ -128,7 +128,7 @@ def extract_environmental_drivers(
 def generate_ipm_recommendations(
     category: str,
     profile: PestBiologicalProfile,
-    days_since_sowing: Optional[int] = None,
+    days_since_sowing: int | None = None,
 ) -> list[str]:
     """Generate agronomic recommendations aligned with ICAR/NCIPM IPM guidelines."""
     recommendations: list[str] = []
@@ -158,7 +158,7 @@ def generate_ipm_recommendations(
             "Perform immediate intensive field scouting within 24–48 hours across 20–25 random plants across all field boundaries and interiors."
         )
         recommendations.append(
-            f"Check local Economic Threshold Level (ETL): e.g. for Pink Bollworm, 8–10 moths/trap/night for 3 consecutive days or 10% rosette flowers / green boll damage."
+            "Check local Economic Threshold Level (ETL): e.g. for Pink Bollworm, 8–10 moths/trap/night for 3 consecutive days or 10% rosette flowers / green boll damage."
         )
         recommendations.append(
             "If field scouting confirms pest numbers at or above ETL, execute recommended ICAR-approved targeted intervention without delay. Consult local KVK extension specialist."
@@ -172,8 +172,8 @@ def build_explanation_payload(
     temp_c: float,
     rh_pct: float,
     rainfall_mm: float,
-    soil_moisture_m3m3: Optional[float],
-    days_since_sowing: Optional[int],
+    soil_moisture_m3m3: float | None,
+    days_since_sowing: int | None,
     profile: PestBiologicalProfile,
 ) -> dict[str, Any]:
     """

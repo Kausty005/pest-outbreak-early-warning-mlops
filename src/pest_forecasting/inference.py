@@ -9,14 +9,13 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 import joblib
 import pandas as pd
-from pydantic import BaseModel, Field, ValidationError
+from pydantic import BaseModel, Field
 
 from .dataset import (
-    CATEGORICAL_COLUMNS,
     ENVIRONMENTAL_FEATURE_COLUMNS,
     FULL_FEATURE_COLUMNS,
 )
@@ -46,9 +45,9 @@ class ExperimentalPestForecastInput(BaseModel):
     t14_rainfall_mm: float = Field(ge=0.0, description="14-day cumulative rainfall (mm)")
 
     # Optional in-field scouting features (only required for FULL synthetic configuration)
-    current_incidence_pct_t0: Optional[float] = Field(default=None, ge=0.0, le=100.0, description="Observed infested plants (%)")
-    current_severity_pct_t0: Optional[float] = Field(default=None, ge=0.0, le=100.0, description="Observed tissue damage (%)")
-    pest_present_t0: Optional[int] = Field(default=None, ge=0, le=1, description="Binary insect presence indicator (0 or 1)")
+    current_incidence_pct_t0: float | None = Field(default=None, ge=0.0, le=100.0, description="Observed infested plants (%)")
+    current_severity_pct_t0: float | None = Field(default=None, ge=0.0, le=100.0, description="Observed tissue damage (%)")
+    pest_present_t0: int | None = Field(default=None, ge=0, le=1, description="Binary insect presence indicator (0 or 1)")
 
 
 class ExperimentalPestForecastOutput(BaseModel):
@@ -97,6 +96,11 @@ class ExperimentalPestForecaster:
 
         if pipeline_file.exists():
             self.pipeline = joblib.load(pipeline_file)
+            if self.pipeline and hasattr(self.pipeline, "steps"):
+                for _, step in self.pipeline.steps:
+                    if hasattr(step, "__dict__") and not hasattr(step, "multi_class"):
+                        if "LogisticRegression" in type(step).__name__:
+                            step.multi_class = "auto"
 
         summary_file = self.models_dir / "experiment_comparison_summary.json"
         if summary_file.exists():

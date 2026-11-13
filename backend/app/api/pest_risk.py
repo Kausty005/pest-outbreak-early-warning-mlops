@@ -12,7 +12,6 @@ from __future__ import annotations
 
 import logging
 from pathlib import Path
-from typing import Optional
 
 import numpy as np
 import pandas as pd
@@ -30,7 +29,6 @@ from backend.app.schemas.pest_risk import (
 from src.pest_risk import (
     DISCLAIMER_TEXT,
     DailyWeatherRecord,
-    PestBiologicalProfile,
     RiskAssessmentRequest,
     RiskAssessmentResponse,
     assess_pest_risk,
@@ -53,7 +51,7 @@ DATASET_PATH = (
 )
 
 # In-memory dataframe cache
-_CACHED_DF: Optional[pd.DataFrame] = None
+_CACHED_DF: pd.DataFrame | None = None
 
 
 def get_surveillance_dataframe() -> pd.DataFrame:
@@ -236,7 +234,7 @@ def assess_environmental_pest_risk(payload: EnvironmentalAssessmentRequest):
         LOGGER.exception("Error executing assess_pest_risk: %s", exc)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Error evaluating biophysical favorability: {str(exc)}",
+            detail=f"Error evaluating biophysical favorability: {exc!s}",
         )
 
     # 6. Build Summary Structures
@@ -270,7 +268,7 @@ def assess_environmental_pest_risk(payload: EnvironmentalAssessmentRequest):
         data_notices=engine_resp.data_notices,
     )
 
-    forecast_summary: Optional[ForecastSummary] = None
+    forecast_summary: ForecastSummary | None = None
     if engine_resp.forecast_days:
         daily_projections = [
             ForecastDayItem(

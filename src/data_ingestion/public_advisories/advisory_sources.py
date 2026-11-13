@@ -17,7 +17,7 @@ Records:
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass
-from typing import Any, Optional
+from typing import Any
 
 
 @dataclass(frozen=True)
@@ -292,7 +292,7 @@ def list_advisory_sources() -> list[AdvisorySourceInfo]:
     return list(_ADVISORY_SOURCES.values())
 
 
-def get_advisory_source(source_id: str) -> Optional[AdvisorySourceInfo]:
+def get_advisory_source(source_id: str) -> AdvisorySourceInfo | None:
     """Retrieve metadata for a specific advisory source."""
     return _ADVISORY_SOURCES.get(source_id.upper())
 

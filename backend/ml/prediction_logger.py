@@ -30,9 +30,8 @@ def log_prediction_input(
         "_logged_at": datetime.now(timezone.utc).isoformat(),
     }
     try:
-        with _LOCK:
-            with path.open("a", encoding="utf-8") as f:
-                f.write(json.dumps(record) + "\n")
+        with _LOCK, path.open("a", encoding="utf-8") as f:
+            f.write(json.dumps(record) + "\n")
     except Exception as exc:  # noqa: BLE001
         LOGGER.warning("Failed to log prediction input: %s", exc)
 

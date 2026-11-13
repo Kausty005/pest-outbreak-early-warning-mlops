@@ -18,23 +18,20 @@ Usage:
 
 from __future__ import annotations
 
-import json
 from pathlib import Path
-from typing import Any, Union
+from typing import Any
 
 import joblib
 import numpy as np
 import pandas as pd
 
-ROOT = Path(__file__).resolve().parents[2]
-
 from src.models.model import (
-    FertilizerRecommendationModel,
-    TARGETS,
     NUMERIC_FEATURES,
-    CATEGORICAL_FEATURES,
+    FertilizerRecommendationModel,
 )
 from src.utils.logger import get_logger
+
+ROOT = Path(__file__).resolve().parents[2]
 
 log = get_logger(__name__)
 
@@ -73,7 +70,7 @@ class FertilizerPredictor:
     Production prediction engine for AgriAdapt AI fertilizer recommendations.
     """
 
-    def __init__(self, model_path: Union[str, Path] = DEFAULT_MODEL_PATH):
+    def __init__(self, model_path: str | Path = DEFAULT_MODEL_PATH):
         self.model_path = Path(model_path)
         self.model: FertilizerRecommendationModel = self._load_model()
         self.feature_names = self.model.feature_names
@@ -103,7 +100,7 @@ class FertilizerPredictor:
         return "Kharif"
 
     def validate_and_prepare_input(
-        self, input_data: Union[dict[str, Any], list[dict[str, Any]], pd.DataFrame]
+        self, input_data: dict[str, Any] | list[dict[str, Any]] | pd.DataFrame
     ) -> pd.DataFrame:
         """
         Validate input format, check required features, verify data types and physical bounds,
@@ -111,15 +108,12 @@ class FertilizerPredictor:
         """
         if isinstance(input_data, dict):
             df = pd.DataFrame([input_data])
-            is_single = True
         elif isinstance(input_data, list):
             if len(input_data) == 0:
                 raise ValueError("Input list is empty. Provide at least one record.")
             df = pd.DataFrame(input_data)
-            is_single = False
         elif isinstance(input_data, pd.DataFrame):
             df = input_data.copy()
-            is_single = len(df) == 1
         else:
             raise TypeError(
                 f"Unsupported input type '{type(input_data).__name__}'. "
@@ -207,9 +201,9 @@ class FertilizerPredictor:
 
     def predict(
         self,
-        input_data: Union[dict[str, Any], list[dict[str, Any]], pd.DataFrame],
+        input_data: dict[str, Any] | list[dict[str, Any]] | pd.DataFrame,
         return_format: str = "auto",
-    ) -> Union[dict[str, Any], list[dict[str, Any]], pd.DataFrame]:
+    ) -> dict[str, Any] | list[dict[str, Any]] | pd.DataFrame:
         """
         Execute prediction and return recommendations with nutrient names and units.
 
@@ -312,8 +306,8 @@ def get_example_input() -> dict[str, Any]:
 
 
 def predict_fertilizer(
-    input_data: Union[dict[str, Any], list[dict[str, Any]], pd.DataFrame]
-) -> Union[dict[str, Any], list[dict[str, Any]], pd.DataFrame]:
+    input_data: dict[str, Any] | list[dict[str, Any]] | pd.DataFrame
+) -> dict[str, Any] | list[dict[str, Any]] | pd.DataFrame:
     """Convenience top-level prediction function."""
     predictor = FertilizerPredictor()
     return predictor.predict(input_data)

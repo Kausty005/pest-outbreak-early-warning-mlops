@@ -13,10 +13,8 @@ from __future__ import annotations
 
 import logging
 from dataclasses import dataclass
-from datetime import datetime, timedelta
-from typing import Any, Optional
+from datetime import datetime
 
-import numpy as np
 import pandas as pd
 
 from src.data_ingestion.pest_surveillance.surveillance_schema import SurveillanceRecord
@@ -57,8 +55,8 @@ class TemporallyAlignedFeatures:
     t7_mean_rh_pct: float
     t7_high_rh_days: int
     rainfall_7d_mm: float
-    rainfall_14d_mm: Optional[float]
-    soil_moisture_era5_m3m3: Optional[float]
+    rainfall_14d_mm: float | None
+    soil_moisture_era5_m3m3: float | None
     gdd_accumulated_7d: float
     temporal_coverage_complete: bool
     data_notices: list[str]
@@ -121,7 +119,7 @@ def extract_antecedent_environmental_features(
     rain_14d = float(antecedent_14["rainfall_mm"].sum()) if len(antecedent_14) >= 10 else None
 
     # Soil moisture from ERA5-Land
-    sm_val: Optional[float] = None
+    sm_val: float | None = None
     if "soil_moisture_era5_m3m3" in antecedent.columns:
         valid_sm = antecedent["soil_moisture_era5_m3m3"].dropna()
         if not valid_sm.empty:

@@ -4,7 +4,7 @@ from fastapi.testclient import TestClient
 
 from backend.app.core.config import Settings
 from backend.app.main import create_app
-from backend.ml.irrigation import assess_irrigation_need, CROP_MOISTURE_PROFILES
+from backend.ml.irrigation import assess_irrigation_need
 
 
 def test_irrigation_rules_optimal_and_deficit():

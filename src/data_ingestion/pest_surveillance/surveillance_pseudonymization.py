@@ -22,7 +22,7 @@ import logging
 import math
 import os
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 LOGGER = logging.getLogger(__name__)
 
@@ -51,7 +51,7 @@ def generate_pseudonymous_farmer_id(
     legal_name: str,
     survey_number: str,
     district_code: str,
-    secret_key: Optional[str] = None,
+    secret_key: str | None = None,
 ) -> str:
     """
     Generate a cryptographically keyed HMAC-SHA-256 pseudonymous farmer ID.
@@ -63,7 +63,7 @@ def generate_pseudonymous_farmer_id(
     Format: FMR-{DIST}-{12_HEX_HMAC}
     """
     key = (secret_key or get_pseudonymization_secret()).encode("utf-8")
-    raw_payload = f"{legal_name.strip().lower()}|{survey_number.strip().lower()}|{district_code.strip().upper()}".encode("utf-8")
+    raw_payload = f"{legal_name.strip().lower()}|{survey_number.strip().lower()}|{district_code.strip().upper()}".encode()
     mac = hmac.new(key, raw_payload, hashlib.sha256).hexdigest()
     truncated_hash = mac[:12].upper()
     dist = district_code.strip().upper()[:3]
@@ -89,7 +89,7 @@ def fuzz_coordinates_deterministic(
     latitude: float,
     longitude: float,
     field_id: str,
-    secret_key: Optional[str] = None,
+    secret_key: str | None = None,
 ) -> tuple[float, float]:
     """
     Apply a deterministic, keyed spatial displacement of 1.5 to 3.0 km.
@@ -105,7 +105,7 @@ def fuzz_coordinates_deterministic(
         (fuzzed_latitude, fuzzed_longitude) rounded to 4 decimal places (~11 m precision).
     """
     key = (secret_key or get_pseudonymization_secret()).encode("utf-8")
-    payload = f"COORD_FUZZ|{field_id.strip()}|{latitude:.6f}|{longitude:.6f}".encode("utf-8")
+    payload = f"COORD_FUZZ|{field_id.strip()}|{latitude:.6f}|{longitude:.6f}".encode()
     mac = hmac.new(key, payload, hashlib.sha256).hexdigest()
 
     # Extract 32-bit integers from HMAC hex slices for angle and distance
@@ -146,7 +146,7 @@ class IdentityVault:
         self._mappings: dict[str, dict[str, Any]] = {}
         self._load()
 
-    def _verify_auth(self, token: Optional[str]) -> None:
+    def _verify_auth(self, token: str | None) -> None:
         if not token or not hmac.compare_digest(token, self._admin_token):
             raise PermissionError("Unauthorized access to identity mapping vault.")
 
@@ -205,7 +205,7 @@ class IdentityVault:
         self._save()
         return resolved_id
 
-    def lookup_identity(self, farmer_id: str, token: str) -> Optional[dict[str, Any]]:
+    def lookup_identity(self, farmer_id: str, token: str) -> dict[str, Any] | None:
         """Restricted lookup of real identity; requires admin token."""
         self._verify_auth(token)
         return self._mappings.get(farmer_id)
@@ -213,7 +213,7 @@ class IdentityVault:
 
 def sanitize_public_surveillance_record(
     record: dict[str, Any],
-    secret_key: Optional[str] = None,
+    secret_key: str | None = None,
 ) -> dict[str, Any]:
     """
     Sanitize a surveillance record for public export or unauthenticated API display.

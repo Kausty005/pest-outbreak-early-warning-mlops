@@ -5,7 +5,6 @@ Test suite for Public Pest Advisory & Intelligence FastAPI endpoints.
 """
 from __future__ import annotations
 
-import pytest
 from fastapi.testclient import TestClient
 
 from backend.app.main import app

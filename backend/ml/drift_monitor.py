@@ -92,10 +92,9 @@ def run_drift_detection(
         "alert": False,
     }
 
-    use_evidently = True
     try:
-        from evidently.report import Report
         from evidently.metric_preset import DataDriftPreset
+        from evidently.report import Report
 
         report = Report(metrics=[DataDriftPreset()])
         report.run(reference_data=ref, current_data=cur)
@@ -120,7 +119,6 @@ def run_drift_detection(
 
     except Exception as exc:  # noqa: BLE001
         LOGGER.warning("Evidently unavailable (%s) — using scipy Kolmogorov-Smirnov 2-sample drift engine", exc)
-        use_evidently = False
         from scipy import stats
 
         drifted_count = 0

@@ -23,7 +23,7 @@ from __future__ import annotations
 import json
 from dataclasses import asdict, dataclass
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 PROD_SURVEILLANCE_FILE = Path("data/processed/pest_surveillance/field_surveillance_records.json")
 HISTORICAL_QUARANTINE_FILE = Path("data/raw/pest_surveillance/historical_transcriptions/reconciled_transcription.csv")
@@ -52,7 +52,7 @@ class ReadinessCriterion:
     target_requirement: str
     actual_state: Any
     is_satisfied: bool
-    blocking_reason: Optional[str] = None
+    blocking_reason: str | None = None
 
 
 @dataclass
@@ -71,7 +71,7 @@ class ProductionReadinessReport:
 
 def evaluate_production_readiness(
     surveillance_path: Path = PROD_SURVEILLANCE_FILE,
-    etl_status_map: Optional[dict[str, str]] = None,
+    etl_status_map: dict[str, str] | None = None,
 ) -> ProductionReadinessReport:
     """
     Evaluate the 11 scientific readiness criteria against real project storage.

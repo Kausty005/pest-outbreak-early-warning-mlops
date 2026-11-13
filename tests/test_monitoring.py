@@ -8,14 +8,14 @@ from fastapi.testclient import TestClient
 from backend.app.core.config import Settings
 from backend.app.main import create_app
 from backend.ml.drift_monitor import (
-    load_reference_data,
-    load_prediction_log,
-    run_drift_detection,
-    get_latest_drift_summary,
     get_drift_history,
+    get_latest_drift_summary,
+    load_prediction_log,
+    load_reference_data,
+    run_drift_detection,
 )
-from backend.ml.prediction_logger import log_prediction_input, count_logged_predictions
-from backend.ml.retrain_trigger import should_retrain, get_retrain_history
+from backend.ml.prediction_logger import count_logged_predictions, log_prediction_input
+from backend.ml.retrain_trigger import should_retrain
 
 
 def test_prediction_logger_roundtrip(tmp_path):
@@ -34,7 +34,7 @@ def test_prediction_logger_roundtrip(tmp_path):
 def test_drift_detection_and_summary(tmp_path):
     ref_df = load_reference_data("data/raw/Crop_recommendation.csv")
     cur_df = load_prediction_log("non_existent_file.jsonl")  # loads synthetic drift sample
-    
+
     report_dir = tmp_path / "drift"
     summary = run_drift_detection(ref_df, cur_df, report_dir=report_dir, run_id="test_run_1")
 

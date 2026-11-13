@@ -15,7 +15,6 @@ Tests:
 """
 from __future__ import annotations
 
-import io
 import json
 import urllib.error
 from unittest.mock import MagicMock, patch
@@ -27,7 +26,6 @@ from src.pest_risk import (
     DailyWeatherRecord,
     PestBiologicalProfile,
     RiskAssessmentRequest,
-    RiskAssessmentResponse,
     assess_pest_risk,
     categorize_favorability_risk,
     compute_daily_favorability,
@@ -42,7 +40,6 @@ from src.pest_risk import (
     list_supported_crops,
     list_supported_pests_for_crop,
 )
-
 
 # ══════════════════════════════════════════════════════════════════════════════
 # 1. BIOLOGICAL PROFILES & SCIENTIFIC REGISTRY TESTS

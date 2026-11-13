@@ -6,7 +6,7 @@ from datetime import datetime, timezone
 from typing import Any
 from uuid import uuid4
 
-from ...ml.fertilizer import FertilizerPredictor, get_example_input, VALID_CROPS
+from ...ml.fertilizer import VALID_CROPS, FertilizerPredictor, get_example_input
 from ..core.config import Settings
 from .model_service import ModelUnavailableError
 

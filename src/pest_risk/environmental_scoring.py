@@ -14,7 +14,6 @@ from __future__ import annotations
 
 import logging
 from dataclasses import dataclass
-from typing import Optional
 
 from src.pest_risk.pest_profiles import (
     EdaphicProfile,
@@ -34,7 +33,7 @@ class DailyFavorabilityScores:
     temperature_score: float
     humidity_score: float
     rainfall_score: float
-    soil_moisture_score: Optional[float]
+    soil_moisture_score: float | None
     phenology_score: float
     composite_index: float
     risk_category: str  # "LOW", "MODERATE", "HIGH"
@@ -140,9 +139,9 @@ def compute_precipitation_favorability(rainfall_mm: float, profile: Precipitatio
 
 
 def compute_soil_moisture_favorability(
-    soil_moisture_m3m3: Optional[float],
+    soil_moisture_m3m3: float | None,
     profile: EdaphicProfile,
-) -> Optional[float]:
+) -> float | None:
     """
     Compute topsoil (0-7 cm) moisture favorability score S_SM in [0.0, 1.0].
 
@@ -186,7 +185,7 @@ def compute_soil_moisture_favorability(
 
 
 def compute_phenological_susceptibility(
-    days_since_sowing: Optional[int],
+    days_since_sowing: int | None,
     profile: PhenologyProfile,
 ) -> float:
     """
@@ -245,8 +244,8 @@ def compute_daily_favorability(
     temp_c: float,
     rh_pct: float,
     rainfall_mm: float,
-    soil_moisture_m3m3: Optional[float],
-    days_since_sowing: Optional[int],
+    soil_moisture_m3m3: float | None,
+    days_since_sowing: int | None,
     pest_profile: PestBiologicalProfile,
 ) -> DailyFavorabilityScores:
     """

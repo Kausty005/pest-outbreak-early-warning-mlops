@@ -16,13 +16,11 @@ from __future__ import annotations
 import logging
 import re
 from dataclasses import dataclass, field
-from datetime import datetime
 from pathlib import Path
-from typing import Any, Optional
 from uuid import uuid4
 
-from bs4 import BeautifulSoup
 import pypdf
+from bs4 import BeautifulSoup
 
 from src.data_ingestion.public_advisories.advisory_normalization import (
     AdvisoryNormalizer,
@@ -61,9 +59,9 @@ class AdvisoryParser:
         file_path: Path | str,
         source_id: str,
         issuing_organization: str,
-        issuing_office: Optional[str] = None,
-        source_url: Optional[str] = None,
-        default_publication_date: Optional[str] = None,
+        issuing_office: str | None = None,
+        source_url: str | None = None,
+        default_publication_date: str | None = None,
     ) -> ParsedAdvisoryDocument:
         """Parse an advisory document by detecting its format from extension and content."""
         path = Path(file_path)
@@ -100,7 +98,7 @@ class AdvisoryParser:
                 issuing_office=issuing_office,
                 source_document=path.name,
                 source_url=source_url,
-                advisory_text=f"[EXTRACTION_FAILED] Parser encountered error: {str(e)}",
+                advisory_text=f"[EXTRACTION_FAILED] Parser encountered error: {e!s}",
                 document_sha256=sha256_hash,
                 extraction_method="fallback_error_handler",
                 extraction_confidence=0.0,
@@ -124,9 +122,9 @@ class AdvisoryParser:
         sha256_hash: str,
         source_id: str,
         issuing_organization: str,
-        issuing_office: Optional[str],
-        source_url: Optional[str],
-        default_publication_date: Optional[str],
+        issuing_office: str | None,
+        source_url: str | None,
+        default_publication_date: str | None,
     ) -> ParsedAdvisoryDocument:
         """Extract text page by page from a PDF bulletin using pypdf."""
         reader = pypdf.PdfReader(str(path))
@@ -196,9 +194,9 @@ class AdvisoryParser:
         sha256_hash: str,
         source_id: str,
         issuing_organization: str,
-        issuing_office: Optional[str],
-        source_url: Optional[str],
-        default_publication_date: Optional[str],
+        issuing_office: str | None,
+        source_url: str | None,
+        default_publication_date: str | None,
     ) -> ParsedAdvisoryDocument:
         """Parse advisory content from HTML document."""
         with open(path, "r", encoding="utf-8", errors="replace") as f:
@@ -241,9 +239,9 @@ class AdvisoryParser:
         sha256_hash: str,
         source_id: str,
         issuing_organization: str,
-        issuing_office: Optional[str],
-        source_url: Optional[str],
-        default_publication_date: Optional[str],
+        issuing_office: str | None,
+        source_url: str | None,
+        default_publication_date: str | None,
     ) -> ParsedAdvisoryDocument:
         """Parse raw or bulletin text file."""
         with open(path, "r", encoding="utf-8", errors="replace") as f:
@@ -282,12 +280,12 @@ class AdvisoryParser:
         raw_text: str,
         source_id: str,
         issuing_organization: str,
-        issuing_office: Optional[str],
+        issuing_office: str | None,
         source_document: str,
-        source_url: Optional[str],
+        source_url: str | None,
         document_sha256: str,
         page_number: int,
-        pub_date: Optional[str],
+        pub_date: str | None,
         extraction_method: str,
     ) -> list[AdvisoryRecord]:
         """
@@ -428,7 +426,7 @@ class AdvisoryParser:
         return EvidenceType.UNKNOWN_EVIDENCE_TYPE
 
     @classmethod
-    def extract_evidence_justification_quote(cls, text: str, evidence_type: EvidenceType) -> Optional[str]:
+    def extract_evidence_justification_quote(cls, text: str, evidence_type: EvidenceType) -> str | None:
         """Extract the exact sentence from advisory text justifying the assigned evidence classification."""
         sentences = re.split(r"[.।\n]", text)
         for s in sentences:
@@ -465,7 +463,7 @@ class AdvisoryParser:
         return AdvisorySeverity.INFORMATIONAL
 
     @classmethod
-    def extract_recommendations(cls, text: str) -> tuple[Optional[str], Optional[str], Optional[str]]:
+    def extract_recommendations(cls, text: str) -> tuple[str | None, str | None, str | None]:
         """Extract scouting, management, and preventive recommendations from text."""
         scouting = []
         mgmt = []
@@ -494,7 +492,7 @@ class AdvisoryParser:
         return scout_str, mgmt_str, prev_str
 
     @classmethod
-    def _extract_pest_status_snippet(cls, text: str) -> Optional[str]:
+    def _extract_pest_status_snippet(cls, text: str) -> str | None:
         """Extract a short sentence describing the pest status."""
         for s in re.split(r"[.।\n]", text):
             s_clean = s.strip()
@@ -504,7 +502,7 @@ class AdvisoryParser:
         return None
 
     @classmethod
-    def extract_date_from_text(cls, text: str) -> Optional[str]:
+    def extract_date_from_text(cls, text: str) -> str | None:
         """
         Extract publication date from text using regex across English and Devanagari formats.
         Supports:
@@ -557,7 +555,7 @@ class AdvisoryParser:
         return None
 
     @classmethod
-    def _extract_date_from_pypdf_metadata(cls, reader: pypdf.PdfReader) -> Optional[str]:
+    def _extract_date_from_pypdf_metadata(cls, reader: pypdf.PdfReader) -> str | None:
         """Extract creation or modification date from PDF metadata."""
         if not reader.metadata:
             return None

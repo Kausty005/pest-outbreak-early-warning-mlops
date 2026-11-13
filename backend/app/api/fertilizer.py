@@ -5,15 +5,15 @@ import time
 from fastapi import APIRouter, HTTPException, Request, status
 
 from ..core.metrics import (
-    prediction_requests_total,
+    input_feature_value,
     prediction_errors_total,
     prediction_latency_seconds,
-    input_feature_value,
+    prediction_requests_total,
 )
 from ..schemas.fertilizer import (
+    FertilizerModelInfoResponse,
     FertilizerRecommendationRequest,
     FertilizerRecommendationResponse,
-    FertilizerModelInfoResponse,
 )
 from ..services.model_service import ModelUnavailableError
 from ..services.prediction_persistence import persist_fertilizer_prediction

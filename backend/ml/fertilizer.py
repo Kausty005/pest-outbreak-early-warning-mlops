@@ -15,32 +15,32 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from src.models.model import (
-    FertilizerRecommendationModel,
-    TARGETS,
-    NUMERIC_FEATURES,
+from src.models.model import (  # noqa: E402
     CATEGORICAL_FEATURES,
+    NUMERIC_FEATURES,
+    TARGETS,
+    FertilizerRecommendationModel,
 )
-from src.models.predict import (
-    FertilizerPredictor,
-    predict_fertilizer,
-    get_example_input,
-    VALID_CROPS,
-    REQUIRED_FEATURES,
+from src.models.predict import (  # noqa: E402
     DEFAULT_MODEL_PATH,
+    REQUIRED_FEATURES,
     SCHEMA_PATH,
+    VALID_CROPS,
+    FertilizerPredictor,
+    get_example_input,
+    predict_fertilizer,
 )
 
 __all__ = [
-    "FertilizerRecommendationModel",
-    "FertilizerPredictor",
-    "predict_fertilizer",
-    "get_example_input",
-    "VALID_CROPS",
-    "REQUIRED_FEATURES",
-    "NUMERIC_FEATURES",
     "CATEGORICAL_FEATURES",
-    "TARGETS",
     "DEFAULT_MODEL_PATH",
+    "NUMERIC_FEATURES",
+    "REQUIRED_FEATURES",
     "SCHEMA_PATH",
+    "TARGETS",
+    "VALID_CROPS",
+    "FertilizerPredictor",
+    "FertilizerRecommendationModel",
+    "get_example_input",
+    "predict_fertilizer",
 ]

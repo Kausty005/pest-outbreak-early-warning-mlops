@@ -81,7 +81,7 @@ def run_retraining(
     if use_mlflow:
         cmd += ["--mlflow", "--register-mlflow"]
 
-    result = subprocess.run(cmd, capture_output=True, text=True)  # noqa: S603
+    result = subprocess.run(cmd, capture_output=True, text=True)
     if result.returncode != 0:
         LOGGER.error("Retraining failed:\n%s", result.stderr)
         return None
@@ -100,7 +100,7 @@ def maybe_promote(new_metadata: dict[str, Any], artifacts_dir: str | Path = ARTI
     Promote the new model if it improves on the current champion.
     Returns True if promoted.
     """
-    from backend.ml.model_registry import promote_candidate, PromotionError
+    from backend.ml.model_registry import PromotionError, promote_candidate
 
     try:
         promote_candidate(

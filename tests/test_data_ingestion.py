@@ -1,26 +1,17 @@
 """Unit tests for the real-world data ingestion and alignment pipeline."""
 from __future__ import annotations
 
-import json
-from pathlib import Path
-
-import numpy as np
 import pandas as pd
 import pytest
 
 from src.data_ingestion.data_validation import (
-    PHYSICAL_BOUNDS,
     validate_environmental_dataframe,
 )
 from src.data_ingestion.pest_surveillance_ingestion import (
     check_surveillance_data_availability,
     create_surveillance_template,
-    load_pest_surveillance_data,
 )
-from src.data_ingestion.soil_moisture_ingestion import extract_soil_moisture_series
 from src.data_ingestion.weather_ingestion import (
-    IngestionConfig,
-    fetch_open_meteo_weather,
     process_weather_data,
 )
 

@@ -17,13 +17,11 @@ from __future__ import annotations
 
 import json
 import logging
-from dataclasses import asdict
 from pathlib import Path
-from typing import Optional
 
 from src.data_ingestion.public_advisories.advisory_discovery import (
-    AdvisoryDiscoveryService,
     DEFAULT_RAW_ADVISORIES_DIR,
+    AdvisoryDiscoveryService,
 )
 from src.data_ingestion.public_advisories.advisory_parser import (
     AdvisoryParser,
@@ -37,7 +35,6 @@ from src.data_ingestion.public_advisories.advisory_schema import (
 )
 from src.data_ingestion.public_advisories.advisory_sources import (
     get_advisory_source,
-    list_advisory_sources,
 )
 from src.data_ingestion.public_advisories.advisory_validation import (
     AdvisoryValidationReport,

@@ -11,8 +11,8 @@ Test suite for the Field Pest Surveillance API endpoints:
 from __future__ import annotations
 
 import io
-import json
 from pathlib import Path
+
 import pytest
 from fastapi.testclient import TestClient
 

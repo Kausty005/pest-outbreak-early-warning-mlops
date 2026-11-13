@@ -86,12 +86,15 @@ class CropFeatureBuilder(BaseEstimator, TransformerMixin):
             return frame
 
         n, p, k = (frame[column].to_numpy(dtype=float) for column in ("N", "P", "K"))
-        safe_divide = lambda numerator, denominator: np.divide(
-            numerator,
-            denominator,
-            out=np.full(numerator.shape, self.zero_denominator_value, dtype=float),
-            where=denominator != 0,
-        )
+
+        def safe_divide(numerator, denominator):
+            return np.divide(
+                numerator,
+                denominator,
+                out=np.full(numerator.shape, self.zero_denominator_value, dtype=float),
+                where=denominator != 0,
+            )
+
         frame["npk_total"] = n + p + k
         frame["nitrogen_phosphorus_ratio"] = safe_divide(n, p)
         frame["nitrogen_potassium_ratio"] = safe_divide(n, k)

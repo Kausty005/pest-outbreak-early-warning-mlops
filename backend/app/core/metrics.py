@@ -1,5 +1,5 @@
 """Prometheus metrics definitions for AgriAdapt MLOps platform."""
-from prometheus_client import Counter, Histogram, Gauge, Info
+from prometheus_client import Counter, Gauge, Histogram, Info
 
 # Counters
 prediction_requests_total = Counter(

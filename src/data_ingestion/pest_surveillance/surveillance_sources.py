@@ -12,8 +12,8 @@ Documents:
 """
 from __future__ import annotations
 
-from dataclasses import asdict, dataclass, field
-from typing import Any, Optional
+from dataclasses import asdict, dataclass
+from typing import Any
 
 
 @dataclass(frozen=True)
@@ -227,7 +227,7 @@ def list_authoritative_sources() -> list[SurveillanceSourceInfo]:
     return list(_ALL_SOURCES.values())
 
 
-def get_source_info(source_id: str) -> Optional[SurveillanceSourceInfo]:
+def get_source_info(source_id: str) -> SurveillanceSourceInfo | None:
     """Retrieve metadata for a specific surveillance source."""
     return _ALL_SOURCES.get(source_id.upper())
 

@@ -7,9 +7,7 @@ from uuid import uuid4
 from fastapi import APIRouter, HTTPException, Request, status
 from pydantic import BaseModel, Field
 
-from ..schemas.crop import CropRecommendationRequest
-from ..schemas.fertilizer import normalize_crop_name, VALID_CROPS
-from ..services.model_service import ModelUnavailableError
+from ..schemas.fertilizer import VALID_CROPS, normalize_crop_name
 
 router = APIRouter(prefix="/advisory", tags=["unified agricultural advisory"])
 

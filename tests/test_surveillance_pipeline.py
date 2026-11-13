@@ -13,7 +13,6 @@ Phase 7 additions:
 """
 from __future__ import annotations
 
-import tempfile
 from pathlib import Path
 
 import pandas as pd
@@ -22,25 +21,20 @@ from pydantic import ValidationError
 
 from src.data_ingestion.pest_surveillance import (
     HIGH_CONFIDENCE_GRID_DISTANCE_KM,
-    KNOWN_DISTRICT_CENTROIDS,
-    MAX_PERMISSIBLE_MATCH_DISTANCE_KM,
-    EconomicThreshold,
-    GeospatialMatch,
     LoadResult,
     OutbreakLabelResult,
     SurveillanceRecord,
     calculate_smw,
-    compute_file_sha256,
     compute_forward_outbreak_label,
     extract_antecedent_environmental_features,
-    get_economic_threshold,
-    haversine_distance_km,
     list_authoritative_sources,
     load_surveillance_file,
     match_observation_to_environmental_grid,
     validate_surveillance_records,
 )
-from src.data_ingestion.pest_surveillance.surveillance_labeling import OFFICIAL_ETL_REGISTRY
+from src.data_ingestion.pest_surveillance.surveillance_labeling import (
+    OFFICIAL_ETL_REGISTRY,
+)
 
 DATASET_PATH = (
     Path(__file__).resolve().parents[1]
@@ -466,7 +460,6 @@ def test_etl_verification_status_field_exists_on_all_registered_etls():
     with primary institutional citations.
     """
     from src.data_ingestion.pest_surveillance.surveillance_labeling import (
-        OFFICIAL_ETL_REGISTRY,
         VALID_ETL_VERIFICATION_STATUSES,
     )
 
@@ -553,7 +546,6 @@ def test_unverified_etl_blocks_labeling():
     """
     from src.data_ingestion.pest_surveillance.surveillance_labeling import (
         EconomicThreshold,
-        OFFICIAL_ETL_REGISTRY,
         compute_forward_outbreak_label,
     )
 

@@ -17,18 +17,19 @@ import io
 import json
 import math
 from pathlib import Path
+
 import pytest
 from fastapi.testclient import TestClient
 
 from backend.app.main import app
 from src.data_ingestion.pest_surveillance.surveillance_pseudonymization import (
+    MAX_DISPLACEMENT_KM,
+    MIN_DISPLACEMENT_KM,
     IdentityVault,
     fuzz_coordinates_deterministic,
     generate_pseudonymous_farmer_id,
     generate_pseudonymous_field_id,
     sanitize_public_surveillance_record,
-    MIN_DISPLACEMENT_KM,
-    MAX_DISPLACEMENT_KM,
 )
 
 

@@ -16,7 +16,7 @@ import logging
 from collections import Counter
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
-from typing import Any, Optional
+from typing import Any
 
 from src.data_ingestion.public_advisories.advisory_normalization import (
     CROP_LEXICON,
@@ -152,7 +152,7 @@ class AdvisoryValidator:
         record: AdvisoryRecord,
         reviewer_id: str,
         action: str,  # "APPROVE", "REJECT", "CORRECT_FIELDS", "FLAG_FOR_SURVEILLANCE"
-        field_updates: Optional[dict[str, Any]] = None,
+        field_updates: dict[str, Any] | None = None,
         justification: str = "Routine reviewer evaluation",
     ) -> tuple[AdvisoryRecord, HumanReviewAuditEntry]:
         """

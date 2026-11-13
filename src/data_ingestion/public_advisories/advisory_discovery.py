@@ -12,10 +12,9 @@ from __future__ import annotations
 import logging
 from dataclasses import asdict, dataclass
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 from src.data_ingestion.public_advisories.advisory_sources import (
-    AdvisorySourceInfo,
     list_advisory_sources,
 )
 
@@ -39,7 +38,7 @@ class DiscoveredAdvisoryItem:
     format: str  # "PDF", "HTML", "TXT"
     target_crops: list[str]
     target_districts: list[str]
-    estimated_date: Optional[str]
+    estimated_date: str | None
     url_or_path: str
     is_local: bool
 

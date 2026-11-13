@@ -6,7 +6,8 @@ Fitted strictly on training data partitions, avoiding any test leakage.
 """
 from __future__ import annotations
 
-from typing import Sequence
+from collections.abc import Sequence
+
 from sklearn.compose import ColumnTransformer
 from sklearn.impute import SimpleImputer
 from sklearn.pipeline import Pipeline
@@ -15,8 +16,8 @@ from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from .dataset import (
     CATEGORICAL_COLUMNS,
     ENVIRONMENTAL_NUMERICAL_CONTINUOUS,
-    SCOUTING_NUMERICAL_CONTINUOUS,
     ENVIRONMENTAL_NUMERICAL_DISCRETE,
+    SCOUTING_NUMERICAL_CONTINUOUS,
     SCOUTING_NUMERICAL_DISCRETE,
 )
 

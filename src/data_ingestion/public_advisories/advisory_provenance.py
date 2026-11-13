@@ -18,7 +18,7 @@ import logging
 from dataclasses import asdict, dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 LOGGER = logging.getLogger(__name__)
 
@@ -61,11 +61,11 @@ class DocumentProvenanceEntry:
     sha256: str
     file_size_bytes: int
     ingestion_timestamp: str
-    publication_date: Optional[str] = None
-    title: Optional[str] = None
+    publication_date: str | None = None
+    title: str | None = None
     status: str = "INGESTED"  # "INGESTED", "PROCESSED", "EXTRACTION_FAILED", "DUPLICATE"
     extracted_records_count: int = 0
-    notes: Optional[str] = None
+    notes: str | None = None
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
@@ -111,9 +111,9 @@ class AdvisoryProvenanceRegistry:
     def find_duplicate_by_metadata(
         self,
         source_id: str,
-        publication_date: Optional[str],
-        title: Optional[str],
-    ) -> Optional[DocumentProvenanceEntry]:
+        publication_date: str | None,
+        title: str | None,
+    ) -> DocumentProvenanceEntry | None:
         """Check if a bulletin with the same source, date, and title exists."""
         if not publication_date or not title:
             return None
@@ -132,9 +132,9 @@ class AdvisoryProvenanceRegistry:
         self,
         source_id: str,
         file_path: Path | str,
-        publication_date: Optional[str] = None,
-        title: Optional[str] = None,
-        notes: Optional[str] = None,
+        publication_date: str | None = None,
+        title: str | None = None,
+        notes: str | None = None,
     ) -> tuple[DocumentProvenanceEntry, bool]:
         """
         Register a newly ingested advisory file.

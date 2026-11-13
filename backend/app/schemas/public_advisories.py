@@ -10,7 +10,8 @@ or outbreak labels. They must NEVER be presented as calibrated outbreak probabil
 """
 from __future__ import annotations
 
-from typing import Any, Optional
+from typing import Any
+
 from pydantic import BaseModel, Field
 
 ADVISORY_DISCLAIMER_TEXT = (
@@ -24,44 +25,44 @@ ADVISORY_DISCLAIMER_TEXT = (
 class PublicAdvisoryItem(BaseModel):
     """Schema representing an individual public pest advisory entry."""
     advisory_id: str
-    publication_date: Optional[str] = None
-    observation_period_start: Optional[str] = None
-    observation_period_end: Optional[str] = None
+    publication_date: str | None = None
+    observation_period_start: str | None = None
+    observation_period_end: str | None = None
     issuing_organization: str
-    issuing_office: Optional[str] = None
+    issuing_office: str | None = None
     source_document: str
-    source_url: Optional[str] = None
+    source_url: str | None = None
 
-    crop: Optional[str] = None
-    pest_common_name: Optional[str] = None
-    pest_scientific_name: Optional[str] = None
-    district: Optional[str] = None
-    taluka: Optional[str] = None
-    village: Optional[str] = None
-    reported_pest_status: Optional[str] = None
+    crop: str | None = None
+    pest_common_name: str | None = None
+    pest_scientific_name: str | None = None
+    district: str | None = None
+    taluka: str | None = None
+    village: str | None = None
+    reported_pest_status: str | None = None
     advisory_severity: str
     evidence_type: str
-    evidence_justification_quote: Optional[str] = None
-    source_section: Optional[str] = None
+    evidence_justification_quote: str | None = None
+    source_section: str | None = None
 
-    recommended_scouting_actions: Optional[str] = None
-    recommended_management_actions: Optional[str] = None
-    recommended_preventive_actions: Optional[str] = None
+    recommended_scouting_actions: str | None = None
+    recommended_management_actions: str | None = None
+    recommended_preventive_actions: str | None = None
     advisory_text: str
 
     original_language: str
-    translated_text: Optional[str] = None
-    translation_method: Optional[str] = None
+    translated_text: str | None = None
+    translation_method: str | None = None
 
     document_sha256: str
-    page_number: Optional[int] = None
+    page_number: int | None = None
     extraction_method: str
     extraction_confidence: float
     extraction_flags: list[str] = []
     human_review_status: str
-    human_reviewer_notes: Optional[str] = None
-    reviewed_at: Optional[str] = None
-    reviewed_by: Optional[str] = None
+    human_reviewer_notes: str | None = None
+    reviewed_at: str | None = None
+    reviewed_by: str | None = None
 
 
 class PublicAdvisoriesListResponse(BaseModel):
@@ -76,7 +77,7 @@ class HumanReviewRequest(BaseModel):
     """Request payload for submitting a human review decision."""
     reviewer_id: str = Field(min_length=2, description="Identifier of the reviewer")
     action: str = Field(description="'APPROVE', 'REJECT', 'CORRECT_FIELDS', or 'FLAG_FOR_SURVEILLANCE'")
-    field_updates: Optional[dict[str, Any]] = Field(default=None, description="Optional field corrections")
+    field_updates: dict[str, Any] | None = Field(default=None, description="Optional field corrections")
     justification: str = Field(min_length=5, description="Entomological or procedural justification")
 
 

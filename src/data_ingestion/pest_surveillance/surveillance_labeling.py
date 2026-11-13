@@ -36,9 +36,6 @@ from __future__ import annotations
 import logging
 from dataclasses import dataclass
 from datetime import datetime, timedelta
-from typing import Any, Optional
-
-import pandas as pd
 
 from src.data_ingestion.pest_surveillance.surveillance_schema import (
     SurveillanceRecord,
@@ -80,16 +77,16 @@ class EconomicThreshold:
     crop: str
     pest_id: str
     incidence_etl_pct: float
-    trap_catch_etl_moths: Optional[float]
+    trap_catch_etl_moths: float | None
     threshold_description: str
     source_authority: str
     verification_status: str = "PRIMARY_SOURCE_RETRIEVED"
-    stage_specific_incidence_etls: Optional[dict[str, float]] = None
-    severity_etl_pct: Optional[float] = None
-    density_unit: Optional[str] = None
-    stage_specific_density_etls: Optional[dict[str, float]] = None
+    stage_specific_incidence_etls: dict[str, float] | None = None
+    severity_etl_pct: float | None = None
+    density_unit: str | None = None
+    stage_specific_density_etls: dict[str, float] | None = None
     trap_catch_consecutive_nights_required: int = 1
-    sampling_procedure: Optional[str] = None
+    sampling_procedure: str | None = None
 
     def __post_init__(self) -> None:
         if self.verification_status not in _VALID_VERIFICATION_STATUSES:
@@ -101,7 +98,7 @@ class EconomicThreshold:
 
 def resolve_stage_specific_threshold(
     etl: EconomicThreshold,
-    stage: Optional[str],
+    stage: str | None,
 ) -> float:
     """Resolve the effective incidence ETL threshold for a given crop growth stage."""
     if not stage or not etl.stage_specific_incidence_etls:
@@ -119,8 +116,8 @@ def resolve_stage_specific_threshold(
 
 def resolve_stage_specific_density_threshold(
     etl: EconomicThreshold,
-    stage: Optional[str],
-) -> Optional[float]:
+    stage: str | None,
+) -> float | None:
     """Resolve the effective count density ETL for a given crop growth stage."""
     if not etl.stage_specific_density_etls:
         return None
@@ -290,7 +287,7 @@ OFFICIAL_ETL_REGISTRY: dict[tuple[str, str], EconomicThreshold] = {
 }
 
 
-def get_economic_threshold(crop: str, pest: str) -> Optional[EconomicThreshold]:
+def get_economic_threshold(crop: str, pest: str) -> EconomicThreshold | None:
     """Retrieve official ETL for a crop and pest pair."""
     norm_c = normalize_token(crop)
     norm_p = normalize_token(pest)
@@ -312,11 +309,11 @@ class OutbreakLabelResult:
     forward_window_start: str
     forward_window_end: str
     observations_found_in_forward_window: int
-    outbreak_label_7d: Optional[int]  # 1 = Outbreak (>= ETL), 0 = Verified Non-Outbreak (< ETL), None = Unobserved
-    max_forward_incidence_pct: Optional[float]
-    max_forward_trap_catch: Optional[float]
-    etl_incidence_applied: Optional[float]
-    etl_trap_catch_applied: Optional[float]
+    outbreak_label_7d: int | None  # 1 = Outbreak (>= ETL), 0 = Verified Non-Outbreak (< ETL), None = Unobserved
+    max_forward_incidence_pct: float | None
+    max_forward_trap_catch: float | None
+    etl_incidence_applied: float | None
+    etl_trap_catch_applied: float | None
     label_status: str  # "LABELED_OUTBREAK", "LABELED_NON_OUTBREAK", "UNOBSERVED_FUTURE_WINDOW", "MISSING_ETL"
     notes: str
     production_eligible: bool = False
@@ -351,7 +348,9 @@ def compute_forward_outbreak_label(
     win_end_str = win_end.strftime("%Y-%m-%d")
 
     # Biological compatibility check between host crop and pest
-    from src.data_ingestion.pest_surveillance.surveillance_schema import VALID_CROP_PEST_COMBINATIONS
+    from src.data_ingestion.pest_surveillance.surveillance_schema import (
+        VALID_CROP_PEST_COMBINATIONS,
+    )
     norm_c = normalize_token(record.crop)
     norm_p = normalize_token(record.pest_common_name)
     is_biologically_valid = any(

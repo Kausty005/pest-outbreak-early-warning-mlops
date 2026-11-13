@@ -11,7 +11,6 @@ from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from typing import Any
 
-import numpy as np
 import pandas as pd
 
 LOGGER = logging.getLogger(__name__)

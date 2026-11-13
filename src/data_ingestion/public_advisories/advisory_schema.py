@@ -20,13 +20,12 @@ STRICT INVARIANTS:
 """
 from __future__ import annotations
 
-from dataclasses import asdict, dataclass, field
-from datetime import date, datetime
+from datetime import datetime
 from enum import Enum
-from typing import Any, Optional
+from typing import Any
 from uuid import uuid4
 
-from pydantic import BaseModel, Field, field_validator, model_validator
+from pydantic import BaseModel, Field, field_validator
 
 
 class EvidenceType(str, Enum):
@@ -84,52 +83,52 @@ class AdvisoryRecord(BaseModel):
     """
     # ── 1. Identification ──
     advisory_id: str = Field(description="Unique alphanumeric identifier for this advisory entry")
-    publication_date: Optional[str] = Field(default=None, description="ISO 8601 publication date (YYYY-MM-DD)")
-    observation_period_start: Optional[str] = Field(default=None, description="Start date of advisory validity period")
-    observation_period_end: Optional[str] = Field(default=None, description="End date of advisory validity period")
+    publication_date: str | None = Field(default=None, description="ISO 8601 publication date (YYYY-MM-DD)")
+    observation_period_start: str | None = Field(default=None, description="Start date of advisory validity period")
+    observation_period_end: str | None = Field(default=None, description="End date of advisory validity period")
     issuing_organization: str = Field(description="Organization that published the advisory (e.g. ICAR-CICR, CROPSAP)")
-    issuing_office: Optional[str] = Field(default=None, description="Specific division, research station, or KVK office")
+    issuing_office: str | None = Field(default=None, description="Specific division, research station, or KVK office")
     source_document: str = Field(description="Filename, title, or reference of the source bulletin")
-    source_url: Optional[str] = Field(default=None, description="Public URL from which document was accessed")
+    source_url: str | None = Field(default=None, description="Public URL from which document was accessed")
 
     # ── 2. Agricultural Information ──
-    crop: Optional[str] = Field(default=None, description="Standardized crop name (e.g. cotton, soybean, rice, maize)")
-    pest_common_name: Optional[str] = Field(default=None, description="Standardized common name of the pest")
-    pest_scientific_name: Optional[str] = Field(default=None, description="Binomial Latin nomenclature if mentioned")
-    district: Optional[str] = Field(default=None, description="Administrative district (e.g. Nagpur, Amravati, Yavatmal, Jalgaon)")
-    taluka: Optional[str] = Field(default=None, description="Taluka or sub-district if localized")
-    village: Optional[str] = Field(default=None, description="Village or cluster if explicitly identified")
-    reported_pest_status: Optional[str] = Field(default=None, description="Prose describing observed pest status in document")
+    crop: str | None = Field(default=None, description="Standardized crop name (e.g. cotton, soybean, rice, maize)")
+    pest_common_name: str | None = Field(default=None, description="Standardized common name of the pest")
+    pest_scientific_name: str | None = Field(default=None, description="Binomial Latin nomenclature if mentioned")
+    district: str | None = Field(default=None, description="Administrative district (e.g. Nagpur, Amravati, Yavatmal, Jalgaon)")
+    taluka: str | None = Field(default=None, description="Taluka or sub-district if localized")
+    village: str | None = Field(default=None, description="Village or cluster if explicitly identified")
+    reported_pest_status: str | None = Field(default=None, description="Prose describing observed pest status in document")
     advisory_severity: AdvisorySeverity = Field(default=AdvisorySeverity.INFORMATIONAL, description="Severity rating")
     evidence_type: EvidenceType = Field(default=EvidenceType.GENERAL_PREVENTIVE_ADVISORY, description="Evidence category")
-    evidence_justification_quote: Optional[str] = Field(default=None, description="Verbatim source excerpt justifying evidence type")
-    source_section: Optional[str] = Field(default=None, description="Section or paragraph reference in source document")
+    evidence_justification_quote: str | None = Field(default=None, description="Verbatim source excerpt justifying evidence type")
+    source_section: str | None = Field(default=None, description="Section or paragraph reference in source document")
 
     # ── 3. Recommendations ──
-    recommended_scouting_actions: Optional[str] = Field(default=None, description="Scouting guidance for farmers/scouts")
-    recommended_management_actions: Optional[str] = Field(default=None, description="Recommended curative or IPM interventions")
-    recommended_preventive_actions: Optional[str] = Field(default=None, description="Preventive, cultural, or biological steps")
+    recommended_scouting_actions: str | None = Field(default=None, description="Scouting guidance for farmers/scouts")
+    recommended_management_actions: str | None = Field(default=None, description="Recommended curative or IPM interventions")
+    recommended_preventive_actions: str | None = Field(default=None, description="Preventive, cultural, or biological steps")
     advisory_text: str = Field(description="Raw or cleaned text snippet extracted from source document")
 
     # ── 4. Multilingual & Translation ──
     original_language: str = Field(default="en", description="Original language ('en', 'mr', 'hi')")
-    translated_text: Optional[str] = Field(default=None, description="English translation if original was Marathi/Hindi")
-    translation_method: Optional[str] = Field(default=None, description="Method used ('manual_review', 'dictionary_assisted', etc.)")
+    translated_text: str | None = Field(default=None, description="English translation if original was Marathi/Hindi")
+    translation_method: str | None = Field(default=None, description="Method used ('manual_review', 'dictionary_assisted', etc.)")
 
     # ── 5. Provenance & Quality Assurance ──
     document_sha256: str = Field(description="Cryptographic SHA-256 hash of the source document")
-    page_number: Optional[int] = Field(default=None, description="Page number where snippet appeared (for PDFs)")
+    page_number: int | None = Field(default=None, description="Page number where snippet appeared (for PDFs)")
     extraction_method: str = Field(default="automated_parser", description="Extraction tool or routine")
     extraction_confidence: float = Field(default=1.0, ge=0.0, le=1.0, description="Confidence score [0.0, 1.0]")
     extraction_flags: list[str] = Field(default_factory=list, description="Quality flags or ambiguities detected")
     human_review_status: HumanReviewStatus = Field(default=HumanReviewStatus.PENDING_REVIEW, description="Review status")
-    human_reviewer_notes: Optional[str] = Field(default=None, description="Notes from human reviewer")
-    reviewed_at: Optional[str] = Field(default=None, description="ISO timestamp of review")
-    reviewed_by: Optional[str] = Field(default=None, description="Reviewer identifier")
+    human_reviewer_notes: str | None = Field(default=None, description="Notes from human reviewer")
+    reviewed_at: str | None = Field(default=None, description="ISO timestamp of review")
+    reviewed_by: str | None = Field(default=None, description="Reviewer identifier")
 
     @field_validator("publication_date", "observation_period_start", "observation_period_end")
     @classmethod
-    def validate_date_format(cls, v: Optional[str]) -> Optional[str]:
+    def validate_date_format(cls, v: str | None) -> str | None:
         if v is None or v == "":
             return None
         # Must parse as YYYY-MM-DD

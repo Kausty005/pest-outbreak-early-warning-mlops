@@ -9,15 +9,15 @@ from fastapi.responses import JSONResponse
 from prometheus_client import CONTENT_TYPE_LATEST, generate_latest
 
 from .api import (
-    crop_router,
-    fertilizer_router,
     advisory_router,
-    monitoring_router,
+    crop_router,
     farm_router,
-    pest_risk_router,
-    public_advisories_router,
-    pest_surveillance_router,
+    fertilizer_router,
     lifecycle_router,
+    monitoring_router,
+    pest_risk_router,
+    pest_surveillance_router,
+    public_advisories_router,
 )
 from .core.config import Settings
 from .core.config import settings as default_settings

@@ -24,6 +24,7 @@ import io
 import json
 from datetime import datetime, timedelta
 from pathlib import Path
+
 import pytest
 from fastapi.testclient import TestClient
 
@@ -32,9 +33,6 @@ from src.data_ingestion.pest_surveillance.surveillance_labeling import (
     compute_forward_outbreak_label,
 )
 from src.data_ingestion.pest_surveillance.surveillance_schema import SurveillanceRecord
-from src.data_ingestion.pest_surveillance.surveillance_validation import (
-    validate_surveillance_records,
-)
 
 
 @pytest.fixture

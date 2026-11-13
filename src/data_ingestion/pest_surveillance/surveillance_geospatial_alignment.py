@@ -13,7 +13,6 @@ from __future__ import annotations
 
 import math
 from dataclasses import dataclass
-from typing import Optional
 
 from src.data_ingestion.pest_surveillance.surveillance_schema import SurveillanceRecord
 
@@ -53,10 +52,10 @@ class GeospatialMatch:
     observation_id: str
     surveillance_lat: float
     surveillance_lon: float
-    matched_environmental_location: Optional[str]
-    matched_lat: Optional[float]
-    matched_lon: Optional[float]
-    distance_km: Optional[float]
+    matched_environmental_location: str | None
+    matched_lat: float | None
+    matched_lon: float | None
+    distance_km: float | None
     spatial_confidence: str  # "HIGH_CONFIDENCE_GRID", "MODERATE_CENTROID_APPROX", "COARSE_REGIONAL", "SPATIAL_MISMATCH"
     is_matched: bool
     notes: str
@@ -64,7 +63,7 @@ class GeospatialMatch:
 
 def match_observation_to_environmental_grid(
     record: SurveillanceRecord,
-    target_locations: Optional[dict[str, tuple[float, float]]] = None,
+    target_locations: dict[str, tuple[float, float]] | None = None,
     max_distance_km: float = MAX_PERMISSIBLE_MATCH_DISTANCE_KM,
 ) -> GeospatialMatch:
     """
@@ -74,9 +73,9 @@ def match_observation_to_environmental_grid(
     """
     locations = target_locations or KNOWN_DISTRICT_CENTROIDS
 
-    best_loc: Optional[str] = None
+    best_loc: str | None = None
     min_dist = float("inf")
-    best_coords: Optional[tuple[float, float]] = None
+    best_coords: tuple[float, float] | None = None
 
     # First check if the declared district matches a known location
     norm_declared_dist = record.district.strip().lower()

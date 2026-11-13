@@ -13,14 +13,12 @@ from __future__ import annotations
 
 import logging
 from pathlib import Path
-from typing import Optional
 from urllib.parse import urlparse
 
 import requests
 
 from src.data_ingestion.public_advisories.advisory_provenance import (
     AdvisoryProvenanceRegistry,
-    compute_document_sha256,
 )
 
 LOGGER = logging.getLogger(__name__)
@@ -59,7 +57,7 @@ class AdvisoryDownloader:
     def __init__(
         self,
         target_dir: Path | str = DEFAULT_RAW_DIR,
-        provenance_registry: Optional[AdvisoryProvenanceRegistry] = None,
+        provenance_registry: AdvisoryProvenanceRegistry | None = None,
         timeout_seconds: int = 20,
         ssl_verify: bool | str | Path = True,
     ) -> None:
@@ -84,9 +82,9 @@ class AdvisoryDownloader:
         self,
         url: str,
         source_id: str,
-        filename: Optional[str] = None,
-        publication_date: Optional[str] = None,
-        title: Optional[str] = None,
+        filename: str | None = None,
+        publication_date: str | None = None,
+        title: str | None = None,
     ) -> Path:
         """Download document from an approved public URL and archive locally."""
         if not self.is_url_allowed(url):
@@ -138,8 +136,8 @@ class AdvisoryDownloader:
         source_id: str,
         filename: str,
         content: str,
-        publication_date: Optional[str] = None,
-        title: Optional[str] = None,
+        publication_date: str | None = None,
+        title: str | None = None,
     ) -> Path:
         """Save text/HTML bulletin directly into raw archive and register in provenance."""
         destination = self.target_dir / filename

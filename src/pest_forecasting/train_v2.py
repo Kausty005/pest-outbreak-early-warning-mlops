@@ -18,7 +18,6 @@ Saves versioned artifacts to models/experimental_synthetic_pest_v2/.
 """
 from __future__ import annotations
 
-import copy
 import hashlib
 import json
 import logging
@@ -30,8 +29,8 @@ import joblib
 import numpy as np
 import pandas as pd
 from lightgbm import LGBMClassifier
-from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.linear_model import LogisticRegression
 from xgboost import XGBClassifier
 
 from .dataset_v2 import (
@@ -155,7 +154,6 @@ def train_and_evaluate_configuration_v2(
         # Calculate False Positive Rate and False Alarm Burden
         tn = test_metrics_tuned.true_negatives
         fp = test_metrics_tuned.false_positives
-        fn = test_metrics_tuned.false_negatives
         tp = test_metrics_tuned.true_positives
         fpr = fp / max(fp + tn, 1)
         false_alarm_burden = fp / max(tp + fp, 1)
@@ -455,7 +453,7 @@ def run_training_and_stress_pipeline_v2(
     # Generate inference examples with mandatory warnings
     sample_env = splits_env.X_test.iloc[0:2].to_dict(orient="records")
     sample_env_probs = [round(float(p), 4) for p in best_env_pipeline.predict_proba(splits_env.X_test.iloc[0:2])[:, 1]]
-    
+
     sample_scout = splits_scout.X_test.iloc[0:2].to_dict(orient="records")
     sample_scout_probs = [round(float(p), 4) for p in best_scout_pipeline.predict_proba(splits_scout.X_test.iloc[0:2])[:, 1]]
 

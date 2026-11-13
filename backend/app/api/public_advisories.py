@@ -15,7 +15,6 @@ import json
 import logging
 from collections import Counter
 from pathlib import Path
-from typing import Optional
 
 from fastapi import APIRouter, HTTPException, Query, status
 
@@ -47,7 +46,7 @@ PROCESSED_FILE_PATH = (
 )
 
 # In-memory cached advisory store
-_CACHED_ADVISORIES: Optional[list[AdvisoryRecord]] = None
+_CACHED_ADVISORIES: list[AdvisoryRecord] | None = None
 
 
 def get_all_advisories(force_reload: bool = False) -> list[AdvisoryRecord]:
@@ -89,13 +88,13 @@ def save_all_advisories(records: list[AdvisoryRecord]) -> None:
 
 @router.get("", response_model=PublicAdvisoriesListResponse)
 def list_public_advisories(
-    crop: Optional[str] = Query(None, description="Filter by crop (e.g. cotton, soybean, rice, maize)"),
-    district: Optional[str] = Query(None, description="Filter by Maharashtra district (e.g. Nagpur, Amravati)"),
-    pest: Optional[str] = Query(None, description="Filter by pest common name"),
-    evidence_type: Optional[str] = Query(None, description="Filter by EvidenceType"),
-    language: Optional[str] = Query(None, description="Filter by original language ('mr', 'en', 'hi')"),
-    review_status: Optional[str] = Query(None, description="Filter by HumanReviewStatus"),
-    search: Optional[str] = Query(None, description="Text search across advisory text"),
+    crop: str | None = Query(None, description="Filter by crop (e.g. cotton, soybean, rice, maize)"),
+    district: str | None = Query(None, description="Filter by Maharashtra district (e.g. Nagpur, Amravati)"),
+    pest: str | None = Query(None, description="Filter by pest common name"),
+    evidence_type: str | None = Query(None, description="Filter by EvidenceType"),
+    language: str | None = Query(None, description="Filter by original language ('mr', 'en', 'hi')"),
+    review_status: str | None = Query(None, description="Filter by HumanReviewStatus"),
+    search: str | None = Query(None, description="Text search across advisory text"),
     limit: int = Query(50, ge=1, le=200),
     offset: int = Query(0, ge=0),
 ):

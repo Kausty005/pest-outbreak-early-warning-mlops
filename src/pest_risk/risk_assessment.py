@@ -21,25 +21,21 @@ import json
 import logging
 import urllib.error
 import urllib.request
-from datetime import date, datetime, timedelta
-from typing import Any, Optional
+from datetime import datetime
+from typing import Any
 
 from pydantic import BaseModel, Field, field_validator
 
 from src.pest_risk.environmental_scoring import (
-    DailyFavorabilityScores,
     categorize_favorability_risk,
     compute_daily_favorability,
 )
 from src.pest_risk.explanations import (
-    DISCLAIMER_TEXT,
     build_explanation_payload,
-    generate_ipm_recommendations,
 )
 from src.pest_risk.pest_profiles import (
     PestBiologicalProfile,
     get_pest_profile,
-    list_supported_crops,
 )
 
 LOGGER = logging.getLogger(__name__)
@@ -49,11 +45,11 @@ class DailyWeatherRecord(BaseModel):
     """Atmospheric and edaphic weather observation or forecast for a single date."""
     date: str = Field(description="ISO 8601 date string (YYYY-MM-DD)")
     temp_mean: float = Field(description="Daily mean 2m temperature (°C)")
-    temp_min: Optional[float] = Field(default=None, description="Daily minimum 2m temperature (°C)")
-    temp_max: Optional[float] = Field(default=None, description="Daily maximum 2m temperature (°C)")
+    temp_min: float | None = Field(default=None, description="Daily minimum 2m temperature (°C)")
+    temp_max: float | None = Field(default=None, description="Daily maximum 2m temperature (°C)")
     humidity_mean: float = Field(description="Daily mean relative humidity (%)")
     rainfall_mm: float = Field(description="Daily accumulated rainfall (mm)")
-    soil_moisture_m3m3: Optional[float] = Field(
+    soil_moisture_m3m3: float | None = Field(
         default=None,
         description="Topsoil (0-7 cm) volumetric soil moisture (m³/m³)",
     )
@@ -76,16 +72,16 @@ class DailyWeatherRecord(BaseModel):
 class RiskAssessmentRequest(BaseModel):
     """Input payload requesting a biophysical pest risk assessment."""
     crop: str = Field(description="Target crop (e.g. cotton, soybean, rice, maize)")
-    pest: Optional[str] = Field(default=None, description="Optional target pest name")
+    pest: str | None = Field(default=None, description="Optional target pest name")
     location_name: str = Field(description="District or farm name (e.g. Nagpur)")
     latitude: float = Field(description="WGS84 latitude")
     longitude: float = Field(description="WGS84 longitude")
-    planting_date: Optional[str] = Field(default=None, description="Sowing date (YYYY-MM-DD)")
-    current_date: Optional[str] = Field(default=None, description="Reference date (YYYY-MM-DD)")
+    planting_date: str | None = Field(default=None, description="Sowing date (YYYY-MM-DD)")
+    current_date: str | None = Field(default=None, description="Reference date (YYYY-MM-DD)")
     antecedent_weather: list[DailyWeatherRecord] = Field(
         description="Observed weather leading up to current date (e.g. past 7 days)"
     )
-    forecast_weather: Optional[list[DailyWeatherRecord]] = Field(
+    forecast_weather: list[DailyWeatherRecord] | None = Field(
         default=None,
         description="Optional 7-day projected forecast weather"
     )
@@ -101,11 +97,11 @@ class DayRiskAssessment(BaseModel):
     temperature_c: float
     humidity_pct: float
     rainfall_mm: float
-    soil_moisture_m3m3: Optional[float]
+    soil_moisture_m3m3: float | None
     temperature_score: float
     humidity_score: float
     rainfall_score: float
-    soil_moisture_score: Optional[float]
+    soil_moisture_score: float | None
     phenology_score: float
     composite_favorability_index: float
     risk_category: str
@@ -121,10 +117,10 @@ class RiskAssessmentResponse(BaseModel):
     latitude: float
     longitude: float
     assessment_date: str
-    days_since_sowing: Optional[int]
+    days_since_sowing: int | None
     current_favorability: DayRiskAssessment
     antecedent_mean_favorability: float
-    forecast_mean_favorability: Optional[float]
+    forecast_mean_favorability: float | None
     forecast_days: list[DayRiskAssessment]
     risk_trend: str  # "RISING", "STABLE", "DECLINING", "UNKNOWN"
     primary_advisory_category: str
@@ -142,7 +138,7 @@ def fetch_open_meteo_forecast(
     longitude: float,
     days: int = 7,
     timeout_sec: float = 5.0,
-) -> tuple[list[DailyWeatherRecord], Optional[str]]:
+) -> tuple[list[DailyWeatherRecord], str | None]:
     """
     Fetch 7-day atmospheric and topsoil moisture forecast from Open-Meteo API.
 
@@ -202,10 +198,10 @@ def fetch_open_meteo_forecast(
 
     except Exception as exc:
         LOGGER.warning("Failed to fetch live Open-Meteo forecast for (%s, %s): %s", latitude, longitude, exc)
-        return [], f"Live forecast acquisition failed: {str(exc)}"
+        return [], f"Live forecast acquisition failed: {exc!s}"
 
 
-def _calculate_dss(planting_date_str: Optional[str], target_date_str: str) -> Optional[int]:
+def _calculate_dss(planting_date_str: str | None, target_date_str: str) -> int | None:
     """Calculate days since sowing from planting date and target date."""
     if not planting_date_str:
         return None
@@ -341,7 +337,7 @@ def assess_pest_risk(request: RiskAssessmentRequest) -> RiskAssessmentResponse:
 
     # 6. Trend Analysis
     if forecast_scores:
-        forecast_mean: Optional[float] = round(sum(forecast_scores) / len(forecast_scores), 4)
+        forecast_mean: float | None = round(sum(forecast_scores) / len(forecast_scores), 4)
         delta = forecast_mean - antecedent_mean
         if delta >= 0.10:
             risk_trend = "RISING"

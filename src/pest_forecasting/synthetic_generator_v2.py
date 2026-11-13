@@ -19,8 +19,6 @@ Key Improvements over v1:
 """
 from __future__ import annotations
 
-import argparse
-from dataclasses import dataclass
 import hashlib
 import json
 import logging
@@ -154,13 +152,13 @@ def simulate_district_weather_series(
 
     # Base seasonal temperature (Vidarbha climate: peak heat in May, cool in Dec-Jan)
     t_season = 28.0 + 7.5 * np.sin(2 * np.pi * (doy - 105) / 365.25)
-    
+
     # AR(1) thermal fluctuation
     t_noise = np.zeros(n_days)
     for i in range(1, n_days):
         t_noise[i] = 0.78 * t_noise[i - 1] + rng.normal(0, 1.4)
     t_mean = np.clip(t_season + t_noise, 12.0, 44.0)
-    
+
     # Diurnal range
     diurnal_range = 8.0 + 4.0 * np.cos(2 * np.pi * (doy - 105) / 365.25) + rng.normal(0, 1.0, n_days)
     diurnal_range = np.clip(diurnal_range, 5.0, 16.0)
@@ -169,7 +167,7 @@ def simulate_district_weather_series(
 
     # Monsoon rainfall simulation (Markov chain: dry -> rain, rain -> rain)
     is_monsoon = (doy >= 160) & (doy <= 275)
-    
+
     rain = np.zeros(n_days)
     in_rain_state = False
     for i in range(n_days):
@@ -179,12 +177,12 @@ def simulate_district_weather_series(
         else:
             p_start = 0.04
             p_cont = 0.20
-            
+
         if in_rain_state:
             in_rain_state = rng.random() < p_cont
         else:
             in_rain_state = rng.random() < p_start
-            
+
         if in_rain_state:
             rain[i] = rng.exponential(scale=18.0 if is_monsoon[i] else 6.0)
             if rain[i] < 0.5:
@@ -307,7 +305,7 @@ def generate_synthetic_dataset_v2(
             t7_rainfall = pd.Series(rains).rolling(7, min_periods=1).sum().values
             t14_rainfall = pd.Series(rains).rolling(14, min_periods=1).sum().values
             t7_soil = pd.Series(soils).rolling(7, min_periods=1).mean().values
-            
+
             is_dry = (rains < 1.0).astype(int)
             consec_dry = pd.Series(is_dry).rolling(7, min_periods=1).sum().astype(int).values
 

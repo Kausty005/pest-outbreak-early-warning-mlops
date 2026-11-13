@@ -18,7 +18,7 @@ probabilities of pest outbreaks.
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass, field
-from typing import Any, Optional
+from typing import Any
 
 
 @dataclass(frozen=True)
@@ -442,16 +442,16 @@ def get_supported_pest_profiles() -> dict[tuple[str, str], PestBiologicalProfile
 
 def list_supported_crops() -> list[str]:
     """List supported crop names."""
-    return sorted(list({crop for crop, _ in _REGISTRY.keys()}))
+    return sorted(list({crop for crop, _ in _REGISTRY}))
 
 
 def list_supported_pests_for_crop(crop: str) -> list[str]:
     """List supported pest names for a specific crop."""
     norm_crop = _normalize_name(crop)
-    return [pest for (c, pest) in _REGISTRY.keys() if c == norm_crop]
+    return [pest for (c, pest) in _REGISTRY if c == norm_crop]
 
 
-def get_pest_profile(crop: str, pest: Optional[str] = None) -> PestBiologicalProfile:
+def get_pest_profile(crop: str, pest: str | None = None) -> PestBiologicalProfile:
     """
     Retrieve biological profile for crop and pest.
 

@@ -46,8 +46,11 @@ class RetrainRequest(BaseModel):
 def _safe_import_drift():
     try:
         from backend.ml.drift_monitor import (
-            load_reference_data, load_prediction_log,
-            run_drift_detection, get_latest_drift_summary, get_drift_history,
+            get_drift_history,
+            get_latest_drift_summary,
+            load_prediction_log,
+            load_reference_data,
+            run_drift_detection,
         )
         return load_reference_data, load_prediction_log, run_drift_detection, \
                get_latest_drift_summary, get_drift_history
@@ -60,7 +63,7 @@ def _safe_import_drift():
 
 def _safe_import_trigger():
     try:
-        from backend.ml.retrain_trigger import run_trigger, get_retrain_history
+        from backend.ml.retrain_trigger import get_retrain_history, run_trigger
         return run_trigger, get_retrain_history
     except ImportError as exc:
         raise HTTPException(
@@ -189,7 +192,7 @@ def run_drift_now(payload: DriftRunRequest) -> dict[str, Any]:
         }
     except FileNotFoundError as exc:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc))
-    except Exception as exc:  # noqa: BLE001
+    except Exception as exc:
         LOGGER.exception("Drift detection failed")
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(exc))
 
@@ -212,7 +215,7 @@ def trigger_retrain(payload: RetrainRequest, background_tasks: BackgroundTasks) 
                 drift_score=None,
                 retrain_triggered=True,
             )
-        except Exception as exc:  # noqa: BLE001
+        except Exception as exc:
             LOGGER.exception("Background retrain failed: %s", exc)
 
     background_tasks.add_task(_bg)

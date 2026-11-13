@@ -1,12 +1,17 @@
 from __future__ import annotations
 
+import datetime
 import json
 import uuid
-import datetime
-from pathlib import Path
-from fastapi import APIRouter, HTTPException, status
-from ..schemas.lifecycle import LifecycleEvent, LifecycleLogRequest, LifecycleLogResponse
+
+from fastapi import APIRouter, status
+
 from ..core.config import PROJECT_ROOT
+from ..schemas.lifecycle import (
+    LifecycleEvent,
+    LifecycleLogRequest,
+    LifecycleLogResponse,
+)
 
 router = APIRouter(prefix="/lifecycle", tags=["crop-lifecycle-mlops"])
 

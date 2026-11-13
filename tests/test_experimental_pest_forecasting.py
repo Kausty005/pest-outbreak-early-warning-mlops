@@ -16,16 +16,16 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+
 import numpy as np
 import pandas as pd
 import pytest
 
 from src.pest_forecasting.dataset import (
+    ENVIRONMENTAL_FEATURE_COLUMNS,
+    TARGET_COLUMN,
     DataLeakageError,
     DataValidationError,
-    ENVIRONMENTAL_FEATURE_COLUMNS,
-    FULL_FEATURE_COLUMNS,
-    TARGET_COLUMN,
     chronological_split_with_purging,
     load_and_validate_dataset,
     verify_no_leakage,
@@ -36,10 +36,8 @@ from src.pest_forecasting.evaluate import (
 )
 from src.pest_forecasting.inference import (
     ExperimentalPestForecaster,
-    ExperimentalPestForecastInput,
 )
 from src.pest_forecasting.preprocessor import (
-    build_model_pipeline,
     build_preprocessor,
 )
 

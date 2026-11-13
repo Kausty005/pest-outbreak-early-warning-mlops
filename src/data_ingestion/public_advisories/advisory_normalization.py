@@ -14,8 +14,7 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass
-from typing import Optional
-
+from typing import Any
 
 # ══════════════════════════════════════════════════════════════════════════════
 # MULTILINGUAL ENTITY LEXICONS
@@ -129,10 +128,10 @@ MAHARASHTRA_DISTRICTS: dict[str, list[str]] = {
 @dataclass
 class NormalizedEntities:
     """Entities normalized from raw advisory text."""
-    crop: Optional[str] = None
-    pest_common_name: Optional[str] = None
-    pest_scientific_name: Optional[str] = None
-    district: Optional[str] = None
+    crop: str | None = None
+    pest_common_name: str | None = None
+    pest_scientific_name: str | None = None
+    district: str | None = None
     language: str = "en"
     extraction_flags: list[str] = None
 
@@ -171,7 +170,7 @@ class AdvisoryNormalizer:
         return "hi"
 
     @classmethod
-    def match_crop(cls, text: str) -> tuple[Optional[str], list[str]]:
+    def match_crop(cls, text: str) -> tuple[str | None, list[str]]:
         """Identify referenced crop from text. Returns (crop_name, flags)."""
         lower = text.lower()
         matched_crops = []
@@ -190,7 +189,7 @@ class AdvisoryNormalizer:
         return matched_crops[0], []
 
     @classmethod
-    def match_pest(cls, text: str, crop_hint: Optional[str] = None) -> tuple[Optional[str], Optional[str], list[str]]:
+    def match_pest(cls, text: str, crop_hint: str | None = None) -> tuple[str | None, str | None, list[str]]:
         """Identify referenced pest from text. Returns (common_name, scientific_name, flags)."""
         lower = text.lower()
         matched_pests = []
@@ -219,7 +218,7 @@ class AdvisoryNormalizer:
         return chosen["common_name"], chosen["scientific_name"], flags
 
     @classmethod
-    def match_district(cls, text: str) -> tuple[Optional[str], list[str]]:
+    def match_district(cls, text: str) -> tuple[str | None, list[str]]:
         """Identify referenced Maharashtra district from text."""
         lower = text.lower()
         matched_districts = []
@@ -238,7 +237,7 @@ class AdvisoryNormalizer:
         return matched_districts[0], []
 
     @classmethod
-    def normalize(cls, text: str, crop_hint: Optional[str] = None) -> NormalizedEntities:
+    def normalize(cls, text: str, crop_hint: str | None = None) -> NormalizedEntities:
         """Perform full entity normalization on an advisory text snippet."""
         lang = cls.detect_language(text)
         crop, crop_flags = cls.match_crop(text)
@@ -262,7 +261,7 @@ class AdvisoryNormalizer:
         text: str,
         lang: str,
         entities: NormalizedEntities,
-    ) -> Optional[str]:
+    ) -> str | None:
         """
         Generate a verifiable semantic translation summary for non-English advisories.
         Ensures exact terms and entities are communicated accurately without hallucinatory expansion.

@@ -10,7 +10,8 @@ Fields named 'outbreak_probability' are strictly forbidden.
 """
 from __future__ import annotations
 
-from typing import Any, Optional
+from typing import Any
+
 from pydantic import BaseModel, Field, model_validator
 
 
@@ -18,12 +19,12 @@ class EnvironmentalAssessmentRequest(BaseModel):
     """Request payload for experimental pest favorability assessment."""
     crop: str = Field(description="Target crop (e.g. cotton, soybean, rice, maize)")
     district: str = Field(description="Target Maharashtra district (e.g. Nagpur, Amravati, Yavatmal, Jalgaon)")
-    pest: Optional[str] = Field(default=None, description="Optional target pest name (e.g. pink_bollworm)")
-    assessment_date: Optional[str] = Field(
+    pest: str | None = Field(default=None, description="Optional target pest name (e.g. pink_bollworm)")
+    assessment_date: str | None = Field(
         default=None,
         description="Reference assessment date (YYYY-MM-DD). Defaults to latest date in surveillance records.",
     )
-    planting_date: Optional[str] = Field(
+    planting_date: str | None = Field(
         default=None,
         description="Crop sowing/planting date (YYYY-MM-DD) for phenological susceptibility evaluation.",
     )
@@ -37,11 +38,11 @@ class EnvironmentalObservationSummary(BaseModel):
     """Observed microclimatic conditions used in the assessment."""
     date: str
     temperature_mean_c: float
-    temperature_min_c: Optional[float] = None
-    temperature_max_c: Optional[float] = None
+    temperature_min_c: float | None = None
+    temperature_max_c: float | None = None
     relative_humidity_pct: float
     rainfall_mm: float
-    soil_moisture_m3m3: Optional[float] = None
+    soil_moisture_m3m3: float | None = None
     antecedent_window_days: int
     antecedent_mean_temperature_c: float
     antecedent_mean_humidity_pct: float
@@ -64,7 +65,7 @@ class ForecastDayItem(BaseModel):
     temperature_c: float
     humidity_pct: float
     rainfall_mm: float
-    soil_moisture_m3m3: Optional[float] = None
+    soil_moisture_m3m3: float | None = None
     favorability_score: float
     risk_category: str
 
@@ -74,7 +75,7 @@ class ForecastSummary(BaseModel):
     forecast_available: bool
     forecast_source: str
     forecast_days_count: int
-    forecast_mean_favorability: Optional[float] = None
+    forecast_mean_favorability: float | None = None
     daily_projections: list[ForecastDayItem] = Field(default_factory=list)
 
 
@@ -100,7 +101,7 @@ class EnvironmentalAssessmentResponse(BaseModel):
     environmental_observations: EnvironmentalObservationSummary
     data_quality: DataQualitySummary
     forecast_available: bool
-    forecast_summary: Optional[ForecastSummary] = None
+    forecast_summary: ForecastSummary | None = None
     recommendations: list[str]
     limitations: list[str]
     references: list[dict[str, Any]]

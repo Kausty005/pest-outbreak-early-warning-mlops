@@ -6,8 +6,10 @@ and per-crop / per-pest evaluation for pest outbreak forecasting.
 """
 from __future__ import annotations
 
+from collections.abc import Sequence
 from dataclasses import asdict, dataclass
-from typing import Any, Sequence
+from typing import Any
+
 import numpy as np
 import pandas as pd
 from sklearn.calibration import calibration_curve
@@ -65,7 +67,7 @@ def calculate_calibration_assessment(
         bin_edges = np.linspace(0, 1, n_bins + 1)
         bin_assignments = np.digitize(y_prob, bin_edges) - 1
         bin_assignments = np.clip(bin_assignments, 0, n_bins - 1)
-        
+
         ece = 0.0
         n_total = len(y_true)
         for b in range(n_bins):
@@ -74,7 +76,7 @@ def calculate_calibration_assessment(
                 bin_acc = np.mean(y_true[mask])
                 bin_conf = np.mean(y_prob[mask])
                 ece += (np.sum(mask) / n_total) * abs(bin_acc - bin_conf)
-                
+
         return {
             "prob_true": [round(float(v), 4) for v in prob_true],
             "prob_pred": [round(float(v), 4) for v in prob_pred],
