@@ -1,0 +1,41 @@
+{
+  "FULL_SYNTHETIC_FEATURES": [
+    "district",
+    "crop",
+    "pest",
+    "growth_stage",
+    "t7_mean_temp_c",
+    "t7_min_temp_c",
+    "t7_max_temp_c",
+    "t7_mean_rh_pct",
+    "t7_rainfall_mm",
+    "t14_rainfall_mm",
+    "t7_high_rh_days",
+    "current_incidence_pct_t0",
+    "current_severity_pct_t0",
+    "pest_present_t0"
+  ],
+  "ENVIRONMENTAL_ONLY_FEATURES": [
+    "district",
+    "crop",
+    "pest",
+    "growth_stage",
+    "t7_mean_temp_c",
+    "t7_min_temp_c",
+    "t7_max_temp_c",
+    "t7_mean_rh_pct",
+    "t7_rainfall_mm",
+    "t14_rainfall_mm",
+    "t7_high_rh_days"
+  ],
+  "EXCLUDED_FROM_ENVIRONMENTAL": [
+    "current_incidence_pct_t0",
+    "current_severity_pct_t0",
+    "pest_present_t0"
+  ],
+  "FORBIDDEN_LEAKAGE_COLUMNS": [
+    "date",
+    "field_id",
+    "outbreak_within_7d"
+  ]
+}

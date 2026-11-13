@@ -12,9 +12,13 @@ async function request(path, options = {}) {
   } else {
     url = `${API_BASE_URL}${path}`
   }
+  const headers = { ...options.headers }
+  if (!(options.body instanceof FormData) && !headers['Content-Type']) {
+    headers['Content-Type'] = 'application/json'
+  }
   const response = await fetch(url, {
-    headers: { 'Content-Type': 'application/json', ...options.headers },
     ...options,
+    headers,
   })
   const body = await response.json().catch(() => ({}))
   if (!response.ok) {
@@ -64,5 +68,50 @@ export const farmApi = {
   advisory: (zoneId) => request(`/farm/zones/${zoneId}/advisory`),
   weather: (lat, lon) => request(`/farm/weather${lat && lon ? `?lat=${lat}&lon=${lon}` : ''}`),
 }
+
+export const pestRiskApi = {
+  supportedProfiles: () => request('/pest-risk/supported-profiles'),
+  assess: (payload) => request('/pest-risk/environmental-assessment', { method: 'POST', body: JSON.stringify(payload) }),
+}
+
+export const publicAdvisoriesApi = {
+  list: (params = {}) => {
+    const qry = new URLSearchParams()
+    Object.entries(params).forEach(([k, v]) => {
+      if (v !== undefined && v !== null && v !== '') {
+        qry.append(k, v)
+      }
+    })
+    const qs = qry.toString()
+    return request(`/public-advisories${qs ? `?${qs}` : ''}`)
+  },
+  summary: () => request('/public-advisories/summary'),
+  sources: () => request('/public-advisories/sources'),
+  get: (advisoryId) => request(`/public-advisories/${advisoryId}`),
+  submitReview: (advisoryId, payload) =>
+    request(`/public-advisories/${advisoryId}/review`, { method: 'POST', body: JSON.stringify(payload) }),
+}
+
+export const pestSurveillanceApi = {
+  dashboard: () => request('/pest-surveillance/dashboard'),
+  records: (params = {}) => {
+    const qry = new URLSearchParams()
+    Object.entries(params).forEach(([k, v]) => {
+      if (v !== undefined && v !== null && v !== '') {
+        qry.append(k, v)
+      }
+    })
+    const qs = qry.toString()
+    return request(`/pest-surveillance/records${qs ? `?${qs}` : ''}`)
+  },
+  createRecord: (payload) =>
+    request('/pest-surveillance/records', { method: 'POST', body: JSON.stringify(payload) }),
+  uploadCsv: (formData) =>
+    request('/pest-surveillance/upload-csv', { method: 'POST', body: formData }),
+  reviewRecord: (payload) =>
+    request('/pest-surveillance/review', { method: 'POST', body: JSON.stringify(payload) }),
+  readinessGate: () => request('/pest-surveillance/readiness-gate'),
+}
+
 
 

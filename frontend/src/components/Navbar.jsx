@@ -54,6 +54,20 @@ export default function Navbar({ activeTab, setActiveTab }) {
             Unified & Pest Advisory
           </a>
           <a
+            href="#pest-risk"
+            onClick={(e) => { e.preventDefault(); setActiveTab && setActiveTab('pest-risk'); }}
+            style={{ fontWeight: activeTab === 'pest-risk' ? 'bold' : 'normal', color: activeTab === 'pest-risk' ? '#b9e487' : '#e5eee8' }}
+          >
+            🐛 Pest Favorability
+          </a>
+          <a
+            href="#public-advisories"
+            onClick={(e) => { e.preventDefault(); setActiveTab && setActiveTab('advisories'); }}
+            style={{ fontWeight: activeTab === 'advisories' ? 'bold' : 'normal', color: activeTab === 'advisories' ? '#b9e487' : '#e5eee8' }}
+          >
+            📜 Public Advisories
+          </a>
+          <a
             href="#monitoring"
             onClick={(e) => { e.preventDefault(); setActiveTab && setActiveTab('monitoring'); }}
             style={{ fontWeight: activeTab === 'monitoring' ? 'bold' : 'normal', color: activeTab === 'monitoring' ? '#b9e487' : '#e5eee8' }}

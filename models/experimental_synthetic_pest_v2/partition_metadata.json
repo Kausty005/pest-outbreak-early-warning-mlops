@@ -1,0 +1,44 @@
+{
+  "environmental": {
+    "train_samples": 61265,
+    "val_samples": 14692,
+    "test_samples": 21574,
+    "purged_samples": 2469,
+    "train_dates": [
+      "2023-06-07",
+      "2024-10-31"
+    ],
+    "val_dates": [
+      "2024-11-08",
+      "2025-07-31"
+    ],
+    "test_dates": [
+      "2025-08-08",
+      "2025-12-30"
+    ],
+    "train_outbreaks": 5096,
+    "val_outbreaks": 1810,
+    "test_outbreaks": 3164
+  },
+  "scouting_assisted": {
+    "train_samples": 61265,
+    "val_samples": 14692,
+    "test_samples": 21574,
+    "purged_samples": 2469,
+    "train_dates": [
+      "2023-06-07",
+      "2024-10-31"
+    ],
+    "val_dates": [
+      "2024-11-08",
+      "2025-07-31"
+    ],
+    "test_dates": [
+      "2025-08-08",
+      "2025-12-30"
+    ],
+    "train_outbreaks": 5096,
+    "val_outbreaks": 1810,
+    "test_outbreaks": 3164
+  }
+}

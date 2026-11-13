@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { farmApi } from '../services/api'
+import EnvironmentalPestRiskSection from './EnvironmentalPestRiskSection'
 
 function rnd(min, max, d = 1) { return parseFloat((Math.random() * (max - min) + min).toFixed(d)) }
 function fmt(v, d = 1) { return typeof v === 'number' ? parseFloat(v.toFixed(d)) : v }
@@ -595,6 +596,7 @@ export default function FarmDashboard() {
                 { id:'soil', label:'🌱 Soil Nutrients' },
                 { id:'water', label:'💧 Water & Climate' },
                 { id:'summary', label:'📋 Action Summary' },
+                { id:'pest', label:'🐛 Pest Favorability (Tier 1)' },
               ].map(t => (
                 <button key={t.id} className={`itab ${insightTab===t.id?'on':''}`} onClick={() => setInsightTab(t.id)}>{t.label}</button>
               ))}
@@ -679,6 +681,13 @@ export default function FarmDashboard() {
                   })}
                 </div>
               </div>
+            </div>
+          )}
+
+          {/* TAB: Environmental Pest Risk Assessment (Tier 1) */}
+          {insightTab === 'pest' && (
+            <div style={{ animation:'slideUp 0.3s ease' }}>
+              <EnvironmentalPestRiskSection />
             </div>
           )}
         </div>

@@ -8,6 +8,9 @@ import FertilizerSection from './components/FertilizerSection'
 import UnifiedAdvisorySection from './components/UnifiedAdvisorySection'
 import MonitoringSection from './components/MonitoringSection'
 import FarmDashboard from './components/FarmDashboard'
+import EnvironmentalPestRiskSection from './components/EnvironmentalPestRiskSection'
+import PublicPestAdvisoriesSection from './components/PublicPestAdvisoriesSection'
+import FieldSurveillanceSection from './components/FieldSurveillanceSection'
 import { cropApi } from './services/api'
 
 function validate(values) {
@@ -115,6 +118,33 @@ export default function App() {
           <button
             type="button"
             role="tab"
+            aria-selected={activeTab === 'pest-risk'}
+            className={`tab-btn ${activeTab === 'pest-risk' ? 'active' : ''}`}
+            onClick={() => setActiveTab('pest-risk')}
+          >
+            🐛 Pest Favorability
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={activeTab === 'advisories'}
+            className={`tab-btn ${activeTab === 'advisories' ? 'active' : ''}`}
+            onClick={() => setActiveTab('advisories')}
+          >
+            📜 Public Advisories
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={activeTab === 'surveillance'}
+            className={`tab-btn ${activeTab === 'surveillance' ? 'active' : ''}`}
+            onClick={() => setActiveTab('surveillance')}
+          >
+            🔍 Field Surveillance
+          </button>
+          <button
+            type="button"
+            role="tab"
             aria-selected={activeTab === 'monitoring'}
             className={`tab-btn ${activeTab === 'monitoring' ? 'active' : ''}`}
             onClick={() => setActiveTab('monitoring')}
@@ -155,7 +185,22 @@ export default function App() {
           <UnifiedAdvisorySection />
         )}
 
-        {/* Tab 4: MLOps Drift & Retrain Lifecycle */}
+        {/* Tab 4: Experimental Environmental Pest Favorability */}
+        {activeTab === 'pest-risk' && (
+          <EnvironmentalPestRiskSection />
+        )}
+
+        {/* Tab 5: Public Agricultural Pest Intelligence & Advisories */}
+        {activeTab === 'advisories' && (
+          <PublicPestAdvisoriesSection />
+        )}
+
+        {/* Tab 6: Field Pest Surveillance Data Entry & Progress */}
+        {activeTab === 'surveillance' && (
+          <FieldSurveillanceSection />
+        )}
+
+        {/* Tab 7: MLOps Drift & Retrain Lifecycle */}
         {activeTab === 'monitoring' && (
           <MonitoringSection />
         )}

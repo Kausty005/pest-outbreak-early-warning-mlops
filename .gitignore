@@ -14,11 +14,24 @@ data/raw/*.csv
 data/processed/*
 !data/processed/.gitkeep
 
+# Authentic pest surveillance data — MUST NOT be committed to public Git.
+# These files may contain confidential farmer-level scouting records obtained
+# under institutional data-sharing agreements (MoU / NDA).
+# The empty headers-only template is excluded from this rule (committed for schema reference).
+data/raw/pest_surveillance/*.csv
+!data/raw/pest_surveillance/surveillance_data_template.csv
+!data/raw/pest_surveillance/cropsap_surveillance_template.csv
+
+# Public pest advisories — raw external binary downloads (PDFs)
+data/raw/public_advisories/*.pdf
+!data/raw/public_advisories/.gitkeep
+
 # Trained model artifacts (tracked via DVC)
 backend/artifacts/*.joblib
 backend/artifacts/*.json
 backend/artifacts/*.md
 !backend/artifacts/.gitkeep
+backend/artifacts/candidates/crop-202611*
 
 # Drift & monitoring logs (runtime-generated)
 logs/

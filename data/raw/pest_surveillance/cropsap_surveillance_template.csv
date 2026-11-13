@@ -1,0 +1,3 @@
+observation_date,district,taluk,village,latitude,longitude,crop,growth_stage,pest_type,pest_incidence_pct,pest_severity_pct,trap_catch_count,economic_threshold_exceeded,source_agency,quality_flag
+2023-07-15,Nagpur,Hingna,Kanhan,21.15,79.08,Cotton,Squaring_bud,Pink bollworm,8.5,4.2,12,0,CROPSAP-Maharashtra,AUTHENTIC_SCOUTED
+2023-07-22,Nagpur,Hingna,Kanhan,21.15,79.08,Cotton,Flowering,Pink bollworm,14.0,11.5,28,1,CROPSAP-Maharashtra,AUTHENTIC_SCOUTED

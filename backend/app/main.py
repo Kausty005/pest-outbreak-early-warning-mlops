@@ -7,7 +7,16 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from .api import crop_router, fertilizer_router, advisory_router, monitoring_router, farm_router
+from .api import (
+    crop_router,
+    fertilizer_router,
+    advisory_router,
+    monitoring_router,
+    farm_router,
+    pest_risk_router,
+    public_advisories_router,
+    pest_surveillance_router,
+)
 from .core.config import Settings
 from .core.config import settings as default_settings
 from .core.logging import configure_logging
@@ -59,6 +68,9 @@ def create_app(config: Settings | None = None) -> FastAPI:
     app.include_router(advisory_router, prefix=app_settings.api_prefix)
     app.include_router(monitoring_router, prefix=app_settings.api_prefix)
     app.include_router(farm_router, prefix=app_settings.api_prefix)
+    app.include_router(pest_risk_router, prefix=app_settings.api_prefix)
+    app.include_router(public_advisories_router, prefix=app_settings.api_prefix)
+    app.include_router(pest_surveillance_router, prefix=app_settings.api_prefix)
 
     @app.exception_handler(Exception)
     async def internal_error_handler(request: Request, exc: Exception):

@@ -1,0 +1,102 @@
+{
+  "status": "SYNTHETIC_EXPERIMENTAL",
+  "is_production_ready": false,
+  "environmental_only_inference": [
+    {
+      "input": {
+        "district": "Wardha",
+        "crop": "Rice",
+        "pest": "Brown planthopper",
+        "growth_stage": "Stem Elongation",
+        "t7_mean_temp_c": 33.47,
+        "t7_min_temp_c": 29.24,
+        "t7_max_temp_c": 38.4,
+        "t7_mean_rh_pct": 74.6,
+        "t7_rainfall_mm": 0.9,
+        "t14_rainfall_mm": 37.8,
+        "t7_mean_soil_moisture": 0.407,
+        "t7_high_rh_days": 1,
+        "t7_consecutive_dry_days": 7
+      },
+      "predicted_outbreak_probability_7d": 0.0,
+      "decision_threshold": 0.32,
+      "outbreak_forecast_flag": false,
+      "disclaimer": "SYNTHETIC_EXPERIMENTAL: Unapproved for field operations."
+    },
+    {
+      "input": {
+        "district": "Wardha",
+        "crop": "Cotton",
+        "pest": "Pink bollworm",
+        "growth_stage": "Squaring",
+        "t7_mean_temp_c": 33.47,
+        "t7_min_temp_c": 29.24,
+        "t7_max_temp_c": 38.4,
+        "t7_mean_rh_pct": 74.6,
+        "t7_rainfall_mm": 0.9,
+        "t14_rainfall_mm": 37.8,
+        "t7_mean_soil_moisture": 0.407,
+        "t7_high_rh_days": 1,
+        "t7_consecutive_dry_days": 7
+      },
+      "predicted_outbreak_probability_7d": 0.0,
+      "decision_threshold": 0.32,
+      "outbreak_forecast_flag": false,
+      "disclaimer": "SYNTHETIC_EXPERIMENTAL: Unapproved for field operations."
+    }
+  ],
+  "scouting_assisted_inference": [
+    {
+      "input": {
+        "district": "Wardha",
+        "crop": "Rice",
+        "pest": "Brown planthopper",
+        "growth_stage": "Stem Elongation",
+        "t7_mean_temp_c": 33.47,
+        "t7_min_temp_c": 29.24,
+        "t7_max_temp_c": 38.4,
+        "t7_mean_rh_pct": 74.6,
+        "t7_rainfall_mm": 0.9,
+        "t14_rainfall_mm": 37.8,
+        "t7_mean_soil_moisture": 0.407,
+        "t7_high_rh_days": 1,
+        "t7_consecutive_dry_days": 7,
+        "scout_incidence_pct": 0.0,
+        "scout_severity_pct": 0.0,
+        "trap_catch_count": 0.0,
+        "days_since_scouting": 12,
+        "pest_present": 0
+      },
+      "predicted_outbreak_probability_7d": 0.0001,
+      "decision_threshold": 0.82,
+      "outbreak_forecast_flag": false,
+      "disclaimer": "SYNTHETIC_EXPERIMENTAL: Unapproved for field operations."
+    },
+    {
+      "input": {
+        "district": "Wardha",
+        "crop": "Cotton",
+        "pest": "Pink bollworm",
+        "growth_stage": "Squaring",
+        "t7_mean_temp_c": 33.47,
+        "t7_min_temp_c": 29.24,
+        "t7_max_temp_c": 38.4,
+        "t7_mean_rh_pct": 74.6,
+        "t7_rainfall_mm": 0.9,
+        "t14_rainfall_mm": 37.8,
+        "t7_mean_soil_moisture": 0.407,
+        "t7_high_rh_days": 1,
+        "t7_consecutive_dry_days": 7,
+        "scout_incidence_pct": 0.0,
+        "scout_severity_pct": 0.0,
+        "trap_catch_count": 0.0,
+        "days_since_scouting": 4,
+        "pest_present": 0
+      },
+      "predicted_outbreak_probability_7d": 0.0006,
+      "decision_threshold": 0.82,
+      "outbreak_forecast_flag": false,
+      "disclaimer": "SYNTHETIC_EXPERIMENTAL: Unapproved for field operations."
+    }
+  ]
+}

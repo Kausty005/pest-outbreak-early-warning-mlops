@@ -1,0 +1,1762 @@
+{
+  "experiment_timestamp": "2026-11-13T13:00:55.955799",
+  "random_seed": 42,
+  "dataset_path": "data/synthetic_multicrop_pest_forecasting.csv",
+  "total_records": 100000,
+  "target_column": "outbreak_within_7d",
+  "classification": "SYNTHETIC_EXPERIMENTAL_BENCHMARK",
+  "scientific_disclaimer": "All metrics are benchmark results obtained on simulated synthetic data. They do NOT establish real-world predictive validity and must NOT be used for operational pest management.",
+  "experiments": {
+    "FULL_SYNTHETIC": {
+      "feature_configuration": "FULL",
+      "feature_count": 14,
+      "features": [
+        "district",
+        "crop",
+        "pest",
+        "growth_stage",
+        "t7_mean_temp_c",
+        "t7_min_temp_c",
+        "t7_max_temp_c",
+        "t7_mean_rh_pct",
+        "t7_rainfall_mm",
+        "t14_rainfall_mm",
+        "t7_high_rh_days",
+        "current_incidence_pct_t0",
+        "current_severity_pct_t0",
+        "pest_present_t0"
+      ],
+      "split_metadata": {
+        "train_samples": 70049,
+        "val_samples": 14034,
+        "test_samples": 14059,
+        "purged_samples": 1858,
+        "train_dates": [
+          "2022-06-20",
+          "2024-07-27"
+        ],
+        "val_dates": [
+          "2024-08-04",
+          "2024-11-17"
+        ],
+        "test_dates": [
+          "2024-11-25",
+          "2025-03-21"
+        ]
+      },
+      "best_model_name": "LightGBM",
+      "best_validation_pr_auc": 0.8563,
+      "models": {
+        "LogisticRegression": {
+          "model_name": "LogisticRegression",
+          "feature_set": "FULL",
+          "optimal_threshold": 0.61,
+          "validation_metrics": {
+            "model_name": "LogisticRegression",
+            "feature_set": "FULL",
+            "split_name": "validation",
+            "threshold": 0.61,
+            "accuracy": 0.9377,
+            "precision": 0.8598,
+            "recall": 0.7426,
+            "f1": 0.7969,
+            "roc_auc": 0.9326,
+            "pr_auc": 0.7826,
+            "brier_score": 0.0791,
+            "true_negatives": 11442,
+            "false_positives": 280,
+            "false_negatives": 595,
+            "true_positives": 1717,
+            "total_samples": 14034,
+            "positive_rate": 0.1647,
+            "calibration_data": {
+              "prob_true": [
+                0.001,
+                0.0368,
+                0.0642,
+                0.0681,
+                0.154,
+                0.2743,
+                0.4309,
+                0.4912,
+                0.6833,
+                0.903
+              ],
+              "prob_pred": [
+                0.014,
+                0.1596,
+                0.246,
+                0.346,
+                0.4423,
+                0.5411,
+                0.6439,
+                0.7442,
+                0.8662,
+                0.98
+              ],
+              "expected_calibration_error": 0.1295
+            }
+          },
+          "test_metrics_default_threshold": {
+            "model_name": "LogisticRegression",
+            "feature_set": "FULL",
+            "split_name": "test_default_0.50",
+            "threshold": 0.5,
+            "accuracy": 0.9092,
+            "precision": 0.7099,
+            "recall": 0.779,
+            "f1": 0.7428,
+            "roc_auc": 0.9236,
+            "pr_auc": 0.784,
+            "brier_score": 0.0899,
+            "true_negatives": 10940,
+            "false_positives": 753,
+            "false_negatives": 523,
+            "true_positives": 1843,
+            "total_samples": 14059,
+            "positive_rate": 0.1683,
+            "calibration_data": {
+              "prob_true": [
+                0.0022,
+                0.0518,
+                0.0538,
+                0.0719,
+                0.1268,
+                0.1594,
+                0.2654,
+                0.5513,
+                0.7564,
+                0.8998
+              ],
+              "prob_pred": [
+                0.0245,
+                0.1494,
+                0.2517,
+                0.343,
+                0.4438,
+                0.5431,
+                0.6408,
+                0.7464,
+                0.8568,
+                0.9816
+              ],
+              "expected_calibration_error": 0.1471
+            }
+          },
+          "test_metrics_tuned_threshold": {
+            "model_name": "LogisticRegression",
+            "feature_set": "FULL",
+            "split_name": "test_tuned",
+            "threshold": 0.61,
+            "accuracy": 0.9314,
+            "precision": 0.8281,
+            "recall": 0.7473,
+            "f1": 0.7856,
+            "roc_auc": 0.9236,
+            "pr_auc": 0.784,
+            "brier_score": 0.0899,
+            "true_negatives": 11326,
+            "false_positives": 367,
+            "false_negatives": 598,
+            "true_positives": 1768,
+            "total_samples": 14059,
+            "positive_rate": 0.1683,
+            "calibration_data": {
+              "prob_true": [
+                0.0022,
+                0.0518,
+                0.0538,
+                0.0719,
+                0.1268,
+                0.1594,
+                0.2654,
+                0.5513,
+                0.7564,
+                0.8998
+              ],
+              "prob_pred": [
+                0.0245,
+                0.1494,
+                0.2517,
+                0.343,
+                0.4438,
+                0.5431,
+                0.6408,
+                0.7464,
+                0.8568,
+                0.9816
+              ],
+              "expected_calibration_error": 0.1471
+            }
+          },
+          "per_crop_slices": {
+            "Chickpea": {
+              "samples": 4572,
+              "outbreaks": 622,
+              "prevalence_pct": 13.6,
+              "pr_auc": 0.7586,
+              "roc_auc": 0.9031,
+              "f1": 0.7956,
+              "precision": 0.9198,
+              "recall": 0.701,
+              "brier_score": 0.0798
+            },
+            "Tomato": {
+              "samples": 4032,
+              "outbreaks": 976,
+              "prevalence_pct": 24.21,
+              "pr_auc": 0.8506,
+              "roc_auc": 0.9479,
+              "f1": 0.8291,
+              "precision": 0.8304,
+              "recall": 0.8279,
+              "brier_score": 0.1009
+            },
+            "Wheat": {
+              "samples": 5455,
+              "outbreaks": 768,
+              "prevalence_pct": 14.08,
+              "pr_auc": 0.6918,
+              "roc_auc": 0.9028,
+              "f1": 0.7198,
+              "precision": 0.7616,
+              "recall": 0.6823,
+              "brier_score": 0.0901
+            }
+          },
+          "per_pest_slices": {
+            "Aphids": {
+              "samples": 5455,
+              "outbreaks": 768,
+              "prevalence_pct": 14.08,
+              "pr_auc": 0.6918,
+              "roc_auc": 0.9028,
+              "f1": 0.7198,
+              "precision": 0.7616,
+              "recall": 0.6823,
+              "brier_score": 0.0901
+            },
+            "Fruit borer": {
+              "samples": 4032,
+              "outbreaks": 976,
+              "prevalence_pct": 24.21,
+              "pr_auc": 0.8506,
+              "roc_auc": 0.9479,
+              "f1": 0.8291,
+              "precision": 0.8304,
+              "recall": 0.8279,
+              "brier_score": 0.1009
+            },
+            "Pod borer": {
+              "samples": 4572,
+              "outbreaks": 622,
+              "prevalence_pct": 13.6,
+              "pr_auc": 0.7586,
+              "roc_auc": 0.9031,
+              "f1": 0.7956,
+              "precision": 0.9198,
+              "recall": 0.701,
+              "brier_score": 0.0798
+            }
+          }
+        },
+        "RandomForest": {
+          "model_name": "RandomForest",
+          "feature_set": "FULL",
+          "optimal_threshold": 0.75,
+          "validation_metrics": {
+            "model_name": "RandomForest",
+            "feature_set": "FULL",
+            "split_name": "validation",
+            "threshold": 0.75,
+            "accuracy": 0.9397,
+            "precision": 0.881,
+            "recall": 0.7331,
+            "f1": 0.8003,
+            "roc_auc": 0.9385,
+            "pr_auc": 0.848,
+            "brier_score": 0.074,
+            "true_negatives": 11493,
+            "false_positives": 229,
+            "false_negatives": 617,
+            "true_positives": 1695,
+            "total_samples": 14034,
+            "positive_rate": 0.1647,
+            "calibration_data": {
+              "prob_true": [
+                0.0,
+                0.0238,
+                0.0754,
+                0.1026,
+                0.1795,
+                0.1402,
+                0.3385,
+                0.4187,
+                0.7317,
+                0.935
+              ],
+              "prob_pred": [
+                0.0695,
+                0.1573,
+                0.2449,
+                0.334,
+                0.439,
+                0.551,
+                0.6589,
+                0.7524,
+                0.8541,
+                0.9496
+              ],
+              "expected_calibration_error": 0.1342
+            }
+          },
+          "test_metrics_default_threshold": {
+            "model_name": "RandomForest",
+            "feature_set": "FULL",
+            "split_name": "test_default_0.50",
+            "threshold": 0.5,
+            "accuracy": 0.9289,
+            "precision": 0.7964,
+            "recall": 0.7756,
+            "f1": 0.7859,
+            "roc_auc": 0.9264,
+            "pr_auc": 0.8399,
+            "brier_score": 0.075,
+            "true_negatives": 11224,
+            "false_positives": 469,
+            "false_negatives": 531,
+            "true_positives": 1835,
+            "total_samples": 14059,
+            "positive_rate": 0.1683,
+            "calibration_data": {
+              "prob_true": [
+                0.0,
+                0.0403,
+                0.0663,
+                0.1029,
+                0.1105,
+                0.2658,
+                0.2979,
+                0.3207,
+                0.7755,
+                0.9401
+              ],
+              "prob_pred": [
+                0.0668,
+                0.1536,
+                0.2459,
+                0.348,
+                0.4351,
+                0.5504,
+                0.6545,
+                0.742,
+                0.859,
+                0.9547
+              ],
+              "expected_calibration_error": 0.1295
+            }
+          },
+          "test_metrics_tuned_threshold": {
+            "model_name": "RandomForest",
+            "feature_set": "FULL",
+            "split_name": "test_tuned",
+            "threshold": 0.75,
+            "accuracy": 0.9408,
+            "precision": 0.897,
+            "recall": 0.7325,
+            "f1": 0.8064,
+            "roc_auc": 0.9264,
+            "pr_auc": 0.8399,
+            "brier_score": 0.075,
+            "true_negatives": 11494,
+            "false_positives": 199,
+            "false_negatives": 633,
+            "true_positives": 1733,
+            "total_samples": 14059,
+            "positive_rate": 0.1683,
+            "calibration_data": {
+              "prob_true": [
+                0.0,
+                0.0403,
+                0.0663,
+                0.1029,
+                0.1105,
+                0.2658,
+                0.2979,
+                0.3207,
+                0.7755,
+                0.9401
+              ],
+              "prob_pred": [
+                0.0668,
+                0.1536,
+                0.2459,
+                0.348,
+                0.4351,
+                0.5504,
+                0.6545,
+                0.742,
+                0.859,
+                0.9547
+              ],
+              "expected_calibration_error": 0.1295
+            }
+          },
+          "per_crop_slices": {
+            "Chickpea": {
+              "samples": 4572,
+              "outbreaks": 622,
+              "prevalence_pct": 13.6,
+              "pr_auc": 0.8025,
+              "roc_auc": 0.9037,
+              "f1": 0.8051,
+              "precision": 0.9342,
+              "recall": 0.7074,
+              "brier_score": 0.0659
+            },
+            "Tomato": {
+              "samples": 4032,
+              "outbreaks": 976,
+              "prevalence_pct": 24.21,
+              "pr_auc": 0.9036,
+              "roc_auc": 0.9529,
+              "f1": 0.8449,
+              "precision": 0.8937,
+              "recall": 0.8012,
+              "brier_score": 0.0859
+            },
+            "Wheat": {
+              "samples": 5455,
+              "outbreaks": 768,
+              "prevalence_pct": 14.08,
+              "pr_auc": 0.7641,
+              "roc_auc": 0.904,
+              "f1": 0.7548,
+              "precision": 0.872,
+              "recall": 0.6654,
+              "brier_score": 0.0745
+            }
+          },
+          "per_pest_slices": {
+            "Aphids": {
+              "samples": 5455,
+              "outbreaks": 768,
+              "prevalence_pct": 14.08,
+              "pr_auc": 0.7641,
+              "roc_auc": 0.904,
+              "f1": 0.7548,
+              "precision": 0.872,
+              "recall": 0.6654,
+              "brier_score": 0.0745
+            },
+            "Fruit borer": {
+              "samples": 4032,
+              "outbreaks": 976,
+              "prevalence_pct": 24.21,
+              "pr_auc": 0.9036,
+              "roc_auc": 0.9529,
+              "f1": 0.8449,
+              "precision": 0.8937,
+              "recall": 0.8012,
+              "brier_score": 0.0859
+            },
+            "Pod borer": {
+              "samples": 4572,
+              "outbreaks": 622,
+              "prevalence_pct": 13.6,
+              "pr_auc": 0.8025,
+              "roc_auc": 0.9037,
+              "f1": 0.8051,
+              "precision": 0.9342,
+              "recall": 0.7074,
+              "brier_score": 0.0659
+            }
+          }
+        },
+        "XGBoost": {
+          "model_name": "XGBoost",
+          "feature_set": "FULL",
+          "optimal_threshold": 0.71,
+          "validation_metrics": {
+            "model_name": "XGBoost",
+            "feature_set": "FULL",
+            "split_name": "validation",
+            "threshold": 0.71,
+            "accuracy": 0.9382,
+            "precision": 0.8539,
+            "recall": 0.7535,
+            "f1": 0.8006,
+            "roc_auc": 0.9364,
+            "pr_auc": 0.8554,
+            "brier_score": 0.0746,
+            "true_negatives": 11424,
+            "false_positives": 298,
+            "false_negatives": 570,
+            "true_positives": 1742,
+            "total_samples": 14034,
+            "positive_rate": 0.1647,
+            "calibration_data": {
+              "prob_true": [
+                0.0034,
+                0.0343,
+                0.072,
+                0.0803,
+                0.1732,
+                0.21,
+                0.277,
+                0.4494,
+                0.568,
+                0.9301
+              ],
+              "prob_pred": [
+                0.0186,
+                0.1592,
+                0.2461,
+                0.3433,
+                0.4368,
+                0.5473,
+                0.6556,
+                0.7503,
+                0.8439,
+                0.9787
+              ],
+              "expected_calibration_error": 0.1213
+            }
+          },
+          "test_metrics_default_threshold": {
+            "model_name": "XGBoost",
+            "feature_set": "FULL",
+            "split_name": "test_default_0.50",
+            "threshold": 0.5,
+            "accuracy": 0.9205,
+            "precision": 0.7526,
+            "recall": 0.7857,
+            "f1": 0.7688,
+            "roc_auc": 0.9285,
+            "pr_auc": 0.8507,
+            "brier_score": 0.0771,
+            "true_negatives": 11082,
+            "false_positives": 611,
+            "false_negatives": 507,
+            "true_positives": 1859,
+            "total_samples": 14059,
+            "positive_rate": 0.1683,
+            "calibration_data": {
+              "prob_true": [
+                0.0027,
+                0.0551,
+                0.0579,
+                0.0745,
+                0.1439,
+                0.1798,
+                0.1913,
+                0.361,
+                0.54,
+                0.9378
+              ],
+              "prob_pred": [
+                0.0221,
+                0.1593,
+                0.2405,
+                0.3466,
+                0.4394,
+                0.545,
+                0.6477,
+                0.7506,
+                0.8443,
+                0.9792
+              ],
+              "expected_calibration_error": 0.122
+            }
+          },
+          "test_metrics_tuned_threshold": {
+            "model_name": "XGBoost",
+            "feature_set": "FULL",
+            "split_name": "test_tuned",
+            "threshold": 0.71,
+            "accuracy": 0.9378,
+            "precision": 0.8566,
+            "recall": 0.7574,
+            "f1": 0.8039,
+            "roc_auc": 0.9285,
+            "pr_auc": 0.8507,
+            "brier_score": 0.0771,
+            "true_negatives": 11393,
+            "false_positives": 300,
+            "false_negatives": 574,
+            "true_positives": 1792,
+            "total_samples": 14059,
+            "positive_rate": 0.1683,
+            "calibration_data": {
+              "prob_true": [
+                0.0027,
+                0.0551,
+                0.0579,
+                0.0745,
+                0.1439,
+                0.1798,
+                0.1913,
+                0.361,
+                0.54,
+                0.9378
+              ],
+              "prob_pred": [
+                0.0221,
+                0.1593,
+                0.2405,
+                0.3466,
+                0.4394,
+                0.545,
+                0.6477,
+                0.7506,
+                0.8443,
+                0.9792
+              ],
+              "expected_calibration_error": 0.122
+            }
+          },
+          "per_crop_slices": {
+            "Chickpea": {
+              "samples": 4572,
+              "outbreaks": 622,
+              "prevalence_pct": 13.6,
+              "pr_auc": 0.8062,
+              "roc_auc": 0.9037,
+              "f1": 0.7968,
+              "precision": 0.8843,
+              "recall": 0.7251,
+              "brier_score": 0.0712
+            },
+            "Tomato": {
+              "samples": 4032,
+              "outbreaks": 976,
+              "prevalence_pct": 24.21,
+              "pr_auc": 0.9171,
+              "roc_auc": 0.9566,
+              "f1": 0.8387,
+              "precision": 0.8466,
+              "recall": 0.8309,
+              "brier_score": 0.0884
+            },
+            "Wheat": {
+              "samples": 5455,
+              "outbreaks": 768,
+              "prevalence_pct": 14.08,
+              "pr_auc": 0.7819,
+              "roc_auc": 0.906,
+              "f1": 0.7615,
+              "precision": 0.8494,
+              "recall": 0.6901,
+              "brier_score": 0.0738
+            }
+          },
+          "per_pest_slices": {
+            "Aphids": {
+              "samples": 5455,
+              "outbreaks": 768,
+              "prevalence_pct": 14.08,
+              "pr_auc": 0.7819,
+              "roc_auc": 0.906,
+              "f1": 0.7615,
+              "precision": 0.8494,
+              "recall": 0.6901,
+              "brier_score": 0.0738
+            },
+            "Fruit borer": {
+              "samples": 4032,
+              "outbreaks": 976,
+              "prevalence_pct": 24.21,
+              "pr_auc": 0.9171,
+              "roc_auc": 0.9566,
+              "f1": 0.8387,
+              "precision": 0.8466,
+              "recall": 0.8309,
+              "brier_score": 0.0884
+            },
+            "Pod borer": {
+              "samples": 4572,
+              "outbreaks": 622,
+              "prevalence_pct": 13.6,
+              "pr_auc": 0.8062,
+              "roc_auc": 0.9037,
+              "f1": 0.7968,
+              "precision": 0.8843,
+              "recall": 0.7251,
+              "brier_score": 0.0712
+            }
+          }
+        },
+        "LightGBM": {
+          "model_name": "LightGBM",
+          "feature_set": "FULL",
+          "optimal_threshold": 0.77,
+          "validation_metrics": {
+            "model_name": "LightGBM",
+            "feature_set": "FULL",
+            "split_name": "validation",
+            "threshold": 0.77,
+            "accuracy": 0.9404,
+            "precision": 0.89,
+            "recall": 0.7279,
+            "f1": 0.8009,
+            "roc_auc": 0.9374,
+            "pr_auc": 0.8563,
+            "brier_score": 0.0744,
+            "true_negatives": 11514,
+            "false_positives": 208,
+            "false_negatives": 629,
+            "true_positives": 1683,
+            "total_samples": 14034,
+            "positive_rate": 0.1647,
+            "calibration_data": {
+              "prob_true": [
+                0.0007,
+                0.0351,
+                0.0774,
+                0.0842,
+                0.1325,
+                0.2222,
+                0.3187,
+                0.3946,
+                0.624,
+                0.9284
+              ],
+              "prob_pred": [
+                0.0181,
+                0.1615,
+                0.2465,
+                0.3426,
+                0.4385,
+                0.5463,
+                0.6594,
+                0.7512,
+                0.847,
+                0.9775
+              ],
+              "expected_calibration_error": 0.1216
+            }
+          },
+          "test_metrics_default_threshold": {
+            "model_name": "LightGBM",
+            "feature_set": "FULL",
+            "split_name": "test_default_0.50",
+            "threshold": 0.5,
+            "accuracy": 0.9209,
+            "precision": 0.7534,
+            "recall": 0.7878,
+            "f1": 0.7702,
+            "roc_auc": 0.9266,
+            "pr_auc": 0.8483,
+            "brier_score": 0.079,
+            "true_negatives": 11083,
+            "false_positives": 610,
+            "false_negatives": 502,
+            "true_positives": 1864,
+            "total_samples": 14059,
+            "positive_rate": 0.1683,
+            "calibration_data": {
+              "prob_true": [
+                0.003,
+                0.0584,
+                0.0509,
+                0.0838,
+                0.1039,
+                0.1442,
+                0.2661,
+                0.3454,
+                0.5106,
+                0.9352
+              ],
+              "prob_pred": [
+                0.0213,
+                0.1616,
+                0.2399,
+                0.3465,
+                0.4402,
+                0.5376,
+                0.6465,
+                0.7587,
+                0.8359,
+                0.9793
+              ],
+              "expected_calibration_error": 0.1256
+            }
+          },
+          "test_metrics_tuned_threshold": {
+            "model_name": "LightGBM",
+            "feature_set": "FULL",
+            "split_name": "test_tuned",
+            "threshold": 0.77,
+            "accuracy": 0.9385,
+            "precision": 0.8736,
+            "recall": 0.7422,
+            "f1": 0.8026,
+            "roc_auc": 0.9266,
+            "pr_auc": 0.8483,
+            "brier_score": 0.079,
+            "true_negatives": 11439,
+            "false_positives": 254,
+            "false_negatives": 610,
+            "true_positives": 1756,
+            "total_samples": 14059,
+            "positive_rate": 0.1683,
+            "calibration_data": {
+              "prob_true": [
+                0.003,
+                0.0584,
+                0.0509,
+                0.0838,
+                0.1039,
+                0.1442,
+                0.2661,
+                0.3454,
+                0.5106,
+                0.9352
+              ],
+              "prob_pred": [
+                0.0213,
+                0.1616,
+                0.2399,
+                0.3465,
+                0.4402,
+                0.5376,
+                0.6465,
+                0.7587,
+                0.8359,
+                0.9793
+              ],
+              "expected_calibration_error": 0.1256
+            }
+          },
+          "per_crop_slices": {
+            "Chickpea": {
+              "samples": 4572,
+              "outbreaks": 622,
+              "prevalence_pct": 13.6,
+              "pr_auc": 0.8051,
+              "roc_auc": 0.9025,
+              "f1": 0.7931,
+              "precision": 0.9052,
+              "recall": 0.7058,
+              "brier_score": 0.0725
+            },
+            "Tomato": {
+              "samples": 4032,
+              "outbreaks": 976,
+              "prevalence_pct": 24.21,
+              "pr_auc": 0.9144,
+              "roc_auc": 0.9542,
+              "f1": 0.8401,
+              "precision": 0.8571,
+              "recall": 0.8238,
+              "brier_score": 0.0912
+            },
+            "Wheat": {
+              "samples": 5455,
+              "outbreaks": 768,
+              "prevalence_pct": 14.08,
+              "pr_auc": 0.7761,
+              "roc_auc": 0.9041,
+              "f1": 0.7572,
+              "precision": 0.8739,
+              "recall": 0.668,
+              "brier_score": 0.0755
+            }
+          },
+          "per_pest_slices": {
+            "Aphids": {
+              "samples": 5455,
+              "outbreaks": 768,
+              "prevalence_pct": 14.08,
+              "pr_auc": 0.7761,
+              "roc_auc": 0.9041,
+              "f1": 0.7572,
+              "precision": 0.8739,
+              "recall": 0.668,
+              "brier_score": 0.0755
+            },
+            "Fruit borer": {
+              "samples": 4032,
+              "outbreaks": 976,
+              "prevalence_pct": 24.21,
+              "pr_auc": 0.9144,
+              "roc_auc": 0.9542,
+              "f1": 0.8401,
+              "precision": 0.8571,
+              "recall": 0.8238,
+              "brier_score": 0.0912
+            },
+            "Pod borer": {
+              "samples": 4572,
+              "outbreaks": 622,
+              "prevalence_pct": 13.6,
+              "pr_auc": 0.8051,
+              "roc_auc": 0.9025,
+              "f1": 0.7931,
+              "precision": 0.9052,
+              "recall": 0.7058,
+              "brier_score": 0.0725
+            }
+          }
+        }
+      }
+    },
+    "ENVIRONMENTAL_ONLY": {
+      "feature_configuration": "ENVIRONMENTAL",
+      "feature_count": 11,
+      "features": [
+        "district",
+        "crop",
+        "pest",
+        "growth_stage",
+        "t7_mean_temp_c",
+        "t7_min_temp_c",
+        "t7_max_temp_c",
+        "t7_mean_rh_pct",
+        "t7_rainfall_mm",
+        "t14_rainfall_mm",
+        "t7_high_rh_days"
+      ],
+      "split_metadata": {
+        "train_samples": 70049,
+        "val_samples": 14034,
+        "test_samples": 14059,
+        "purged_samples": 1858,
+        "train_dates": [
+          "2022-06-20",
+          "2024-07-27"
+        ],
+        "val_dates": [
+          "2024-08-04",
+          "2024-11-17"
+        ],
+        "test_dates": [
+          "2024-11-25",
+          "2025-03-21"
+        ]
+      },
+      "best_model_name": "LogisticRegression",
+      "best_validation_pr_auc": 0.2923,
+      "models": {
+        "LogisticRegression": {
+          "model_name": "LogisticRegression",
+          "feature_set": "ENVIRONMENTAL",
+          "optimal_threshold": 0.39,
+          "validation_metrics": {
+            "model_name": "LogisticRegression",
+            "feature_set": "ENVIRONMENTAL",
+            "split_name": "validation",
+            "threshold": 0.39,
+            "accuracy": 0.5599,
+            "precision": 0.2612,
+            "recall": 0.9144,
+            "f1": 0.4064,
+            "roc_auc": 0.7272,
+            "pr_auc": 0.2923,
+            "brier_score": 0.2111,
+            "true_negatives": 5744,
+            "false_positives": 5978,
+            "false_negatives": 198,
+            "true_positives": 2114,
+            "total_samples": 14034,
+            "positive_rate": 0.1647,
+            "calibration_data": {
+              "prob_true": [
+                0.0003,
+                0.0389,
+                0.0866,
+                0.138,
+                0.2718,
+                0.2491,
+                0.2408,
+                0.2745,
+                0.4795
+              ],
+              "prob_pred": [
+                0.0258,
+                0.1562,
+                0.2374,
+                0.3579,
+                0.4564,
+                0.5512,
+                0.6534,
+                0.7409,
+                0.8113
+              ],
+              "expected_calibration_error": 0.2452
+            }
+          },
+          "test_metrics_default_threshold": {
+            "model_name": "LogisticRegression",
+            "feature_set": "ENVIRONMENTAL",
+            "split_name": "test_default_0.50",
+            "threshold": 0.5,
+            "accuracy": 0.5511,
+            "precision": 0.2587,
+            "recall": 0.8935,
+            "f1": 0.4012,
+            "roc_auc": 0.7163,
+            "pr_auc": 0.2778,
+            "brier_score": 0.2308,
+            "true_negatives": 5634,
+            "false_positives": 6059,
+            "false_negatives": 252,
+            "true_positives": 2114,
+            "total_samples": 14059,
+            "positive_rate": 0.1683,
+            "calibration_data": {
+              "prob_true": [
+                0.0034,
+                0.0424,
+                0.0428,
+                0.0,
+                0.23,
+                0.2549,
+                0.2181,
+                0.3173,
+                0.2281
+              ],
+              "prob_pred": [
+                0.019,
+                0.1537,
+                0.2277,
+                0.3076,
+                0.4798,
+                0.5609,
+                0.6489,
+                0.7447,
+                0.8142
+              ],
+              "expected_calibration_error": 0.2824
+            }
+          },
+          "test_metrics_tuned_threshold": {
+            "model_name": "LogisticRegression",
+            "feature_set": "ENVIRONMENTAL",
+            "split_name": "test_tuned",
+            "threshold": 0.39,
+            "accuracy": 0.5434,
+            "precision": 0.258,
+            "recall": 0.9129,
+            "f1": 0.4023,
+            "roc_auc": 0.7163,
+            "pr_auc": 0.2778,
+            "brier_score": 0.2308,
+            "true_negatives": 5480,
+            "false_positives": 6213,
+            "false_negatives": 206,
+            "true_positives": 2160,
+            "total_samples": 14059,
+            "positive_rate": 0.1683,
+            "calibration_data": {
+              "prob_true": [
+                0.0034,
+                0.0424,
+                0.0428,
+                0.0,
+                0.23,
+                0.2549,
+                0.2181,
+                0.3173,
+                0.2281
+              ],
+              "prob_pred": [
+                0.019,
+                0.1537,
+                0.2277,
+                0.3076,
+                0.4798,
+                0.5609,
+                0.6489,
+                0.7447,
+                0.8142
+              ],
+              "expected_calibration_error": 0.2824
+            }
+          },
+          "per_crop_slices": {
+            "Chickpea": {
+              "samples": 4572,
+              "outbreaks": 622,
+              "prevalence_pct": 13.6,
+              "pr_auc": 0.1646,
+              "roc_auc": 0.6185,
+              "f1": 0.3155,
+              "precision": 0.1914,
+              "recall": 0.8971,
+              "brier_score": 0.2368
+            },
+            "Tomato": {
+              "samples": 4032,
+              "outbreaks": 976,
+              "prevalence_pct": 24.21,
+              "pr_auc": 0.3326,
+              "roc_auc": 0.6998,
+              "f1": 0.5087,
+              "precision": 0.346,
+              "recall": 0.96,
+              "brier_score": 0.2677
+            },
+            "Wheat": {
+              "samples": 5455,
+              "outbreaks": 768,
+              "prevalence_pct": 14.08,
+              "pr_auc": 0.2083,
+              "roc_auc": 0.7016,
+              "f1": 0.3781,
+              "precision": 0.2418,
+              "recall": 0.8659,
+              "brier_score": 0.1985
+            }
+          },
+          "per_pest_slices": {
+            "Aphids": {
+              "samples": 5455,
+              "outbreaks": 768,
+              "prevalence_pct": 14.08,
+              "pr_auc": 0.2083,
+              "roc_auc": 0.7016,
+              "f1": 0.3781,
+              "precision": 0.2418,
+              "recall": 0.8659,
+              "brier_score": 0.1985
+            },
+            "Fruit borer": {
+              "samples": 4032,
+              "outbreaks": 976,
+              "prevalence_pct": 24.21,
+              "pr_auc": 0.3326,
+              "roc_auc": 0.6998,
+              "f1": 0.5087,
+              "precision": 0.346,
+              "recall": 0.96,
+              "brier_score": 0.2677
+            },
+            "Pod borer": {
+              "samples": 4572,
+              "outbreaks": 622,
+              "prevalence_pct": 13.6,
+              "pr_auc": 0.1646,
+              "roc_auc": 0.6185,
+              "f1": 0.3155,
+              "precision": 0.1914,
+              "recall": 0.8971,
+              "brier_score": 0.2368
+            }
+          }
+        },
+        "RandomForest": {
+          "model_name": "RandomForest",
+          "feature_set": "ENVIRONMENTAL",
+          "optimal_threshold": 0.49,
+          "validation_metrics": {
+            "model_name": "RandomForest",
+            "feature_set": "ENVIRONMENTAL",
+            "split_name": "validation",
+            "threshold": 0.49,
+            "accuracy": 0.6128,
+            "precision": 0.2737,
+            "recall": 0.8166,
+            "f1": 0.41,
+            "roc_auc": 0.728,
+            "pr_auc": 0.2766,
+            "brier_score": 0.1981,
+            "true_negatives": 6712,
+            "false_positives": 5010,
+            "false_negatives": 424,
+            "true_positives": 1888,
+            "total_samples": 14034,
+            "positive_rate": 0.1647,
+            "calibration_data": {
+              "prob_true": [
+                0.0,
+                0.0058,
+                0.0123,
+                0.0875,
+                0.1643,
+                0.2846,
+                0.2573,
+                0.3889
+              ],
+              "prob_pred": [
+                0.0925,
+                0.1489,
+                0.2381,
+                0.368,
+                0.4597,
+                0.5454,
+                0.6334,
+                0.7242
+              ],
+              "expected_calibration_error": 0.2621
+            }
+          },
+          "test_metrics_default_threshold": {
+            "model_name": "RandomForest",
+            "feature_set": "ENVIRONMENTAL",
+            "split_name": "test_default_0.50",
+            "threshold": 0.5,
+            "accuracy": 0.6085,
+            "precision": 0.2653,
+            "recall": 0.7498,
+            "f1": 0.392,
+            "roc_auc": 0.7243,
+            "pr_auc": 0.3127,
+            "brier_score": 0.2031,
+            "true_negatives": 6781,
+            "false_positives": 4912,
+            "false_negatives": 592,
+            "true_positives": 1774,
+            "total_samples": 14059,
+            "positive_rate": 0.1683,
+            "calibration_data": {
+              "prob_true": [
+                0.0398,
+                0.0357,
+                0.0849,
+                0.2168,
+                0.217,
+                0.3059,
+                0.4107,
+                0.6667
+              ],
+              "prob_pred": [
+                0.1715,
+                0.2412,
+                0.3432,
+                0.4641,
+                0.5456,
+                0.6416,
+                0.7302,
+                0.8087
+              ],
+              "expected_calibration_error": 0.2679
+            }
+          },
+          "test_metrics_tuned_threshold": {
+            "model_name": "RandomForest",
+            "feature_set": "ENVIRONMENTAL",
+            "split_name": "test_tuned",
+            "threshold": 0.49,
+            "accuracy": 0.5978,
+            "precision": 0.2644,
+            "recall": 0.7798,
+            "f1": 0.3949,
+            "roc_auc": 0.7243,
+            "pr_auc": 0.3127,
+            "brier_score": 0.2031,
+            "true_negatives": 6559,
+            "false_positives": 5134,
+            "false_negatives": 521,
+            "true_positives": 1845,
+            "total_samples": 14059,
+            "positive_rate": 0.1683,
+            "calibration_data": {
+              "prob_true": [
+                0.0398,
+                0.0357,
+                0.0849,
+                0.2168,
+                0.217,
+                0.3059,
+                0.4107,
+                0.6667
+              ],
+              "prob_pred": [
+                0.1715,
+                0.2412,
+                0.3432,
+                0.4641,
+                0.5456,
+                0.6416,
+                0.7302,
+                0.8087
+              ],
+              "expected_calibration_error": 0.2679
+            }
+          },
+          "per_crop_slices": {
+            "Chickpea": {
+              "samples": 4572,
+              "outbreaks": 622,
+              "prevalence_pct": 13.6,
+              "pr_auc": 0.1932,
+              "roc_auc": 0.6416,
+              "f1": 0.2989,
+              "precision": 0.1887,
+              "recall": 0.7186,
+              "brier_score": 0.2053
+            },
+            "Tomato": {
+              "samples": 4032,
+              "outbreaks": 976,
+              "prevalence_pct": 24.21,
+              "pr_auc": 0.3766,
+              "roc_auc": 0.7146,
+              "f1": 0.5058,
+              "precision": 0.3489,
+              "recall": 0.9191,
+              "brier_score": 0.2382
+            },
+            "Wheat": {
+              "samples": 5455,
+              "outbreaks": 768,
+              "prevalence_pct": 14.08,
+              "pr_auc": 0.2615,
+              "roc_auc": 0.7247,
+              "f1": 0.357,
+              "precision": 0.2457,
+              "recall": 0.6523,
+              "brier_score": 0.1753
+            }
+          },
+          "per_pest_slices": {
+            "Aphids": {
+              "samples": 5455,
+              "outbreaks": 768,
+              "prevalence_pct": 14.08,
+              "pr_auc": 0.2615,
+              "roc_auc": 0.7247,
+              "f1": 0.357,
+              "precision": 0.2457,
+              "recall": 0.6523,
+              "brier_score": 0.1753
+            },
+            "Fruit borer": {
+              "samples": 4032,
+              "outbreaks": 976,
+              "prevalence_pct": 24.21,
+              "pr_auc": 0.3766,
+              "roc_auc": 0.7146,
+              "f1": 0.5058,
+              "precision": 0.3489,
+              "recall": 0.9191,
+              "brier_score": 0.2382
+            },
+            "Pod borer": {
+              "samples": 4572,
+              "outbreaks": 622,
+              "prevalence_pct": 13.6,
+              "pr_auc": 0.1932,
+              "roc_auc": 0.6416,
+              "f1": 0.2989,
+              "precision": 0.1887,
+              "recall": 0.7186,
+              "brier_score": 0.2053
+            }
+          }
+        },
+        "XGBoost": {
+          "model_name": "XGBoost",
+          "feature_set": "ENVIRONMENTAL",
+          "optimal_threshold": 0.43,
+          "validation_metrics": {
+            "model_name": "XGBoost",
+            "feature_set": "ENVIRONMENTAL",
+            "split_name": "validation",
+            "threshold": 0.43,
+            "accuracy": 0.5733,
+            "precision": 0.2647,
+            "recall": 0.894,
+            "f1": 0.4084,
+            "roc_auc": 0.7332,
+            "pr_auc": 0.2918,
+            "brier_score": 0.2024,
+            "true_negatives": 5979,
+            "false_positives": 5743,
+            "false_negatives": 245,
+            "true_positives": 2067,
+            "total_samples": 14034,
+            "positive_rate": 0.1647,
+            "calibration_data": {
+              "prob_true": [
+                0.0003,
+                0.0203,
+                0.0774,
+                0.181,
+                0.2483,
+                0.249,
+                0.2512,
+                0.3233,
+                0.2941
+              ],
+              "prob_pred": [
+                0.0403,
+                0.1476,
+                0.2466,
+                0.3601,
+                0.4648,
+                0.5557,
+                0.6538,
+                0.7312,
+                0.8076
+              ],
+              "expected_calibration_error": 0.2421
+            }
+          },
+          "test_metrics_default_threshold": {
+            "model_name": "XGBoost",
+            "feature_set": "ENVIRONMENTAL",
+            "split_name": "test_default_0.50",
+            "threshold": 0.5,
+            "accuracy": 0.5899,
+            "precision": 0.2653,
+            "recall": 0.8123,
+            "f1": 0.4,
+            "roc_auc": 0.7228,
+            "pr_auc": 0.3027,
+            "brier_score": 0.2157,
+            "true_negatives": 6371,
+            "false_positives": 5322,
+            "false_negatives": 444,
+            "true_positives": 1922,
+            "total_samples": 14059,
+            "positive_rate": 0.1683,
+            "calibration_data": {
+              "prob_true": [
+                0.002,
+                0.0466,
+                0.0577,
+                0.1455,
+                0.1846,
+                0.2386,
+                0.2324,
+                0.3463,
+                0.4161
+              ],
+              "prob_pred": [
+                0.0598,
+                0.1606,
+                0.236,
+                0.3458,
+                0.45,
+                0.5597,
+                0.6485,
+                0.7342,
+                0.8127
+              ],
+              "expected_calibration_error": 0.2668
+            }
+          },
+          "test_metrics_tuned_threshold": {
+            "model_name": "XGBoost",
+            "feature_set": "ENVIRONMENTAL",
+            "split_name": "test_tuned",
+            "threshold": 0.43,
+            "accuracy": 0.5677,
+            "precision": 0.2598,
+            "recall": 0.8487,
+            "f1": 0.3979,
+            "roc_auc": 0.7228,
+            "pr_auc": 0.3027,
+            "brier_score": 0.2157,
+            "true_negatives": 5973,
+            "false_positives": 5720,
+            "false_negatives": 358,
+            "true_positives": 2008,
+            "total_samples": 14059,
+            "positive_rate": 0.1683,
+            "calibration_data": {
+              "prob_true": [
+                0.002,
+                0.0466,
+                0.0577,
+                0.1455,
+                0.1846,
+                0.2386,
+                0.2324,
+                0.3463,
+                0.4161
+              ],
+              "prob_pred": [
+                0.0598,
+                0.1606,
+                0.236,
+                0.3458,
+                0.45,
+                0.5597,
+                0.6485,
+                0.7342,
+                0.8127
+              ],
+              "expected_calibration_error": 0.2668
+            }
+          },
+          "per_crop_slices": {
+            "Chickpea": {
+              "samples": 4572,
+              "outbreaks": 622,
+              "prevalence_pct": 13.6,
+              "pr_auc": 0.1935,
+              "roc_auc": 0.6451,
+              "f1": 0.3079,
+              "precision": 0.1906,
+              "recall": 0.8006,
+              "brier_score": 0.2214
+            },
+            "Tomato": {
+              "samples": 4032,
+              "outbreaks": 976,
+              "prevalence_pct": 24.21,
+              "pr_auc": 0.3683,
+              "roc_auc": 0.7096,
+              "f1": 0.5051,
+              "precision": 0.3451,
+              "recall": 0.9416,
+              "brier_score": 0.2498
+            },
+            "Wheat": {
+              "samples": 5455,
+              "outbreaks": 768,
+              "prevalence_pct": 14.08,
+              "pr_auc": 0.2592,
+              "roc_auc": 0.7261,
+              "f1": 0.3671,
+              "precision": 0.241,
+              "recall": 0.7695,
+              "brier_score": 0.1857
+            }
+          },
+          "per_pest_slices": {
+            "Aphids": {
+              "samples": 5455,
+              "outbreaks": 768,
+              "prevalence_pct": 14.08,
+              "pr_auc": 0.2592,
+              "roc_auc": 0.7261,
+              "f1": 0.3671,
+              "precision": 0.241,
+              "recall": 0.7695,
+              "brier_score": 0.1857
+            },
+            "Fruit borer": {
+              "samples": 4032,
+              "outbreaks": 976,
+              "prevalence_pct": 24.21,
+              "pr_auc": 0.3683,
+              "roc_auc": 0.7096,
+              "f1": 0.5051,
+              "precision": 0.3451,
+              "recall": 0.9416,
+              "brier_score": 0.2498
+            },
+            "Pod borer": {
+              "samples": 4572,
+              "outbreaks": 622,
+              "prevalence_pct": 13.6,
+              "pr_auc": 0.1935,
+              "roc_auc": 0.6451,
+              "f1": 0.3079,
+              "precision": 0.1906,
+              "recall": 0.8006,
+              "brier_score": 0.2214
+            }
+          }
+        },
+        "LightGBM": {
+          "model_name": "LightGBM",
+          "feature_set": "ENVIRONMENTAL",
+          "optimal_threshold": 0.42,
+          "validation_metrics": {
+            "model_name": "LightGBM",
+            "feature_set": "ENVIRONMENTAL",
+            "split_name": "validation",
+            "threshold": 0.42,
+            "accuracy": 0.5688,
+            "precision": 0.2614,
+            "recall": 0.8858,
+            "f1": 0.4036,
+            "roc_auc": 0.7284,
+            "pr_auc": 0.2875,
+            "brier_score": 0.2031,
+            "true_negatives": 5934,
+            "false_positives": 5788,
+            "false_negatives": 264,
+            "true_positives": 2048,
+            "total_samples": 14034,
+            "positive_rate": 0.1647,
+            "calibration_data": {
+              "prob_true": [
+                0.0007,
+                0.0224,
+                0.0906,
+                0.1935,
+                0.2274,
+                0.2545,
+                0.2462,
+                0.3187,
+                0.2
+              ],
+              "prob_pred": [
+                0.04,
+                0.1428,
+                0.2423,
+                0.3503,
+                0.4584,
+                0.5568,
+                0.656,
+                0.7315,
+                0.801
+              ],
+              "expected_calibration_error": 0.2408
+            }
+          },
+          "test_metrics_default_threshold": {
+            "model_name": "LightGBM",
+            "feature_set": "ENVIRONMENTAL",
+            "split_name": "test_default_0.50",
+            "threshold": 0.5,
+            "accuracy": 0.5695,
+            "precision": 0.2579,
+            "recall": 0.8297,
+            "f1": 0.3935,
+            "roc_auc": 0.7291,
+            "pr_auc": 0.3164,
+            "brier_score": 0.2196,
+            "true_negatives": 6044,
+            "false_positives": 5649,
+            "false_negatives": 403,
+            "true_positives": 1963,
+            "total_samples": 14059,
+            "positive_rate": 0.1683,
+            "calibration_data": {
+              "prob_true": [
+                0.002,
+                0.0457,
+                0.0427,
+                0.1261,
+                0.2521,
+                0.2079,
+                0.2321,
+                0.3728
+              ],
+              "prob_pred": [
+                0.0588,
+                0.1605,
+                0.238,
+                0.3402,
+                0.4557,
+                0.5608,
+                0.6536,
+                0.7361
+              ],
+              "expected_calibration_error": 0.2751
+            }
+          },
+          "test_metrics_tuned_threshold": {
+            "model_name": "LightGBM",
+            "feature_set": "ENVIRONMENTAL",
+            "split_name": "test_tuned",
+            "threshold": 0.42,
+            "accuracy": 0.5515,
+            "precision": 0.2581,
+            "recall": 0.888,
+            "f1": 0.3999,
+            "roc_auc": 0.7291,
+            "pr_auc": 0.3164,
+            "brier_score": 0.2196,
+            "true_negatives": 5653,
+            "false_positives": 6040,
+            "false_negatives": 265,
+            "true_positives": 2101,
+            "total_samples": 14059,
+            "positive_rate": 0.1683,
+            "calibration_data": {
+              "prob_true": [
+                0.002,
+                0.0457,
+                0.0427,
+                0.1261,
+                0.2521,
+                0.2079,
+                0.2321,
+                0.3728
+              ],
+              "prob_pred": [
+                0.0588,
+                0.1605,
+                0.238,
+                0.3402,
+                0.4557,
+                0.5608,
+                0.6536,
+                0.7361
+              ],
+              "expected_calibration_error": 0.2751
+            }
+          },
+          "per_crop_slices": {
+            "Chickpea": {
+              "samples": 4572,
+              "outbreaks": 622,
+              "prevalence_pct": 13.6,
+              "pr_auc": 0.192,
+              "roc_auc": 0.6501,
+              "f1": 0.3105,
+              "precision": 0.1897,
+              "recall": 0.8553,
+              "brier_score": 0.2262
+            },
+            "Tomato": {
+              "samples": 4032,
+              "outbreaks": 976,
+              "prevalence_pct": 24.21,
+              "pr_auc": 0.3897,
+              "roc_auc": 0.7315,
+              "f1": 0.5047,
+              "precision": 0.3428,
+              "recall": 0.957,
+              "brier_score": 0.2516
+            },
+            "Wheat": {
+              "samples": 5455,
+              "outbreaks": 768,
+              "prevalence_pct": 14.08,
+              "pr_auc": 0.2447,
+              "roc_auc": 0.7182,
+              "f1": 0.3759,
+              "precision": 0.2432,
+              "recall": 0.8268,
+              "brier_score": 0.1904
+            }
+          },
+          "per_pest_slices": {
+            "Aphids": {
+              "samples": 5455,
+              "outbreaks": 768,
+              "prevalence_pct": 14.08,
+              "pr_auc": 0.2447,
+              "roc_auc": 0.7182,
+              "f1": 0.3759,
+              "precision": 0.2432,
+              "recall": 0.8268,
+              "brier_score": 0.1904
+            },
+            "Fruit borer": {
+              "samples": 4032,
+              "outbreaks": 976,
+              "prevalence_pct": 24.21,
+              "pr_auc": 0.3897,
+              "roc_auc": 0.7315,
+              "f1": 0.5047,
+              "precision": 0.3428,
+              "recall": 0.957,
+              "brier_score": 0.2516
+            },
+            "Pod borer": {
+              "samples": 4572,
+              "outbreaks": 622,
+              "prevalence_pct": 13.6,
+              "pr_auc": 0.192,
+              "roc_auc": 0.6501,
+              "f1": 0.3105,
+              "precision": 0.1897,
+              "recall": 0.8553,
+              "brier_score": 0.2262
+            }
+          }
+        }
+      }
+    }
+  }
+}
