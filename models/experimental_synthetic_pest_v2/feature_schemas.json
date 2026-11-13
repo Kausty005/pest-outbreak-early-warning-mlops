@@ -1,0 +1,40 @@
+{
+  "version": "2.0.0",
+  "environmental_features": [
+    "district",
+    "crop",
+    "pest",
+    "growth_stage",
+    "t7_mean_temp_c",
+    "t7_min_temp_c",
+    "t7_max_temp_c",
+    "t7_mean_rh_pct",
+    "t7_rainfall_mm",
+    "t14_rainfall_mm",
+    "t7_mean_soil_moisture",
+    "t7_high_rh_days",
+    "t7_consecutive_dry_days"
+  ],
+  "scouting_assisted_features": [
+    "district",
+    "crop",
+    "pest",
+    "growth_stage",
+    "t7_mean_temp_c",
+    "t7_min_temp_c",
+    "t7_max_temp_c",
+    "t7_mean_rh_pct",
+    "t7_rainfall_mm",
+    "t14_rainfall_mm",
+    "t7_mean_soil_moisture",
+    "t7_high_rh_days",
+    "t7_consecutive_dry_days",
+    "scout_incidence_pct",
+    "scout_severity_pct",
+    "trap_catch_count",
+    "days_since_scouting",
+    "pest_present"
+  ],
+  "target_column": "outbreak_within_7d",
+  "prediction_horizon_days": 7
+}

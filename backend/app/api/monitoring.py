@@ -10,7 +10,10 @@ Endpoints:
 """
 from __future__ import annotations
 
+import json
 import logging
+import os
+from datetime import datetime, timezone
 from typing import Any
 
 from fastapi import APIRouter, BackgroundTasks, HTTPException, Query, status
@@ -22,6 +25,7 @@ router = APIRouter(prefix="/monitoring", tags=["mlops monitoring"])
 _DRIFT_REPORT_DIR = "logs/drift"
 _REFERENCE_DATA = "data/raw/Crop_recommendation.csv"
 _PREDICTION_LOG = "logs/prediction_log.jsonl"
+_MLOPS_EVENTS_LOG = "logs/mlops_events.jsonl"
 
 
 # ── Request / Response models ────────────────────────────────────────────────
@@ -63,6 +67,33 @@ def _safe_import_trigger():
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail=f"Retrain trigger unavailable: {exc}",
         )
+
+
+def _log_mlops_event(event_type: str, model: str, drift_score: float | None, retrain_triggered: bool) -> None:
+    """Append a structured JSON event to logs/mlops_events.jsonl."""
+    try:
+        os.makedirs(os.path.dirname(_MLOPS_EVENTS_LOG), exist_ok=True)
+        record = {
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "event_type": event_type,
+            "model": model,
+            "drift_score": drift_score,
+            "retrain_triggered": retrain_triggered,
+        }
+        with open(_MLOPS_EVENTS_LOG, "a", encoding="utf-8") as f:
+            f.write(json.dumps(record) + "\n")
+    except Exception as exc:  # noqa: BLE001
+        LOGGER.warning("Failed to write mlops event log: %s", exc)
+
+
+def _update_drift_gauge(summary: dict) -> None:
+    """Update Prometheus drift gauge after a drift check."""
+    try:
+        from ..core.metrics import model_drift_score
+        drift_share = summary.get("drift_share", 0.0)
+        model_drift_score.labels(model="crop").set(drift_share)
+    except Exception as exc:  # noqa: BLE001
+        LOGGER.warning("Failed to update Prometheus drift gauge: %s", exc)
 
 
 # ── Routes ───────────────────────────────────────────────────────────────────
@@ -141,6 +172,14 @@ def run_drift_now(payload: DriftRunRequest) -> dict[str, Any]:
             report_dir=payload.report_dir,
             run_id=payload.run_id,
         )
+        # Update Prometheus gauge and log event
+        _update_drift_gauge(summary)
+        _log_mlops_event(
+            event_type="drift_check",
+            model="crop",
+            drift_score=summary.get("drift_share"),
+            retrain_triggered=False,
+        )
         # Strip full feature_drift detail for API response (too large)
         return {k: v for k, v in summary.items() if k != "feature_drift"} | {
             "feature_drift_summary": {
@@ -167,6 +206,12 @@ def trigger_retrain(payload: RetrainRequest, background_tasks: BackgroundTasks) 
         try:
             result = run_trigger(force=payload.force, use_mlflow=payload.use_mlflow)
             LOGGER.info("Background retrain complete: %s", result)
+            _log_mlops_event(
+                event_type="retrain",
+                model="crop",
+                drift_score=None,
+                retrain_triggered=True,
+            )
         except Exception as exc:  # noqa: BLE001
             LOGGER.exception("Background retrain failed: %s", exc)
 

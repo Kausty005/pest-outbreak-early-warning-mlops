@@ -1,0 +1,9 @@
+{
+  "dataset_name": "synthetic_pest_forecasting_v2.csv",
+  "dataset_path": "data/experimental/synthetic_pest_forecasting_v2.csv",
+  "dataset_checksum_sha256": "f8fd7212724576849e3fad0086c4a13bbac0dfd940b622db8d1eb1b4445937e2",
+  "total_records": 100000,
+  "classification": "SYNTHETIC_EXPERIMENTAL_V2",
+  "is_production_ready": false,
+  "disclaimer": "SYNTHETIC_EXPERIMENTAL: Models trained on synthetic benchmark v2 are for research comparison only. Strictly prohibited from commercial farm deployment."
+}

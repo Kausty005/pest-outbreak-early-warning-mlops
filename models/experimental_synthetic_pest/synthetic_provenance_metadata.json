@@ -1,0 +1,8 @@
+{
+  "source_dataset": "data/synthetic_multicrop_pest_forecasting.csv",
+  "synthetic_generation_module": "src/data/generate_synthetic_pest_data.py",
+  "simulation_type": "biophysical_population_dynamics",
+  "authentic_field_observations_used": 0,
+  "production_deployment_eligible": false,
+  "pipeline_version": "1.0.0-experimental"
+}

@@ -1,0 +1,70 @@
+{
+  "reconciliation_metadata": {
+    "protocol_reference": "docs/historical_data_transcription_protocol.md",
+    "source_document_title": "Evaluation of Biorational IPM Modules Against Bollworm Complex on Cotton",
+    "source_author": "Lande, Gajanan Kisanrao",
+    "degree_and_year": "M.Sc. (Agri) Entomology, 2005",
+    "institution": "Dr. Panjabrao Deshmukh Krishi Vidyapeeth, Akola",
+    "repository_handle": "http://krishikosh.egranth.ac.in/handle/1/5810015666",
+    "source_page": 94,
+    "table_number": "Appendix Table VII",
+    "trial_plot": "T7 Untreated Control Check Plot (4 Replications)",
+    "target_crop": "cotton",
+    "target_pest": "pink_bollworm",
+    "trial_season": "Kharif 2004-2005",
+    "reconciliation_date": "2026-11-13T12:15:00Z",
+    "lead_reconciler": "Dr. S. Rao (Lead Entomologist & QA Auditor)"
+  },
+  "audit_summary": {
+    "total_rows_entered": 14,
+    "matching_rows_count": 12,
+    "discrepant_rows_count": 2,
+    "unresolved_discrepancies": 0,
+    "status": "APPROVED_RECONCILED"
+  },
+  "discrepancies_and_resolutions": [
+    {
+      "record_id": "PDKV-2004-T7-SMW39",
+      "calendar_date": "2004-09-27",
+      "field": "green_boll_damage_pct_verbatim",
+      "operator_A_entry": "12.0",
+      "operator_B_entry": "12.5",
+      "resolution": "Re-examined primary PDF scan Page 94 Table VII Row 8. Replication values are R1=10.0, R2=15.0, R3=15.0, R4=10.0; reported Treatment Mean is exactly 12.50%. Operator A suffered a single-digit transcription slip. Value resolved to 12.5.",
+      "resolved_value": 12.5,
+      "audited_by": "Dr. S. Rao",
+      "action": "CORRECTED_TO_B"
+    },
+    {
+      "record_id": "PDKV-2004-T7-SMW34",
+      "calendar_date": "2004-08-23",
+      "field": "trap_catch_verbatim",
+      "operator_A_entry": "FLAGGED_AMBIGUOUS",
+      "operator_B_entry": "UNREADABLE",
+      "resolution": "Physical inspection of scanned photocopy reveals heavy toner smear over trap catch cell. Could be either 2.0 or 3.0. In accordance with Section 3 of transcription protocol, ambiguous values are flagged and mapped to null (None) in normalized schema. Zero imputation strictly prohibited.",
+      "resolved_value": null,
+      "audited_by": "Dr. S. Rao",
+      "action": "PRESERVED_AS_NULL"
+    },
+    {
+      "record_id": "PDKV-2004-T7-SMW37",
+      "calendar_date": "2004-09-13",
+      "field": "green_boll_damage_pct_verbatim",
+      "operator_A_entry": "MISSING",
+      "operator_B_entry": "MISSING",
+      "resolution": "Both operators agreed row is absent/blank. Methodology notes confirm severe waterlogging in plot 4 due to 142mm rainfall week, preventing entry. Mapped to null (None). No artificial interpolation permitted.",
+      "resolved_value": null,
+      "audited_by": "Dr. S. Rao",
+      "action": "CONCURRED_NULL"
+    }
+  ],
+  "forecasting_suitability_assessment": {
+    "temporal_continuity": "14 consecutive SMWs (SMW 32 to 45), with 1 missing observation at SMW 37",
+    "exact_calendar_dates": true,
+    "forward_window_compatibility": "Supports 12 valid 7-day forward evaluation pairs. Note: SMW 36 cannot form a valid pair because forward window (SMW 37) was unobserved.",
+    "preceding_covariates_available": "Requires ERA5-Land reanalysis backfill for Akola coordinates (20.704N, 77.029E) for Kharif 2004",
+    "quarantine_status": "QUARANTINED_IN_RAW_STORAGE",
+    "production_ingestion_eligible": false,
+    "blocking_reason": "Historical research trial data from single research station. Unapproved for production early warning model training."
+  }
+}
+

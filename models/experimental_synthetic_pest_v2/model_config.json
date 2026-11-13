@@ -1,0 +1,15 @@
+{
+  "random_seed": 42,
+  "environmental_best_model": "RandomForest",
+  "scouting_best_model": "LightGBM",
+  "candidate_models": [
+    "LogisticRegression",
+    "RandomForest",
+    "XGBoost",
+    "LightGBM"
+  ],
+  "decision_thresholds": {
+    "environmental": 0.32,
+    "scouting_assisted": 0.82
+  }
+}

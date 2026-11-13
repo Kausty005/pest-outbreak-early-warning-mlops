@@ -63,7 +63,7 @@ export default function UnifiedAdvisorySection() {
     <div className="unified-advisory-container" id="unified-advisory">
       <div className="section-header">
         <div>
-          <p className="eyebrow">End-to-End MLOps Pipeline</p>
+          <p className="eyebrow">Model Lifecycle & Governance</p>
           <h2>Unified Agricultural Advisory & Pest Early-Warning</h2>
           <p className="muted">
             Seamlessly orchestrates Crop Selection, Fertilizer Optimization, and Pest Outbreak Risk Screening.
@@ -133,7 +133,7 @@ export default function UnifiedAdvisorySection() {
             <div className="result-card advisory-card">
               <p className="eyebrow">Comprehensive Field Plan</p>
               <h2>{advisory.crop_recommendation.primary_crop}</h2>
-              <p className="muted">Orchestrated across Crop & Fertilizer MLOps Pipelines</p>
+              <p className="muted">Orchestrated across Crop & Fertilizer Pipelines</p>
 
               {/* Pest Early Warning Section */}
               <div className={`pest-risk-badge risk-${advisory.pest_early_warning_preview.preliminary_risk_level.toLowerCase()}`}>

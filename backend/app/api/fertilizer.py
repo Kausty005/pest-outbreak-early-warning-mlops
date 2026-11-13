@@ -1,7 +1,15 @@
 from __future__ import annotations
 
+import time
+
 from fastapi import APIRouter, HTTPException, Request, status
 
+from ..core.metrics import (
+    prediction_requests_total,
+    prediction_errors_total,
+    prediction_latency_seconds,
+    input_feature_value,
+)
 from ..schemas.fertilizer import (
     FertilizerRecommendationRequest,
     FertilizerRecommendationResponse,
@@ -54,13 +62,25 @@ def recommend_fertilizer(payload: FertilizerRecommendationRequest, request: Requ
     if service is None:
         raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="Fertilizer service not initialized")
 
+    prediction_requests_total.labels(model="fertilizer", endpoint="/fertilizer/recommend").inc()
+    start = time.time()
     try:
         raw_inputs = payload.model_dump(exclude={"farm_id"}, exclude_none=True)
         result = service.prediction(raw_inputs)
     except ModelUnavailableError as error:
+        prediction_errors_total.labels(model="fertilizer", endpoint="/fertilizer/recommend").inc()
         raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=str(error)) from error
     except (ValueError, TypeError) as error:
+        prediction_errors_total.labels(model="fertilizer", endpoint="/fertilizer/recommend").inc()
         raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(error)) from error
+    finally:
+        prediction_latency_seconds.labels(model="fertilizer").observe(time.time() - start)
+
+    # Record input feature histograms
+    for feature in ["N", "P", "K", "temperature", "humidity", "ph", "rainfall"]:
+        val = raw_inputs.get(feature)
+        if val is not None:
+            input_feature_value.labels(feature=feature, model="fertilizer").observe(float(val))
 
     result["persistence_status"] = persist_fertilizer_prediction(
         request.app.state.database,

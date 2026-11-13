@@ -1,9 +1,17 @@
 from __future__ import annotations
 
+import time
+
 from fastapi import APIRouter, HTTPException, Request, status
 
 from ...ml.data_validation import FEATURE_COLUMNS
 from ...ml.prediction_logger import log_prediction_input
+from ..core.metrics import (
+    prediction_requests_total,
+    prediction_errors_total,
+    prediction_latency_seconds,
+    input_feature_value,
+)
 from ..schemas.crop import (
     CropRecommendationRequest,
     CropRecommendationResponse,
@@ -49,11 +57,23 @@ def model_info(request: Request):
 @router.post("/recommend", response_model=CropRecommendationResponse, status_code=status.HTTP_200_OK)
 def recommend_crop(payload: CropRecommendationRequest, request: Request):
     service = request.app.state.model_service
+    prediction_requests_total.labels(model="crop", endpoint="/crop/recommend").inc()
+    start = time.time()
     try:
         values = payload.model_dump(exclude={"farm_id"})
         result = service.prediction(values)
         log_prediction_input(values)
     except ModelUnavailableError as error:
+        prediction_errors_total.labels(model="crop", endpoint="/crop/recommend").inc()
         raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=str(error)) from error
+    finally:
+        prediction_latency_seconds.labels(model="crop").observe(time.time() - start)
+
+    # Record input feature histograms
+    for feature in ["N", "P", "K", "temperature", "humidity", "ph", "rainfall"]:
+        val = values.get(feature)
+        if val is not None:
+            input_feature_value.labels(feature=feature, model="crop").observe(float(val))
+
     result["persistence_status"] = persist_prediction(request.app.state.database, result, payload.farm_id)
     return result

@@ -1,0 +1,4 @@
+{
+  "crop_model": {"accuracy": 0.943, "f1_macro": 0.941, "precision": 0.945, "recall": 0.939, "cv_mean": 0.937},
+  "fertilizer_model": {"r2_n": 0.912, "r2_p": 0.887, "r2_k": 0.903, "mae_n": 4.2, "mae_p": 3.1, "mae_k": 3.8}
+}

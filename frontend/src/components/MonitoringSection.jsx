@@ -64,7 +64,7 @@ export default function MonitoringSection() {
     <section className="form-panel" style={{ maxWidth: '960px', margin: '0 auto 2rem' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
-          <p className="eyebrow">MLOps Lifecycle & Governance</p>
+          <p className="eyebrow">Model Lifecycle & Governance</p>
           <h2>Real-Time Model Drift & Retrain Pipeline</h2>
         </div>
         <div style={{ display: 'flex', gap: '0.5rem' }}>

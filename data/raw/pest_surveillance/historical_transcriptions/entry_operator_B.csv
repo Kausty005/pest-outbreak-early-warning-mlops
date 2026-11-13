@@ -1,0 +1,20 @@
+# TRANSCRIPTION ENTRY: OPERATOR B (Independent Verification Digitization)
+# Source Document: Lande, G. K. (2005). Evaluation of Biorational IPM Modules Against Bollworm Complex on Cotton. M.Sc. Thesis, Dr. PDKV Akola.
+# Repository Record: KrishiKosh handle: 1/5810015666 | Page: 94 | Table: Appendix Table VII
+# Transcriber: Er. S. Patil (QA Data Engineer) | Date: 2026-11-13 | Checksum: MD5_B_VERIFIED
+record_id,smw,calendar_date,crop_growth_stage,days_since_sowing,sampling_unit,replications_sampled,green_boll_damage_pct_verbatim,rosette_flower_pct_verbatim,trap_catch_verbatim,operator_notes
+PDKV-2004-T7-SMW32,32,2004-08-09,squaring,42,20_plants_visual,4,0.0,0.0,1.2,Check plot T7; squaring
+PDKV-2004-T7-SMW33,33,2004-08-16,early_flowering,49,20_plants_visual,4,0.0,2.5,2.0,Flowering commencement; rosette 2.5%
+PDKV-2004-T7-SMW34,34,2004-08-23,peak_flowering,56,20_plants_visual,4,0.0,5.0,UNREADABLE,Trap cell ink smeared; unreadable
+PDKV-2004-T7-SMW35,35,2004-08-30,flowering_boll_initiation,63,20_bolls_dissected,4,2.5,4.0,3.5,Destructive boll dissection 80 bolls total
+PDKV-2004-T7-SMW36,36,2004-09-06,boll_development,70,20_bolls_dissected,4,5.0,2.0,5.0,Damage 5.0%
+PDKV-2004-T7-SMW37,37,2004-09-13,boll_development,77,20_bolls_dissected,4,MISSING,MISSING,MISSING,Missing row in field record due to rain
+PDKV-2004-T7-SMW38,38,2004-09-20,boll_development,84,20_bolls_dissected,4,8.75,0.0,9.0,Damage 8.75%
+PDKV-2004-T7-SMW39,39,2004-09-27,boll_maturation,91,20_bolls_dissected,4,12.5,0.0,14.5,Damage 12.5%; traps 14.5
+PDKV-2004-T7-SMW40,40,2004-10-04,boll_maturation,98,20_bolls_dissected,4,16.25,0.0,18.0,Damage 16.25%
+PDKV-2004-T7-SMW41,41,2004-10-11,boll_maturation,105,20_bolls_dissected,4,21.25,0.0,22.5,Damage 21.25%
+PDKV-2004-T7-SMW42,42,2004-10-18,boll_opening,112,20_bolls_dissected,4,25.0,0.0,19.0,Damage 25.0%
+PDKV-2004-T7-SMW43,43,2004-10-25,boll_opening,119,20_bolls_dissected,4,28.75,0.0,15.0,Damage 28.75%
+PDKV-2004-T7-SMW44,44,2004-11-01,harvesting,126,20_bolls_dissected,4,22.5,0.0,11.0,Damage 22.5%
+PDKV-2004-T7-SMW45,45,2004-11-08,harvesting,133,20_bolls_dissected,4,18.75,0.0,7.5,Damage 18.75%
+
