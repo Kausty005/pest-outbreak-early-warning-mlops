@@ -47,7 +47,7 @@ export function simulateTelemetryForCrop(cropName) {
   }
 }
 
-export default function FarmSetupWizard({ onFarmConfigured, initialConfig, onSelectCropForDetail }) {
+export default function FarmSetupWizard({ currentUser, onFarmConfigured, initialConfig, onSelectCropForDetail }) {
   const [selectedCrop, setSelectedCrop] = useState(initialConfig?.crop || 'Rice')
   const [farmState, setFarmState] = useState(initialConfig?.state || 'Maharashtra')
   const [zoneCount, setZoneCount] = useState(initialConfig?.zones?.length || 3)
@@ -94,6 +94,10 @@ export default function FarmSetupWizard({ onFarmConfigured, initialConfig, onSel
       zones: zones,
       timestamp: new Date().toISOString(),
     }
+    const userKey = currentUser
+      ? `agri_farm_profile_${String(currentUser.id || currentUser.email || currentUser.name).toLowerCase().replace(/[^a-z0-9]/g, '_')}`
+      : 'agri_active_farm_config'
+    localStorage.setItem(userKey, JSON.stringify(farmProfile))
     localStorage.setItem('agri_active_farm_config', JSON.stringify(farmProfile))
     setIsConfiguring(false)
     onFarmConfigured(farmProfile)

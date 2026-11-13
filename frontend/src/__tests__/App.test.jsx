@@ -155,4 +155,26 @@ describe('AgriAdapt Precision Agricultural Platform', () => {
     fireEvent.click(screen.getByRole('button', { name: /^AI Advisory$/i }))
     expect(screen.getAllByText(/Unified AI Crop & Nutrient Advisory/i).length).toBeGreaterThan(0)
   })
+
+  test('different users have different farm estates and different dashboards', async () => {
+    render(<App />)
+
+    // Select Kaushal Sharma preset via Load Estate button
+    const loadButtons = screen.getAllByRole('button', { name: /Load Estate/i })
+    fireEvent.click(loadButtons[0]) // Kaushal Sharma
+
+    expect(await screen.findByText(/Kaushal Sharma's Maharashtra Estate/i)).toBeInTheDocument()
+    expect(screen.getByText(/12.5 Cultivated Acres/i)).toBeInTheDocument()
+
+    // Switch Farmer action opens selector
+    fireEvent.click(screen.getByRole('button', { name: /Switch Farmer/i }))
+    expect(screen.getByText(/Sign In to AgriAdapt/i)).toBeInTheDocument()
+
+    // Select Ramesh Patel preset (2nd button)
+    const switchLoadButtons = screen.getAllByRole('button', { name: /Load Estate/i })
+    fireEvent.click(switchLoadButtons[1]) // Ramesh Patel
+
+    expect(await screen.findByText(/Ramesh Patel's Gujarat Estate/i)).toBeInTheDocument()
+    expect(screen.getByText(/18 Cultivated Acres/i)).toBeInTheDocument()
+  })
 })

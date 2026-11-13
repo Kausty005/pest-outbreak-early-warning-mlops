@@ -9,6 +9,7 @@ import EnvironmentalPestRiskSection from './components/EnvironmentalPestRiskSect
 import PublicPestAdvisoriesSection from './components/PublicPestAdvisoriesSection'
 import FieldSurveillanceSection from './components/FieldSurveillanceSection'
 import MLOpsStatus from './components/MLOpsStatus'
+import { getFarmStorageKeyForUser, ensurePresetFarmsInitialized } from './utils/userFarmStorage'
 
 export default function App() {
   const [currentUser, setCurrentUser] = useState(() => {
@@ -20,30 +21,106 @@ export default function App() {
   })
 
   const [farmProfile, setFarmProfile] = useState(() => {
-    const saved = localStorage.getItem('agri_active_farm_config')
-    if (saved) {
-      try { return JSON.parse(saved) } catch {}
+    const savedUser = localStorage.getItem('agri_auth_user')
+    if (savedUser) {
+      try {
+        const u = JSON.parse(savedUser)
+        const key = getFarmStorageKeyForUser(u)
+        const savedFarm = localStorage.getItem(key) || localStorage.getItem('agri_active_farm_config')
+        if (savedFarm) return JSON.parse(savedFarm)
+      } catch {}
     }
     return null
   })
 
+  const [isAuthOpen, setIsAuthOpen] = useState(false)
   const [activeTab, setActiveTab] = useState('dashboard')
   const [selectedCropDetail, setSelectedCropDetail] = useState(null)
   const [selectedZone, setSelectedZone] = useState(null)
   const [activeTelemetry, setActiveTelemetry] = useState(null)
 
+  // Ensure preset farmers are available in storage
+  useEffect(() => {
+    ensurePresetFarmsInitialized()
+  }, [])
+
+  // Sync farm profile whenever the active logged-in farmer changes
+  useEffect(() => {
+    if (!currentUser) {
+      setFarmProfile(null)
+      setSelectedZone(null)
+      setActiveTelemetry(null)
+      return
+    }
+    const key = getFarmStorageKeyForUser(currentUser)
+    const saved = localStorage.getItem(key)
+    if (saved) {
+      try {
+        const profile = JSON.parse(saved)
+        setFarmProfile(profile)
+        if (profile.zones && profile.zones.length > 0) {
+          setSelectedZone(profile.zones[0])
+          setActiveTelemetry(simulateTelemetryForCrop(profile.zones[0].crop))
+        }
+        return
+      } catch {}
+    }
+    // If user has no farm yet, prompt them to configure
+    setFarmProfile(null)
+    setSelectedZone(null)
+    setActiveTelemetry(null)
+  }, [currentUser?.id, currentUser?.name])
+
+  const handleLogin = (user) => {
+    setCurrentUser(user)
+    setIsAuthOpen(false)
+    const key = getFarmStorageKeyForUser(user)
+    const saved = localStorage.getItem(key)
+    if (saved) {
+      try {
+        const profile = JSON.parse(saved)
+        setFarmProfile(profile)
+        if (profile.zones && profile.zones.length > 0) {
+          setSelectedZone(profile.zones[0])
+          setActiveTelemetry(simulateTelemetryForCrop(profile.zones[0].crop))
+        }
+        return
+      } catch {}
+    }
+    setFarmProfile(null)
+  }
+
   const handleLogout = () => {
     localStorage.removeItem('agri_auth_user')
     setCurrentUser(null)
+    setFarmProfile(null)
+    setSelectedZone(null)
+    setActiveTelemetry(null)
+    setIsAuthOpen(false)
   }
 
   const handleFarmConfigured = (profile) => {
+    if (currentUser) {
+      const key = getFarmStorageKeyForUser(currentUser)
+      localStorage.setItem(key, JSON.stringify(profile))
+    }
+    localStorage.setItem('agri_active_farm_config', JSON.stringify(profile))
     setFarmProfile(profile)
     if (profile.zones && profile.zones.length > 0) {
       setSelectedZone(profile.zones[0])
       const initialTele = simulateTelemetryForCrop(profile.zones[0].crop)
       setActiveTelemetry(initialTele)
     }
+  }
+
+  const handleReconfigureFarm = () => {
+    if (currentUser) {
+      const key = getFarmStorageKeyForUser(currentUser)
+      localStorage.removeItem(key)
+    }
+    setFarmProfile(null)
+    setSelectedZone(null)
+    setActiveTelemetry(null)
   }
 
   const handleSelectCropForDetail = (cropName) => {
@@ -53,22 +130,26 @@ export default function App() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden', background: 'var(--bg-app-gradient)' }}>
-      {/* User Authentication Modal */}
-      {!currentUser && (
-        <AuthModal onLogin={(user) => setCurrentUser(user)} />
+      {/* User Authentication Modal (Prompt on initial load or when switching farmer) */}
+      {(!currentUser || isAuthOpen) && (
+        <AuthModal
+          onLogin={handleLogin}
+          onCancel={currentUser ? () => setIsAuthOpen(false) : null}
+        />
       )}
 
       {/* Main Top Navigation */}
       <Navbar
         currentUser={currentUser}
         onLogout={handleLogout}
+        onSwitchFarmer={() => setIsAuthOpen(true)}
         activeTab={activeTab}
         setActiveTab={setActiveTab}
       />
 
       {/* Main View Area */}
       <main style={{ flex: 1, overflowY: 'auto', padding: '1.25rem 2rem 2.5rem' }}>
-        {/* Onboarding Empty State: If user has no farm config yet */}
+        {/* Onboarding Empty State: If this specific farmer has no farm config yet */}
         {!farmProfile ? (
           <div style={{ maxWidth: '960px', margin: '2rem auto' }}>
             <div style={{
@@ -90,6 +171,7 @@ export default function App() {
             </div>
 
             <FarmSetupWizard
+              currentUser={currentUser}
               initialConfig={null}
               onFarmConfigured={handleFarmConfigured}
               onSelectCropForDetail={handleSelectCropForDetail}
@@ -97,7 +179,7 @@ export default function App() {
           </div>
         ) : (
           <div>
-            {/* Context Subheader Bar - Single unified navigation state without duplicate button rows */}
+            {/* Context Subheader Bar */}
             <div style={{
               display: 'flex',
               marginBottom: '1.25rem',
@@ -121,13 +203,14 @@ export default function App() {
 
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
                 <span style={{ fontSize: '0.825rem', color: '#4B5563' }}>
-                  Estate Crop: <strong style={{ color: '#13241B' }}>{farmProfile.primaryCrop}</strong> ({farmProfile.state})
+                  {currentUser?.name ? `${currentUser.name}'s Estate:` : 'Estate:'}{' '}
+                  <strong style={{ color: '#13241B' }}>{farmProfile.primaryCrop}</strong> ({farmProfile.state})
                 </span>
                 <button
                   type="button"
                   className="btn-secondary-white"
                   style={{ padding: '0.4rem 0.85rem', fontSize: '0.775rem' }}
-                  onClick={() => setFarmProfile(null)}
+                  onClick={handleReconfigureFarm}
                 >
                   ⚙️ Reconfigure Crops
                 </button>
@@ -138,6 +221,7 @@ export default function App() {
             {activeTab === 'dashboard' && (
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '1.35rem', alignItems: 'start' }}>
                 <FarmDashboard
+                  currentUser={currentUser}
                   farmProfile={farmProfile}
                   onSelectCropForDetail={handleSelectCropForDetail}
                   onTelemetryUpdate={(tele, z) => {
@@ -149,7 +233,7 @@ export default function App() {
                   <MLOpsStatus />
                   <div className="modern-card" style={{ border: '1.5px solid #CBD5BF' }}>
                     <div style={{ fontSize: '0.775rem', fontWeight: 800, color: '#059669', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                      Active Standing Plants
+                      {currentUser?.name ? `${currentUser.name}'s Standing Plants` : 'Active Standing Plants'}
                     </div>
                     <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#13241B', marginTop: '0.2rem' }}>
                       {farmProfile.zones?.length || 3} Zones Under Cultivation

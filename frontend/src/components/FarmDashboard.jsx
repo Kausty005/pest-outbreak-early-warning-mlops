@@ -146,7 +146,7 @@ function SensorPin({ zone, telemetry, isSelected, onClick }) {
   )
 }
 
-export default function FarmDashboard({ farmProfile, onSelectCropForDetail, onTelemetryUpdate }) {
+export default function FarmDashboard({ currentUser, farmProfile, onSelectCropForDetail, onTelemetryUpdate }) {
   const [zones, setZones] = useState([])
   const [randomTelemetry, setRandomTelemetry] = useState({})
   const [selectedZoneId, setSelectedZoneId] = useState('zone-1')
@@ -248,7 +248,7 @@ export default function FarmDashboard({ farmProfile, onSelectCropForDetail, onTe
             🛰️ Real-Time IoT Agricultural Command Center
           </span>
           <h2 style={{ margin: '0.2rem 0 0 0', fontSize: '1.45rem', fontWeight: 800, color: '#13241B', letterSpacing: '-0.02em' }}>
-            {farmProfile?.state || 'Maharashtra'} Farm Estate · {farmProfile?.area || '12.5'} Cultivated Acres
+            {currentUser?.name ? `${currentUser.name}'s ` : ''}{farmProfile?.state || 'Maharashtra'} Estate · {farmProfile?.area || '12.5'} Cultivated Acres
           </h2>
         </div>
 

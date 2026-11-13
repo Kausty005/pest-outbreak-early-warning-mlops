@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 
-export default function Navbar({ currentUser, onLogout, activeTab, setActiveTab }) {
+export default function Navbar({ currentUser, onLogout, onSwitchFarmer, activeTab, setActiveTab }) {
   const navItems = [
     { id: 'dashboard', label: 'Field Telemetry' },
     { id: 'advisory', label: 'AI Advisory' },
@@ -152,6 +152,34 @@ export default function Navbar({ currentUser, onLogout, activeTab, setActiveTab 
                 {currentUser.role || 'Farmer'} · {currentUser.district || 'Maharashtra'}
               </div>
             </div>
+
+            <button
+              type="button"
+              onClick={onSwitchFarmer}
+              style={{
+                backgroundColor: 'rgba(16, 185, 129, 0.2)',
+                color: '#6EE7B7',
+                border: '1px solid rgba(52, 211, 153, 0.4)',
+                borderRadius: '7px',
+                padding: '0.35rem 0.65rem',
+                fontSize: '0.725rem',
+                fontWeight: 700,
+                cursor: 'pointer',
+                marginLeft: '0.35rem',
+                transition: 'all 0.15s ease',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = 'rgba(16, 185, 129, 0.35)'
+                e.currentTarget.style.color = '#FFFFFF'
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = 'rgba(16, 185, 129, 0.2)'
+                e.currentTarget.style.color = '#6EE7B7'
+              }}
+              title="Switch to another farmer account"
+            >
+              Switch Farmer
+            </button>
 
             <button
               type="button"
