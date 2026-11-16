@@ -78,6 +78,10 @@ class FertilizerModelService:
             ),
         }
 
+    def recommend_fertilizer(self, inputs: dict[str, Any]) -> dict[str, Any]:
+        """Convenience alias for prediction."""
+        return self.prediction(inputs)
+
     def model_info(self) -> dict[str, Any]:
         if not self.available or self.metadata is None:
             return {
