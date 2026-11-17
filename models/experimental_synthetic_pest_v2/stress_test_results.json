@@ -1,28 +1,28 @@
 {
-  "evaluation_timestamp": "2026-11-17T03:39:11.895045+00:00",
+  "evaluation_timestamp": "2026-11-17T07:37:46.659118+00:00",
   "environmental_pipeline": {
     "pipeline_name": "RandomForest",
     "feature_set": "ENVIRONMENTAL_ONLY",
     "baseline": {
-      "pr_auc": 0.6578,
-      "roc_auc": 0.9469,
-      "f1": 0.6767,
-      "brier_score": 0.1231
+      "pr_auc": 0.6693,
+      "roc_auc": 0.9438,
+      "f1": 0.6769,
+      "brier_score": 0.126
     },
     "stress_scenarios": {
       "missing_weather": {
         "status": "PASSED (Robustly imputed)",
-        "pr_auc": 0.5961,
-        "roc_auc": 0.9189,
+        "pr_auc": 0.5894,
+        "roc_auc": 0.9008,
         "f1": 0.0,
-        "pr_auc_delta": -0.0617
+        "pr_auc_delta": -0.0799
       },
       "sensor_noise": {
         "status": "PASSED",
-        "pr_auc": 0.6256,
-        "roc_auc": 0.9438,
-        "f1": 0.6883,
-        "pr_auc_delta": -0.0322
+        "pr_auc": 0.6218,
+        "roc_auc": 0.9402,
+        "f1": 0.6948,
+        "pr_auc_delta": -0.0475
       }
     }
   },

@@ -1,5 +1,10 @@
 from __future__ import annotations
 
+import os
+
+# Allow local filesystem backend in MLflow 3.x+
+os.environ.setdefault("MLFLOW_ALLOW_FILE_STORE", "true")
+
 import pandas as pd
 import pytest
 from sklearn.ensemble import RandomForestClassifier

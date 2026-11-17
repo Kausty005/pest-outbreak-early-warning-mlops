@@ -18,8 +18,8 @@
         "t7_high_rh_days": 0,
         "t7_consecutive_dry_days": 7
       },
-      "predicted_outbreak_probability_7d": 0.0476,
-      "decision_threshold": 0.69,
+      "predicted_outbreak_probability_7d": 0.0327,
+      "decision_threshold": 0.73,
       "outbreak_forecast_flag": false,
       "disclaimer": "SYNTHETIC_EXPERIMENTAL: Unapproved for field operations."
     },
@@ -39,8 +39,8 @@
         "t7_high_rh_days": 0,
         "t7_consecutive_dry_days": 6
       },
-      "predicted_outbreak_probability_7d": 0.0398,
-      "decision_threshold": 0.69,
+      "predicted_outbreak_probability_7d": 0.03,
+      "decision_threshold": 0.73,
       "outbreak_forecast_flag": false,
       "disclaimer": "SYNTHETIC_EXPERIMENTAL: Unapproved for field operations."
     }

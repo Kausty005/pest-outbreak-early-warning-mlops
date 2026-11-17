@@ -1,5 +1,9 @@
 from __future__ import annotations
 
+import os
+
+os.environ.setdefault("MLFLOW_ALLOW_FILE_STORE", "true")
+
 from backend.ml.train import TrainingConfig, run_training
 
 

@@ -5,6 +5,8 @@ import argparse
 import json
 import logging
 import os
+
+os.environ.setdefault("MLFLOW_ALLOW_FILE_STORE", "true")
 import platform
 import time
 from dataclasses import dataclass, field
@@ -231,6 +233,7 @@ def _comparison_markdown(metadata: dict[str, Any]) -> str:
 def _log_to_mlflow(metadata: dict[str, Any], artifacts_dir: Path, config: TrainingConfig, pipeline: Any) -> None:
     if not config.mlflow_enabled:
         return
+    os.environ.setdefault("MLFLOW_ALLOW_FILE_STORE", "true")
     try:
         import mlflow
         import mlflow.sklearn
@@ -282,7 +285,11 @@ def _log_to_mlflow(metadata: dict[str, Any], artifacts_dir: Path, config: Traini
                 p = artifacts_dir / name
                 if p.exists():
                     mlflow.log_artifact(str(p))
-            mlflow.sklearn.log_model(pipeline, artifact_path="model")
+            mlflow.sklearn.log_model(
+                pipeline,
+                artifact_path="model",
+                serialization_format="cloudpickle",
+            )
             if config.mlflow_register_model:
                 try:
                     mlflow.register_model(f"runs:/{run.info.run_id}/model", "crop-recommendation")

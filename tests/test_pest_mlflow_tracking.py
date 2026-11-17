@@ -11,7 +11,10 @@ Integration tests for MLflow tracking in the Version 2.0 pest forecasting pipeli
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
+
+os.environ.setdefault("MLFLOW_ALLOW_FILE_STORE", "true")
 
 import pytest
 

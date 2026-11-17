@@ -23,6 +23,8 @@ import hashlib
 import json
 import logging
 import os
+
+os.environ.setdefault("MLFLOW_ALLOW_FILE_STORE", "true")
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -473,7 +475,11 @@ def _log_to_mlflow_v2(
 
             # 4. Artifacts
             try:
-                mlflow.sklearn.log_model(best_pipeline, artifact_path="model")
+                mlflow.sklearn.log_model(
+                    best_pipeline,
+                    artifact_path="model",
+                    serialization_format="cloudpickle",
+                )
             except Exception as model_err:
                 LOGGER.warning("MLflow model serialization notice: %s", model_err)
 

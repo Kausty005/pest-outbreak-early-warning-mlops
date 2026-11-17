@@ -9,7 +9,7 @@
     "LightGBM"
   ],
   "decision_thresholds": {
-    "environmental": 0.69,
+    "environmental": 0.73,
     "scouting_assisted": 0.82
   }
 }
