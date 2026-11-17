@@ -1,7 +1,7 @@
 {
   "random_seed": 42,
   "environmental_best_model": "RandomForest",
-  "scouting_best_model": "LightGBM",
+  "scouting_best_model": "LogisticRegression",
   "candidate_models": [
     "LogisticRegression",
     "RandomForest",
@@ -9,7 +9,7 @@
     "LightGBM"
   ],
   "decision_thresholds": {
-    "environmental": 0.32,
+    "environmental": 0.69,
     "scouting_assisted": 0.82
   }
 }

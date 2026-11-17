@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { pestRiskApi } from '../services/api'
+import ExperimentalPestForecastingSection from './ExperimentalPestForecastingSection'
 
 const DEFAULT_CROPS = ['cotton', 'soybean', 'rice', 'maize']
 const DEFAULT_DISTRICTS = ['Nagpur', 'Amravati', 'Yavatmal', 'Jalgaon']
@@ -27,6 +28,7 @@ export default function EnvironmentalPestRiskSection({ preselectedCrop }) {
   const [assessmentDate, setAssessmentDate] = useState('2023-09-15')
   const [plantingDate, setPlantingDate] = useState('2023-06-15')
   const [fetchLiveForecast, setFetchLiveForecast] = useState(false)
+  const [engineMode, setEngineMode] = useState('biophysical') // 'biophysical' or 'ml-forecasting'
 
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -139,7 +141,48 @@ export default function EnvironmentalPestRiskSection({ preselectedCrop }) {
         </p>
       </div>
 
-      <div className="content-grid" style={{ display: 'grid', gridTemplateColumns: 'minmax(340px, 420px) 1fr', gap: '1.5rem', alignItems: 'start' }}>
+      {/* Engine Mode Selector */}
+      <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+        <button
+          type="button"
+          onClick={() => setEngineMode('biophysical')}
+          style={{
+            padding: '0.55rem 1.15rem',
+            borderRadius: '10px',
+            fontSize: '0.825rem',
+            fontWeight: 800,
+            cursor: 'pointer',
+            border: engineMode === 'biophysical' ? '2px solid #059669' : '1px solid #CBD5BF',
+            background: engineMode === 'biophysical' ? '#ECFDF5' : '#FFFFFF',
+            color: engineMode === 'biophysical' ? '#065F46' : '#4B5563',
+            transition: 'all 0.15s ease',
+          }}
+        >
+          🔬 ICAR Biophysical Favorability (Rule-Based EFI)
+        </button>
+        <button
+          type="button"
+          onClick={() => setEngineMode('ml-forecasting')}
+          style={{
+            padding: '0.55rem 1.15rem',
+            borderRadius: '10px',
+            fontSize: '0.825rem',
+            fontWeight: 800,
+            cursor: 'pointer',
+            border: engineMode === 'ml-forecasting' ? '2px solid #059669' : '1px solid #CBD5BF',
+            background: engineMode === 'ml-forecasting' ? '#ECFDF5' : '#FFFFFF',
+            color: engineMode === 'ml-forecasting' ? '#065F46' : '#4B5563',
+            transition: 'all 0.15s ease',
+          }}
+        >
+          ⚡ Experimental ML Outbreak Forecasting (v2.0)
+        </button>
+      </div>
+
+      {engineMode === 'ml-forecasting' ? (
+        <ExperimentalPestForecastingSection />
+      ) : (
+        <div className="content-grid" style={{ display: 'grid', gridTemplateColumns: 'minmax(340px, 420px) 1fr', gap: '1.5rem', alignItems: 'start' }}>
         {/* Input Parameters Panel */}
         <section className="modern-card" style={{ padding: '1.5rem' }}>
           <div style={{ marginBottom: '1.25rem', borderBottom: '1px solid #E2E8D8', paddingBottom: '0.85rem' }}>
@@ -563,6 +606,7 @@ export default function EnvironmentalPestRiskSection({ preselectedCrop }) {
           )}
         </section>
       </div>
+      )}
     </div>
   )
 }

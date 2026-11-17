@@ -32,12 +32,15 @@ backend/artifacts/*.json
 backend/artifacts/*.md
 !backend/artifacts/.gitkeep
 backend/artifacts/candidates/crop-202611*
+models/**/candidates/
+models/**/backups/
 
 # Drift & monitoring logs (runtime-generated)
 logs/
 logs/drift/
 logs/prediction_log.jsonl
 logs/retrain_log.jsonl
+logs/pest_retrain_log.jsonl
 *.log
 
 # macOS

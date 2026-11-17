@@ -74,6 +74,12 @@ export const pestRiskApi = {
   assess: (payload) => request('/pest-risk/environmental-assessment', { method: 'POST', body: JSON.stringify(payload) }),
 }
 
+export const pestForecastingApi = {
+  modelInfo: () => request('/pest-forecasting/model-info'),
+  predict: (payload) => request('/pest-forecasting/predict', { method: 'POST', body: JSON.stringify(payload) }),
+  example: (configuration = 'ENVIRONMENTAL_ONLY') => request(`/pest-forecasting/example?configuration=${configuration}`),
+}
+
 export const publicAdvisoriesApi = {
   list: (params = {}) => {
     const qry = new URLSearchParams()

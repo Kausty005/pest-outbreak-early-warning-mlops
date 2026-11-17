@@ -42,6 +42,11 @@ class RetrainRequest(BaseModel):
     use_mlflow: bool = False
 
 
+class PestRetrainRequest(BaseModel):
+    force_experimental: bool = False
+    use_mlflow: bool = False
+
+
 # ── Helpers ──────────────────────────────────────────────────────────────────
 
 def _safe_import_drift():
@@ -224,4 +229,78 @@ def trigger_retrain(payload: RetrainRequest, background_tasks: BackgroundTasks) 
         "status": "queued",
         "force": payload.force,
         "message": "Retraining queued in background. Poll GET /monitoring/retrain/history for results.",
+    }
+
+
+# ── Pest Forecasting Retraining Endpoints ────────────────────────────────────
+
+@router.get("/pest-retrain/status", status_code=status.HTTP_200_OK)
+def get_pest_retrain_status() -> dict[str, Any]:
+    """Check scientific readiness gate and data sufficiency for pest retraining."""
+    from backend.ml.pest_retrain_trigger import check_pest_retraining_eligibility
+    eligible, reason, meta = check_pest_retraining_eligibility()
+    return {
+        "eligible_for_authentic_retraining": eligible,
+        "reason": reason,
+        "readiness_summary": meta,
+        "policy": "Supervised production retraining requires >=500 verified field records.",
+    }
+
+
+@router.get("/pest-retrain/history", status_code=status.HTTP_200_OK)
+def get_pest_retrain_history_endpoint(last_n: int = Query(default=20, ge=1, le=100)) -> list[dict[str, Any]]:
+    """Retrieve audit history of pest retraining trigger attempts."""
+    from backend.ml.pest_retrain_trigger import get_pest_retrain_history
+    return get_pest_retrain_history(last_n=last_n)
+
+
+@router.post("/pest-retrain/trigger", status_code=status.HTTP_200_OK)
+def trigger_pest_retrain(payload: PestRetrainRequest, background_tasks: BackgroundTasks) -> dict[str, Any]:
+    """
+    Trigger controlled pest forecasting retraining.
+    If authentic data is insufficient, request is rejected by the Scientific Readiness Gate.
+    If force_experimental is True, runs candidate validation and staging in experimental tier.
+    """
+    from backend.ml.pest_retrain_trigger import check_pest_retraining_eligibility, trigger_controlled_pest_retraining
+
+    eligible, reason, meta = check_pest_retraining_eligibility()
+    if not eligible and not payload.force_experimental:
+        # Promptly return gate refusal without queuing
+        from backend.ml.pest_retrain_trigger import _append_pest_retrain_log
+        audit_record = {
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "status": "REJECTED_BY_READINESS_GATE",
+            "reason": reason,
+            "metadata": meta,
+            "retraining_executed": False,
+        }
+        _append_pest_retrain_log(audit_record)
+        return {
+            "status": "rejected",
+            "reason": reason,
+            "readiness_summary": meta,
+            "message": "Supervised model retraining blocked by Scientific Readiness Gate.",
+        }
+
+    def _bg():
+        try:
+            res = trigger_controlled_pest_retraining(
+                force_experimental=payload.force_experimental,
+                use_mlflow=payload.use_mlflow,
+            )
+            LOGGER.info("Pest retraining execution result: %s", res)
+            _log_mlops_event(
+                event_type="pest_retrain",
+                model="pest_forecasting",
+                drift_score=None,
+                retrain_triggered=res.get("retraining_executed", False),
+            )
+        except Exception as exc:
+            LOGGER.exception("Background pest retrain failed: %s", exc)
+
+    background_tasks.add_task(_bg)
+    return {
+        "status": "queued",
+        "force_experimental": payload.force_experimental,
+        "message": "Controlled pest retraining pipeline queued in background. Check /monitoring/pest-retrain/history.",
     }

@@ -15,6 +15,7 @@ from .api import (
     fertilizer_router,
     lifecycle_router,
     monitoring_router,
+    pest_forecasting_router,
     pest_risk_router,
     pest_surveillance_router,
     public_advisories_router,
@@ -24,7 +25,7 @@ from .core.config import settings as default_settings
 from .core.logging import configure_logging
 from .db import DatabaseManager
 from .schemas.crop import HealthResponse
-from .services import CropModelService, FertilizerModelService
+from .services import CropModelService, FertilizerModelService, PestForecastingService
 
 LOGGER = logging.getLogger(__name__)
 
@@ -38,6 +39,7 @@ def create_app(config: Settings | None = None) -> FastAPI:
         # Load models during startup lifespan
         app.state.model_service.load()
         app.state.fertilizer_service.load()
+        app.state.pest_forecasting_service.load()
         yield
 
     app = FastAPI(
@@ -50,11 +52,13 @@ def create_app(config: Settings | None = None) -> FastAPI:
     # Initialize services on state immediately
     app.state.model_service = CropModelService(app_settings)
     app.state.fertilizer_service = FertilizerModelService(app_settings)
+    app.state.pest_forecasting_service = PestForecastingService()
     app.state.database = DatabaseManager(app_settings)
 
     # Also load models eagerly so synchronous clients (e.g. without context manager) work reliably
     app.state.model_service.load()
     app.state.fertilizer_service.load()
+    app.state.pest_forecasting_service.load()
 
     app.add_middleware(
         CORSMiddleware,
@@ -71,6 +75,7 @@ def create_app(config: Settings | None = None) -> FastAPI:
     app.include_router(monitoring_router, prefix=app_settings.api_prefix)
     app.include_router(farm_router, prefix=app_settings.api_prefix)
     app.include_router(pest_risk_router, prefix=app_settings.api_prefix)
+    app.include_router(pest_forecasting_router, prefix=app_settings.api_prefix)
     app.include_router(public_advisories_router, prefix=app_settings.api_prefix)
     app.include_router(pest_surveillance_router, prefix=app_settings.api_prefix)
     app.include_router(lifecycle_router, prefix=app_settings.api_prefix)
@@ -84,10 +89,12 @@ def create_app(config: Settings | None = None) -> FastAPI:
     def health(request: Request):
         crop_svc = getattr(request.app.state, "model_service", None)
         fert_svc = getattr(request.app.state, "fertilizer_service", None)
+        pest_svc = getattr(request.app.state, "pest_forecasting_service", None)
         database = getattr(request.app.state, "database", None)
 
         crop_avail = crop_svc.available if crop_svc else False
         fert_avail = fert_svc.available if fert_svc else False
+        pest_avail = pest_svc.loaded if pest_svc else False
         both_healthy = crop_avail and fert_avail
 
         return {
@@ -98,6 +105,8 @@ def create_app(config: Settings | None = None) -> FastAPI:
             "crop_model_version": crop_svc.model_version if crop_svc else None,
             "fertilizer_model_available": fert_avail,
             "fertilizer_model_version": fert_svc.model_version if fert_svc else None,
+            "pest_forecasting_available": pest_avail,
+            "pest_forecasting_version": pest_svc.model_version if pest_svc else None,
             "persistence_enabled": database.enabled if database else False,
             "persistence_available": database.available if database else False,
         }

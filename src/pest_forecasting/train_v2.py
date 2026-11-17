@@ -18,10 +18,13 @@ Saves versioned artifacts to models/experimental_synthetic_pest_v2/.
 """
 from __future__ import annotations
 
+import argparse
 import hashlib
 import json
 import logging
-from datetime import datetime
+import os
+import sys
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -53,26 +56,29 @@ MODELS_DIR = Path("models/experimental_synthetic_pest_v2")
 RANDOM_SEED = 42
 
 
-def get_model_instances_v2(imbalance_ratio: float) -> dict[str, Any]:
+def get_model_instances_v2(imbalance_ratio: float, quick: bool = False) -> dict[str, Any]:
     """
     Instantiate the candidate models with pinned seeds for reproducibility.
     """
+    n_est = 10 if quick else 100
+    max_d_rf = 4 if quick else 12
+    max_d_boost = 3 if quick else 6
     return {
         "LogisticRegression": LogisticRegression(
             class_weight="balanced",
-            max_iter=1000,
+            max_iter=500 if quick else 1000,
             random_state=RANDOM_SEED,
         ),
         "RandomForest": RandomForestClassifier(
-            n_estimators=100,
-            max_depth=12,
+            n_estimators=n_est,
+            max_depth=max_d_rf,
             class_weight="balanced",
             random_state=RANDOM_SEED,
             n_jobs=-1,
         ),
         "XGBoost": XGBClassifier(
-            n_estimators=100,
-            max_depth=6,
+            n_estimators=n_est,
+            max_depth=max_d_boost,
             learning_rate=0.1,
             scale_pos_weight=imbalance_ratio,
             eval_metric="logloss",
@@ -80,8 +86,8 @@ def get_model_instances_v2(imbalance_ratio: float) -> dict[str, Any]:
             n_jobs=-1,
         ),
         "LightGBM": LGBMClassifier(
-            n_estimators=100,
-            max_depth=6,
+            n_estimators=n_est,
+            max_depth=max_d_boost,
             learning_rate=0.1,
             class_weight="balanced",
             random_state=RANDOM_SEED,
@@ -94,6 +100,7 @@ def get_model_instances_v2(imbalance_ratio: float) -> dict[str, Any]:
 def train_and_evaluate_configuration_v2(
     df: pd.DataFrame,
     feature_config: str = "full",  # "full" (scouting-assisted) or "environmental"
+    quick: bool = False,
 ) -> tuple[dict[str, Any], Any, str]:
     """
     Train and evaluate all 4 model families for a given feature configuration.
@@ -106,7 +113,7 @@ def train_and_evaluate_configuration_v2(
     imbalance_ratio = neg_count / max(pos_count, 1)
 
     selected_features = list(FULL_FEATURE_COLUMNS if feature_config == "full" else ENVIRONMENTAL_FEATURE_COLUMNS)
-    candidate_models = get_model_instances_v2(imbalance_ratio)
+    candidate_models = get_model_instances_v2(imbalance_ratio, quick=quick)
 
     results: dict[str, Any] = {}
     best_model_name = ""
@@ -117,6 +124,17 @@ def train_and_evaluate_configuration_v2(
         print(f"  Training {name} on {feature_config.upper()} v2 set ({len(splits.X_train)} samples)...")
         pipeline = build_model_pipeline_v2(classifier=clf, feature_columns=selected_features)
         pipeline.fit(splits.X_train, splits.y_train)
+
+        # Training metrics
+        train_probs = pipeline.predict_proba(splits.X_train)[:, 1]
+        train_metrics = evaluate_predictions(
+            y_true=splits.y_train.values,
+            y_prob=train_probs,
+            model_name=name,
+            feature_set=feature_config.upper(),
+            split_name="train",
+            threshold=0.50,
+        )
 
         # Validation probability predictions
         val_probs = pipeline.predict_proba(splits.X_val)[:, 1]
@@ -172,6 +190,7 @@ def train_and_evaluate_configuration_v2(
             "optimal_threshold": tuned_thresh,
             "false_positive_rate": round(float(fpr), 4),
             "false_alarm_burden": round(float(false_alarm_burden), 4),
+            "train_metrics": train_metrics.to_dict(),
             "validation_metrics": val_metrics.to_dict(),
             "test_metrics_default_threshold": test_metrics_default.to_dict(),
             "test_metrics_tuned_threshold": test_metrics_tuned.to_dict(),
@@ -321,18 +340,194 @@ def run_stress_tests(
     return stress_results
 
 
+def _log_to_mlflow_v2(
+    experiment_name: str,
+    tracking_uri: str | None,
+    run_name: str,
+    config_name: str,
+    summary: dict[str, Any],
+    best_pipeline: Any,
+    best_model_name: str,
+    stress_pipeline_results: dict[str, Any],
+    dataset_path: str | Path,
+    dataset_checksum: str,
+    models_dir: Path,
+) -> dict[str, Any]:
+    """
+    Log an experimental pest forecasting run to MLflow.
+    Separates training, validation, and test metrics, logs parameters, hyperparams, and artifacts.
+    """
+    try:
+        import mlflow
+        import mlflow.sklearn
+    except ImportError:
+        LOGGER.warning("MLflow package not available; continuing without MLflow logging")
+        return {"status": "unavailable", "reason": "mlflow package not installed"}
+
+    resolved_uri = (
+        tracking_uri
+        or os.getenv("MLFLOW_TRACKING_URI")
+        or str(Path("mlruns").resolve())
+    )
+    if not (
+        resolved_uri.startswith("http://")
+        or resolved_uri.startswith("https://")
+        or resolved_uri.startswith("file:")
+        or resolved_uri.startswith("sqlite:")
+        or resolved_uri.startswith("postgresql:")
+        or resolved_uri.startswith("mysql:")
+    ):
+        resolved_uri = Path(resolved_uri).resolve().as_uri()
+
+    try:
+        mlflow.set_tracking_uri(resolved_uri)
+        mlflow.set_experiment(experiment_name)
+        with mlflow.start_run(run_name=run_name) as run:
+            # 1. Tags
+            mlflow.set_tags(
+                {
+                    "model_domain": "pest_forecasting",
+                    "feature_configuration": config_name,
+                    "model_family": best_model_name,
+                    "dataset_classification": "SYNTHETIC_EXPERIMENTAL_V2",
+                    "is_production_ready": "false",
+                    "pipeline_version": "2.0.0",
+                }
+            )
+
+            # 2. Parameters & Hyperparameters
+            best_res = summary["models"][best_model_name]
+            split_meta = summary["split_metadata"]
+            params = {
+                "feature_configuration": config_name,
+                "model_name": best_model_name,
+                "dataset_checksum_sha256": dataset_checksum,
+                "dataset_name": Path(dataset_path).name,
+                "dataset_classification": "SYNTHETIC_EXPERIMENTAL_V2",
+                "is_production_ready": False,
+                "random_seed": RANDOM_SEED,
+                "feature_count": summary["feature_count"],
+                "optimal_threshold": best_res["optimal_threshold"],
+                "train_samples": split_meta["train_samples"],
+                "val_samples": split_meta["val_samples"],
+                "test_samples": split_meta["test_samples"],
+                "purged_samples": split_meta["purged_samples"],
+                "train_outbreaks": split_meta["train_outbreaks"],
+                "val_outbreaks": split_meta["val_outbreaks"],
+                "test_outbreaks": split_meta["test_outbreaks"],
+            }
+            try:
+                clf = best_pipeline.named_steps["classifier"]
+                clf_params = clf.get_params()
+                for k in ("n_estimators", "max_depth", "learning_rate", "scale_pos_weight", "class_weight"):
+                    if k in clf_params:
+                        params[f"hyperparam_{k}"] = str(clf_params[k])
+            except Exception:
+                pass
+            mlflow.log_params(params)
+
+            # 3. Metrics (Training, Validation, and Test logged separately)
+            metrics: dict[str, float] = {}
+            if "train_metrics" in best_res:
+                tm = best_res["train_metrics"]
+                metrics.update({
+                    "train_pr_auc": float(tm.get("pr_auc", 0.0)),
+                    "train_roc_auc": float(tm.get("roc_auc", 0.0)),
+                    "train_f1": float(tm.get("f1", 0.0)),
+                    "train_brier_score": float(tm.get("brier_score", 0.0)),
+                    "train_precision": float(tm.get("precision", 0.0)),
+                    "train_recall": float(tm.get("recall", 0.0)),
+                })
+            vm = best_res.get("validation_metrics", {})
+            metrics.update({
+                "val_pr_auc": float(vm.get("pr_auc", 0.0)),
+                "val_roc_auc": float(vm.get("roc_auc", 0.0)),
+                "val_f1": float(vm.get("f1", 0.0)),
+                "val_brier_score": float(vm.get("brier_score", 0.0)),
+                "val_precision": float(vm.get("precision", 0.0)),
+                "val_recall": float(vm.get("recall", 0.0)),
+            })
+            tm_tuned = best_res.get("test_metrics_tuned_threshold", {})
+            metrics.update({
+                "test_pr_auc": float(tm_tuned.get("pr_auc", 0.0)),
+                "test_roc_auc": float(tm_tuned.get("roc_auc", 0.0)),
+                "test_f1": float(tm_tuned.get("f1", 0.0)),
+                "test_brier_score": float(tm_tuned.get("brier_score", 0.0)),
+                "test_precision": float(tm_tuned.get("precision", 0.0)),
+                "test_recall": float(tm_tuned.get("recall", 0.0)),
+                "test_false_positive_rate": float(best_res.get("false_positive_rate", 0.0)),
+                "test_false_alarm_burden": float(best_res.get("false_alarm_burden", 0.0)),
+            })
+
+            # Stress test metrics
+            if stress_pipeline_results and "stress_scenarios" in stress_pipeline_results:
+                scenarios = stress_pipeline_results["stress_scenarios"]
+                if "missing_weather" in scenarios and "pr_auc" in scenarios["missing_weather"]:
+                    metrics["stress_missing_weather_pr_auc"] = float(scenarios["missing_weather"]["pr_auc"])
+                if "sensor_noise" in scenarios and "pr_auc" in scenarios["sensor_noise"]:
+                    metrics["stress_sensor_noise_pr_auc"] = float(scenarios["sensor_noise"]["pr_auc"])
+                if "missing_scouting" in scenarios and "pr_auc" in scenarios["missing_scouting"]:
+                    metrics["stress_missing_scouting_pr_auc"] = float(scenarios["missing_scouting"]["pr_auc"])
+
+            mlflow.log_metrics(metrics)
+
+            # 4. Artifacts
+            try:
+                mlflow.sklearn.log_model(best_pipeline, artifact_path="model")
+            except Exception as model_err:
+                LOGGER.warning("MLflow model serialization notice: %s", model_err)
+
+            for artifact_name in (
+                "feature_schemas.json",
+                "model_config.json",
+                "partition_metadata.json",
+                "synthetic_provenance_metadata.json",
+                "stress_test_results.json",
+                "experiment_comparison_summary.json",
+                "inference_examples.json",
+            ):
+                art_p = models_dir / artifact_name
+                if art_p.exists():
+                    mlflow.log_artifact(str(art_p))
+
+            LOGGER.info("MLflow run %s logged successfully to %s", run.info.run_id, resolved_uri)
+            return {
+                "status": "tracked",
+                "run_id": run.info.run_id,
+                "experiment": experiment_name,
+                "tracking_uri": resolved_uri,
+            }
+    except Exception as exc:
+        LOGGER.warning("MLflow logging failed: %s", exc)
+        return {
+            "status": "failed",
+            "error": str(exc),
+            "tracking_uri": resolved_uri,
+        }
+
+
 def run_training_and_stress_pipeline_v2(
     dataset_path: str | Path = "data/experimental/synthetic_pest_forecasting_v2.csv",
     models_dir: str | Path = MODELS_DIR,
+    quick: bool = False,
+    mlflow_enabled: bool = False,
+    mlflow_tracking_uri: str | None = None,
+    mlflow_experiment: str = "pest-forecasting-v2",
+    register_candidate: bool = False,
+    promote_experimental: bool = False,
 ) -> dict[str, Any]:
     """
     Execute complete retraining, evaluation, stress testing, and artifact saving for v2.
+    Integrates MLflow tracking and experimental Model Registry candidate staging.
     """
     models_path = Path(models_dir)
     models_path.mkdir(parents=True, exist_ok=True)
 
     print("=== Loading and Validating Version 2.0 Synthetic Dataset ===")
     df = load_and_validate_dataset_v2(dataset_path)
+    if quick:
+        print("Quick mode active: using 5% sample for fast execution.")
+        df = df.sample(frac=0.05, random_state=RANDOM_SEED).sort_values("date").reset_index(drop=True)
     print(f"Loaded {len(df)} records across {df['crop'].nunique()} crops and {df['district'].nunique()} districts.")
 
     with open(dataset_path, "rb") as fp:
@@ -340,11 +535,15 @@ def run_training_and_stress_pipeline_v2(
 
     # Train Experiment A: ENVIRONMENTAL_ONLY
     print("\n=== EXPERIMENT A: ENVIRONMENTAL-ONLY EARLY WARNING ===")
-    env_summary, best_env_pipeline, best_env_name = train_and_evaluate_configuration_v2(df, feature_config="environmental")
+    env_summary, best_env_pipeline, best_env_name = train_and_evaluate_configuration_v2(
+        df, feature_config="environmental", quick=quick
+    )
 
     # Train Experiment B: SCOUTING_ASSISTED
     print("\n=== EXPERIMENT B: SCOUTING-ASSISTED FORECASTING ===")
-    scout_summary, best_scout_pipeline, best_scout_name = train_and_evaluate_configuration_v2(df, feature_config="full")
+    scout_summary, best_scout_pipeline, best_scout_name = train_and_evaluate_configuration_v2(
+        df, feature_config="full", quick=quick
+    )
 
     # Stress testing
     print("\n=== RUNNING STRESS TESTS ON BEST PIPELINES ===")
@@ -372,7 +571,7 @@ def run_training_and_stress_pipeline_v2(
     )
 
     stress_report = {
-        "evaluation_timestamp": datetime.utcnow().isoformat(),
+        "evaluation_timestamp": datetime.now(timezone.utc).isoformat(),
         "environmental_pipeline": stress_env,
         "scouting_assisted_pipeline": stress_scout,
     }
@@ -435,12 +634,17 @@ def run_training_and_stress_pipeline_v2(
     with open(models_path / "stress_test_results.json", "w", encoding="utf-8") as f:
         json.dump(stress_report, f, indent=2)
 
+    version_id = f"pest-v2-{datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')}-{checksum[:12]}"
+
     # Save comparison summary
     full_comparison = {
-        "experiment_timestamp": datetime.utcnow().isoformat(),
+        "model_version": version_id,
+        "experiment_timestamp": datetime.now(timezone.utc).isoformat(),
         "random_seed": RANDOM_SEED,
         "dataset_checksum": checksum,
         "classification": "SYNTHETIC_EXPERIMENTAL_V2",
+        "is_production_ready": False,
+        "best_val_pr_auc": scout_summary["best_val_pr_auc"],
         "scientific_disclaimer": "SYNTHETIC_EXPERIMENTAL: For algorithm benchmarking only.",
         "experiments": {
             "ENVIRONMENTAL_ONLY": env_summary,
@@ -484,10 +688,102 @@ def run_training_and_stress_pipeline_v2(
     with open(models_path / "inference_examples.json", "w", encoding="utf-8") as f:
         json.dump(inference_examples, f, indent=2)
 
+    # MLflow Tracking
+    if mlflow_enabled:
+        timestamp_str = datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S")
+        env_run_name = f"pest-v2-env-{best_env_name}-{timestamp_str}"
+        scout_run_name = f"pest-v2-scout-{best_scout_name}-{timestamp_str}"
+
+        print(f"\n=== LOGGING TO MLFLOW ({mlflow_experiment}) ===")
+        mlflow_env = _log_to_mlflow_v2(
+            experiment_name=mlflow_experiment,
+            tracking_uri=mlflow_tracking_uri,
+            run_name=env_run_name,
+            config_name="ENVIRONMENTAL_ONLY",
+            summary=env_summary,
+            best_pipeline=best_env_pipeline,
+            best_model_name=best_env_name,
+            stress_pipeline_results=stress_env,
+            dataset_path=dataset_path,
+            dataset_checksum=checksum,
+            models_dir=models_path,
+        )
+        mlflow_scout = _log_to_mlflow_v2(
+            experiment_name=mlflow_experiment,
+            tracking_uri=mlflow_tracking_uri,
+            run_name=scout_run_name,
+            config_name="SCOUTING_ASSISTED",
+            summary=scout_summary,
+            best_pipeline=best_scout_pipeline,
+            best_model_name=best_scout_name,
+            stress_pipeline_results=stress_scout,
+            dataset_path=dataset_path,
+            dataset_checksum=checksum,
+            models_dir=models_path,
+        )
+        full_comparison["mlflow"] = {
+            "ENVIRONMENTAL_ONLY": mlflow_env,
+            "SCOUTING_ASSISTED": mlflow_scout,
+        }
+        with open(models_path / "experiment_comparison_summary.json", "w", encoding="utf-8") as f:
+            json.dump(full_comparison, f, indent=2)
+
+    # Model Registry Candidate Staging
+    if register_candidate:
+        from backend.ml.model_registry import stage_pest_candidate
+        c_dir = stage_pest_candidate(
+            models_dir=models_path,
+            version=version_id,
+            candidate_metadata=full_comparison,
+            source_artifacts_dir=models_path,
+        )
+        print(f"Staged pest candidate in registry: {version_id} ({c_dir})")
+
+    # Experimental Model Promotion
+    if promote_experimental:
+        from backend.ml.model_registry import promote_pest_experimental_candidate, PromotionError
+        try:
+            ledger = promote_pest_experimental_candidate(
+                models_dir=models_path,
+                candidate_metadata=full_comparison,
+                target_tier="experimental",
+            )
+            print(f"Promoted candidate {version_id} to active experimental tier. Active ledger version: {ledger.get('active_experimental_version')}")
+        except PromotionError as pe:
+            print(f"Candidate {version_id} promotion rejected by evaluation gate: {pe}")
+
     print("\n=== Retraining & Artifact Serialization Complete! ===")
     return full_comparison
 
 
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--dataset", default="data/experimental/synthetic_pest_forecasting_v2.csv", help="Path to synthetic pest dataset")
+    parser.add_argument("--models-dir", default=str(MODELS_DIR), help="Output directory for model artifacts")
+    parser.add_argument("--quick", action="store_true", help="Run fast training on subsample for CI or tests")
+    parser.add_argument("--mlflow", action="store_true", help="Enable MLflow tracking")
+    parser.add_argument("--mlflow-tracking-uri", default=None, help="MLflow tracking URI (default: local mlruns)")
+    parser.add_argument("--mlflow-experiment", default="pest-forecasting-v2", help="MLflow experiment name")
+    parser.add_argument("--register-candidate", action="store_true", help="Stage model candidate in model registry")
+    parser.add_argument("--promote-experimental", action="store_true", help="Promote candidate to active experimental tier")
+    return parser.parse_args()
+
+
+def main() -> None:
+    args = parse_args()
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(name)s – %(message)s")
+    run_training_and_stress_pipeline_v2(
+        dataset_path=args.dataset,
+        models_dir=args.models_dir,
+        quick=args.quick,
+        mlflow_enabled=args.mlflow,
+        mlflow_tracking_uri=args.mlflow_tracking_uri,
+        mlflow_experiment=args.mlflow_experiment,
+        register_candidate=args.register_candidate,
+        promote_experimental=args.promote_experimental,
+    )
+
+
 if __name__ == "__main__":
-    run_training_and_stress_pipeline_v2()
+    main()
 

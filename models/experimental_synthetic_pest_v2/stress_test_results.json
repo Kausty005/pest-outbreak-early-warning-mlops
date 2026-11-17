@@ -1,68 +1,68 @@
 {
-  "evaluation_timestamp": "2026-11-13T13:50:45.254966",
+  "evaluation_timestamp": "2026-11-17T03:39:11.895045+00:00",
   "environmental_pipeline": {
     "pipeline_name": "RandomForest",
     "feature_set": "ENVIRONMENTAL_ONLY",
     "baseline": {
-      "pr_auc": 0.7773,
-      "roc_auc": 0.9653,
-      "f1": 0.7026,
-      "brier_score": 0.0698
+      "pr_auc": 0.6578,
+      "roc_auc": 0.9469,
+      "f1": 0.6767,
+      "brier_score": 0.1231
     },
     "stress_scenarios": {
       "missing_weather": {
         "status": "PASSED (Robustly imputed)",
-        "pr_auc": 0.6402,
-        "roc_auc": 0.9327,
-        "f1": 0.01,
-        "pr_auc_delta": -0.1371
+        "pr_auc": 0.5961,
+        "roc_auc": 0.9189,
+        "f1": 0.0,
+        "pr_auc_delta": -0.0617
       },
       "sensor_noise": {
         "status": "PASSED",
-        "pr_auc": 0.7425,
-        "roc_auc": 0.9606,
-        "f1": 0.7004,
-        "pr_auc_delta": -0.0348
+        "pr_auc": 0.6256,
+        "roc_auc": 0.9438,
+        "f1": 0.6883,
+        "pr_auc_delta": -0.0322
       }
     }
   },
   "scouting_assisted_pipeline": {
-    "pipeline_name": "LightGBM",
+    "pipeline_name": "LogisticRegression",
     "feature_set": "SCOUTING_ASSISTED",
     "baseline": {
-      "pr_auc": 0.9524,
-      "roc_auc": 0.9898,
-      "f1": 0.8663,
-      "brier_score": 0.045
+      "pr_auc": 0.9246,
+      "roc_auc": 0.9838,
+      "f1": 0.8219,
+      "brier_score": 0.0501
     },
     "stress_scenarios": {
       "missing_weather": {
         "status": "PASSED (Robustly imputed)",
-        "pr_auc": 0.8828,
-        "roc_auc": 0.9765,
-        "f1": 0.3546,
-        "pr_auc_delta": -0.0696
+        "pr_auc": 0.8958,
+        "roc_auc": 0.9735,
+        "f1": 0.8093,
+        "pr_auc_delta": -0.0288
       },
       "missing_scouting": {
         "status": "PASSED (Robustly imputed)",
-        "pr_auc": 0.6355,
-        "roc_auc": 0.9361,
-        "f1": 0.3584,
-        "pr_auc_delta": -0.3169
+        "pr_auc": 0.6996,
+        "roc_auc": 0.918,
+        "f1": 0.5505,
+        "pr_auc_delta": -0.225
       },
       "sensor_noise": {
         "status": "PASSED",
-        "pr_auc": 0.9468,
-        "roc_auc": 0.9881,
-        "f1": 0.8624,
-        "pr_auc_delta": -0.0056
+        "pr_auc": 0.9194,
+        "roc_auc": 0.9815,
+        "f1": 0.8191,
+        "pr_auc_delta": -0.0052
       },
       "stale_scouting_14d": {
         "status": "PASSED",
-        "pr_auc": 0.9235,
-        "roc_auc": 0.9854,
-        "f1": 0.8385,
-        "pr_auc_delta": -0.0289
+        "pr_auc": 0.9241,
+        "roc_auc": 0.9835,
+        "f1": 0.8141,
+        "pr_auc_delta": -0.0005
       }
     }
   }

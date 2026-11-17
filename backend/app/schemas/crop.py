@@ -54,6 +54,8 @@ class HealthResponse(BaseModel):
     crop_model_version: str | None = None
     fertilizer_model_available: bool = True
     fertilizer_model_version: str | None = None
+    pest_forecasting_available: bool = True
+    pest_forecasting_version: str | None = None
     persistence_enabled: bool
     persistence_available: bool
 

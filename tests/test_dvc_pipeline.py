@@ -36,6 +36,17 @@ def test_dvc_yaml_structure_and_dependencies():
     assert "--reference" in drift_stage["cmd"]
     assert "--synthetic" in drift_stage["cmd"]
 
+    # Check train_pest_forecasting_v2 stage
+    assert "train_pest_forecasting_v2" in stages
+    pest_stage = stages["train_pest_forecasting_v2"]
+    assert "src.pest_forecasting.train_v2" in pest_stage["cmd"]
+    assert "data/experimental/synthetic_pest_forecasting_v2.csv" in pest_stage["deps"]
+    assert "src/pest_forecasting/train_v2.py" in pest_stage["deps"]
+    assert "backend/ml/model_registry.py" in pest_stage["deps"]
+    assert any("environmental_model_pipeline.joblib" in str(out) for out in pest_stage["outs"])
+    assert any("full_model_pipeline.joblib" in str(out) for out in pest_stage["outs"])
+    assert any("experiment_comparison_summary.json" in str(out) for out in pest_stage["outs"])
+
 
 def test_fertilizer_artifact_verification(tmp_path):
     summary = verify_fertilizer_artifacts(target_artifacts_dir=tmp_path / "artifacts")

@@ -84,3 +84,73 @@ stages:
       md5: 42b0e6b92cab37d4a3dbf10eb4a1b8ae.dir
       size: 25287
       nfiles: 13
+  train_pest_forecasting_v2:
+    cmd: python -m src.pest_forecasting.train_v2 --dataset 
+      data/experimental/synthetic_pest_forecasting_v2.csv --models-dir 
+      models/experimental_synthetic_pest_v2 --register-candidate 
+      --promote-experimental
+    deps:
+    - path: backend/ml/model_registry.py
+      hash: md5
+      md5: 8647f35c2f9b51560dd924ad16ba41e2
+      size: 32551
+    - path: data/experimental/synthetic_pest_forecasting_v2.csv
+      hash: md5
+      md5: ceaff58c0f597abbd06536a7d1bb1dff
+      size: 13381052
+    - path: src/pest_forecasting/dataset_v2.py
+      hash: md5
+      md5: c2c2eb6a1608aa69c10a524480a61d46
+      size: 11465
+    - path: src/pest_forecasting/evaluate.py
+      hash: md5
+      md5: 42ead54b646e859ebc94e5754b82cb15
+      size: 7928
+    - path: src/pest_forecasting/preprocessor_v2.py
+      hash: md5
+      md5: c657ac862a5535f0b590acccc7de9d63
+      size: 3135
+    - path: src/pest_forecasting/train_v2.py
+      hash: md5
+      md5: e8cdd4e5256e0f95c696b32a818f1ca4
+      size: 33428
+    outs:
+    - path: 
+        models/experimental_synthetic_pest_v2/environmental_model_pipeline.joblib
+      hash: md5
+      md5: f6ee748419b4bfea5998f44891e697c7
+      size: 4582523
+    - path: 
+        models/experimental_synthetic_pest_v2/experiment_comparison_summary.json
+      hash: md5
+      md5: b3cdbc9bd11b2cf8e0a2c62616e6dbda
+      size: 85527
+    - path: models/experimental_synthetic_pest_v2/feature_schemas.json
+      hash: md5
+      md5: 768986049f37eb1b0ec3fd7e5925fd72
+      size: 880
+    - path: models/experimental_synthetic_pest_v2/full_model_pipeline.joblib
+      hash: md5
+      md5: 1cf3fc59a22828fa940d0679ed55e35f
+      size: 361375
+    - path: models/experimental_synthetic_pest_v2/inference_examples.json
+      hash: md5
+      md5: 8d79f0a7e24d20e352aa93cd82c71313
+      size: 3259
+    - path: models/experimental_synthetic_pest_v2/model_config.json
+      hash: md5
+      md5: 9ecc898c3c1cd1fe73a98fe1a28e8f99
+      size: 314
+    - path: models/experimental_synthetic_pest_v2/partition_metadata.json
+      hash: md5
+      md5: d02efca70e5bb436b3cd89ac586279f3
+      size: 881
+    - path: models/experimental_synthetic_pest_v2/stress_test_results.json
+      hash: md5
+      md5: 48d64c7c1c5af158c9983cc0f210f87e
+      size: 1741
+    - path: 
+        models/experimental_synthetic_pest_v2/synthetic_provenance_metadata.json
+      hash: md5
+      md5: 00dee5ecf5304bfcb55a11b2e939bfa4
+      size: 514

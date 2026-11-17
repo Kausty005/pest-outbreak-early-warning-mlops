@@ -54,3 +54,36 @@ model_info_metric = Info(
     'Model metadata',
     ['model']
 )
+
+# ── Pest Forecasting MLOps Metrics (Version 2.0 Experimental) ─────────────
+pest_prediction_requests_total = Counter(
+    'pest_prediction_requests_total',
+    'Total experimental pest forecasting prediction requests',
+    ['configuration', 'status']
+)
+
+pest_prediction_errors_total = Counter(
+    'pest_prediction_errors_total',
+    'Total experimental pest forecasting prediction errors',
+    ['error_type']
+)
+
+pest_prediction_latency_seconds = Histogram(
+    'pest_prediction_latency_seconds',
+    'Experimental pest forecasting inference latency in seconds',
+    ['configuration'],
+    buckets=[0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1.0, 2.5]
+)
+
+pest_model_info = Gauge(
+    'pest_model_info',
+    'Active experimental pest forecasting model metadata',
+    ['model_version', 'configuration', 'framework', 'is_synthetic', 'is_production_ready']
+)
+
+pest_model_drift = Gauge(
+    'pest_model_drift',
+    'Experimental pest forecasting feature distribution drift indicator',
+    ['feature', 'metric']
+)
+

@@ -49,3 +49,32 @@ stages:
           persist: true
       - data/processed/aligned_environmental_surveillance_2023-06-01_2023-10-31.csv:
           persist: true
+
+  train_pest_forecasting_v2:
+    cmd: python -m src.pest_forecasting.train_v2 --dataset data/experimental/synthetic_pest_forecasting_v2.csv --models-dir models/experimental_synthetic_pest_v2 --register-candidate --promote-experimental --mlflow --mlflow-experiment pest-forecasting-v2
+    deps:
+      - data/experimental/synthetic_pest_forecasting_v2.csv
+      - src/pest_forecasting/dataset_v2.py
+      - src/pest_forecasting/preprocessor_v2.py
+      - src/pest_forecasting/evaluate.py
+      - src/pest_forecasting/train_v2.py
+      - backend/ml/model_registry.py
+    outs:
+      - models/experimental_synthetic_pest_v2/environmental_model_pipeline.joblib:
+          cache: false
+      - models/experimental_synthetic_pest_v2/full_model_pipeline.joblib:
+          cache: false
+      - models/experimental_synthetic_pest_v2/feature_schemas.json:
+          cache: false
+      - models/experimental_synthetic_pest_v2/model_config.json:
+          cache: false
+      - models/experimental_synthetic_pest_v2/partition_metadata.json:
+          cache: false
+      - models/experimental_synthetic_pest_v2/synthetic_provenance_metadata.json:
+          cache: false
+      - models/experimental_synthetic_pest_v2/stress_test_results.json:
+          cache: false
+      - models/experimental_synthetic_pest_v2/experiment_comparison_summary.json:
+          cache: false
+      - models/experimental_synthetic_pest_v2/inference_examples.json:
+          cache: false

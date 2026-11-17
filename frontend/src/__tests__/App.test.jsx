@@ -94,6 +94,50 @@ vi.mock('../services/api', () => ({
       explanations: { primary_driver: 'Normal humidity' },
     }),
   },
+  pestForecastingApi: {
+    modelInfo: vi.fn().mockResolvedValue({
+      service_status: 'ok',
+      environmental_model_available: true,
+      scouting_model_available: true,
+      model_version: 'pest-v2.0.0-experimental-synthetic',
+      classification: 'SYNTHETIC_EXPERIMENTAL',
+      is_production_ready: false,
+      production_readiness_status: 'BLOCKED',
+      decision_thresholds: { environmental: 0.32, scouting_assisted: 0.82 },
+      feature_schemas: {},
+      disclaimer: 'SYNTHETIC EXPERIMENTAL MODEL ONLY',
+    }),
+    example: vi.fn().mockResolvedValue({
+      configuration: 'ENVIRONMENTAL_ONLY',
+      crop: 'Cotton',
+      pest: 'Pink bollworm',
+      district: 'Nagpur',
+      growth_stage: 'Squaring',
+      t7_mean_temp_c: 31.5,
+      t7_min_temp_c: 26.2,
+      t7_max_temp_c: 36.8,
+      t7_mean_rh_pct: 78.4,
+      t7_rainfall_mm: 12.5,
+      t14_rainfall_mm: 45.0,
+      t7_mean_soil_moisture: 0.385,
+      t7_high_rh_days: 4,
+      t7_consecutive_dry_days: 2,
+    }),
+    predict: vi.fn().mockResolvedValue({
+      classification: 'SYNTHETIC_EXPERIMENTAL',
+      is_production_ready: false,
+      feature_configuration: 'ENVIRONMENTAL_ONLY',
+      outbreak_risk_probability: 0.2665,
+      outbreak_warning: false,
+      decision_threshold: 0.32,
+      risk_level: 'MODERATE',
+      model_version: 'pest-v2.0.0-experimental-synthetic',
+      model_family: 'RandomForest',
+      prediction_horizon_days: 7,
+      disclaimer: 'SYNTHETIC EXPERIMENTAL MODEL ONLY',
+      input_summary: { crop: 'Cotton', pest: 'Pink bollworm' },
+    }),
+  },
   publicAdvisoriesApi: {
     list: vi.fn().mockResolvedValue([]),
     summary: vi.fn().mockResolvedValue({ total_advisories: 0, by_crop: {}, by_severity: {} }),
@@ -176,5 +220,60 @@ describe('AgriAdapt Precision Agricultural Platform', () => {
 
     expect(await screen.findByText(/Ramesh Patel's Gujarat Estate/i)).toBeInTheDocument()
     expect(screen.getByText(/18 Cultivated Acres/i)).toBeInTheDocument()
+  })
+
+  test('navigates to pest surveillance tab and switches to experimental ML outbreak forecasting', async () => {
+    localStorage.setItem('agri_auth_user', JSON.stringify({ name: 'Kaushal', role: 'Farm Owner / Agronomist' }))
+
+    render(<App />)
+
+    // Deploy farm config
+    const deployBtn = screen.getByRole('button', { name: /Deploy Farm & Activate Simulated IoT Sensors/i })
+    fireEvent.click(deployBtn)
+
+    // Click Pest Surveillance navbar button
+    const pestNavBtn = await screen.findByRole('button', { name: /Pest Surveillance/i })
+    fireEvent.click(pestNavBtn)
+
+    expect(await screen.findByText(/Biophysical Pest Outbreak & Favorability Surveillance Engine/i)).toBeInTheDocument()
+
+    // Switch to Experimental ML Outbreak Forecasting (v2.0)
+    const mlToggle = screen.getByRole('button', { name: /Experimental ML Outbreak Forecasting/i })
+    fireEvent.click(mlToggle)
+
+    expect(await screen.findByText(/Experimental 7-Day Pest Outbreak Forecaster \(Version 2.0\)/i)).toBeInTheDocument()
+    const runBtn = screen.getByRole('button', { name: /Run 7-Day Outbreak Forecast/i })
+    expect(runBtn).toBeInTheDocument()
+
+    // Execute prediction in Environmental Only mode
+    fireEvent.click(runBtn)
+
+    // Verify results card renders with model version, risk gauge and scientific disclaimer
+    expect(await screen.findByText(/NORMAL RISK/i)).toBeInTheDocument()
+    expect(screen.getByText(/26\.7%/i)).toBeInTheDocument() // 0.2665 -> 26.7%
+    expect(screen.getByText(/pest-v2.0.0-experimental-synthetic/i)).toBeInTheDocument()
+    expect(screen.getAllByText(/SYNTHETIC EXPERIMENTAL MODEL ONLY/i).length).toBeGreaterThan(0)
+  })
+
+  test('scouting-assisted mode enables in-field scouting observations', async () => {
+    localStorage.setItem('agri_auth_user', JSON.stringify({ name: 'Kaushal', role: 'Farm Owner / Agronomist' }))
+    render(<App />)
+
+    const deployBtn = screen.getByRole('button', { name: /Deploy Farm & Activate Simulated IoT Sensors/i })
+    fireEvent.click(deployBtn)
+
+    const pestNavBtn = await screen.findByRole('button', { name: /Pest Surveillance/i })
+    fireEvent.click(pestNavBtn)
+
+    const mlToggle = screen.getByRole('button', { name: /Experimental ML Outbreak Forecasting/i })
+    fireEvent.click(mlToggle)
+
+    // Click Scouting Assisted tab
+    const scoutTab = await screen.findByRole('button', { name: /Scouting Assisted/i })
+    fireEvent.click(scoutTab)
+
+    expect(await screen.findByText(/In-Field Scouting Observations \(Required\)/i)).toBeInTheDocument()
+    expect(screen.getByLabelText(/Infested Plants/i)).toBeInTheDocument()
+    expect(screen.getByLabelText(/Tissue Damage/i)).toBeInTheDocument()
   })
 })
